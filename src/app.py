@@ -41,9 +41,45 @@ class ParametersWidget(QTabWidget):
         header.setSectionResizeMode(2, QHeaderView.ResizeToContents)
         header.setSectionResizeMode(3, QHeaderView.ResizeToContents)
 
+        # Buttons.
+        self.add_file_btn = QPushButton("Add")
+        self.add_file_btn.clicked.connect(self.add_file)
+        self.edit_file_btn = QPushButton("Edit")
+        self.edit_file_btn.clicked.connect(self.edit_file)
+        self.remove_file_btn = QPushButton("Remove")
+        self.remove_file_btn.clicked.connect(self.remove_file)
+
+        self.input_file_buttons = QWidget()
+        controls_layout = QHBoxLayout()
+        controls_layout.addWidget(self.add_file_btn)
+        controls_layout.addWidget(self.edit_file_btn)
+        controls_layout.addWidget(self.remove_file_btn)
+        self.input_file_buttons.setLayout(controls_layout)
+
         layout = QVBoxLayout()
+        layout.addWidget(self.input_file_buttons)
         layout.addWidget(self.input_files_table)
         self.input_files_tab.setLayout(layout)
+
+    def add_file(self):
+        print("adding file")
+
+    def edit_file(self):
+        print("editing file")
+
+    def remove_file(self):
+        selected_ranges = self.input_files_table.selectedRanges()
+        remove_indexes = []
+        for sel in selected_ranges:
+            for i in range(sel.topRow(), sel.bottomRow() + 1):
+                remove_indexes += [i]
+        if len(remove_indexes) > 0:
+            old_list = self.input_files
+            new_list = []
+            for i, file in enumerate(old_list):
+                if i not in remove_indexes:
+                    new_list += [file]
+            self.update_input_files(new_list)
 
     def update_input_files(self, input_files):
         self.input_files = input_files
