@@ -8,6 +8,7 @@ from PyQt5.QtWidgets import *
 import pastaq
 
 class ParametersWidget(QTabWidget):
+    # DEBUG: This should be initialized to an empty list
     input_files = [
             {'reference': True,  'raw_path': '/path/to/mzxml/1_1.mzXML', 'group': 'a', 'ident_path': '/path/to/mzidentml/1_1.mzid'},
             {'reference': True,  'raw_path': '/path/to/mzxml/1_2.mzXML', 'group': 'a', 'ident_path': '/path/to/mzidentml/1_2.mzid'},
@@ -30,6 +31,7 @@ class ParametersWidget(QTabWidget):
         self.input_files_table.setSelectionBehavior(QTableWidget.SelectRows)
         self.input_files_table.setRowCount(len(self.input_files))
         self.input_files_table.setColumnCount(4)
+        self.input_files_table.setFocusPolicy(False)
         column_names = [
             "Raw File (mzXML/mzML)",
             "Identification file (mzID)",
@@ -45,7 +47,8 @@ class ParametersWidget(QTabWidget):
         header.setSectionResizeMode(3, QHeaderView.ResizeToContents)
 
         for i, input_file in enumerate(self.input_files):
-            self.input_files_table.setCellWidget(i, 0, QLabel(input_file['raw_path']))
+            label = QLabel(input_file['raw_path'])
+            self.input_files_table.setCellWidget(i, 0, label)
             if 'ident_path' in input_file:
                 self.input_files_table.setCellWidget(i, 1, QLabel(input_file['ident_path']))
             if 'group' in input_file:
@@ -62,12 +65,17 @@ class ParametersWidget(QTabWidget):
                 lay_out.setAlignment(Qt.AlignCenter)
                 lay_out.setContentsMargins(0, 0, 0, 0)
                 cell_widget.setLayout(lay_out)
+                checkbox.stateChanged.connect(self.toggle_reference)
                 self.input_files_table.setCellWidget(i, 3, cell_widget)
-                # TODO: Toggle the reference when the checkbox is ticked
 
         layout = QVBoxLayout()
         layout.addWidget(self.input_files_table)
         self.input_files_tab.setLayout(layout)
+
+    def toggle_reference(self):
+        for row in range(self.input_files_table.rowCount()):
+            checkbox = self.input_files_table.cellWidget(row, 3).children()[1]
+            self.input_files[row]['reference'] = checkbox.isChecked()
 
     def parameters_tab_ui(self):
         layout = QFormLayout()
