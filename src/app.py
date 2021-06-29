@@ -2,8 +2,6 @@ import sys
 import os
 import json
 
-# from PyQt5.QtCore import QSize, Qt
-# from PyQt5.QtWidgets import QApplication, QMainWindow, QPushButton, QLabel, QLineEdit, QVBoxLayout, QHBoxLayout, QWidget
 from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
 
@@ -78,9 +76,15 @@ class MainWindow(QMainWindow):
         #
         self.project_variables_container = QWidget()
         project_variables_layout = QFormLayout()
-        project_variables_layout.addRow("Project name", QLineEdit())
-        project_variables_layout.addRow("Project description", QLineEdit())
-        project_variables_layout.addRow("Project file", QLineEdit())
+        self.project_name_ui = QLineEdit()
+        self.project_name_ui.textChanged.connect(self.set_project_name)
+        self.project_description_ui = QLineEdit()
+        self.project_name_ui.textChanged.connect(self.set_project_description)
+        self.project_directory_ui = QLineEdit()
+        project_variables_layout.addRow("Project name", self.project_name_ui)
+        project_variables_layout.addRow("Project description", self.project_description_ui)
+        project_variables_layout.addRow("Project directory", self.project_directory_ui)
+        self.project_directory_ui.setEnabled(False)
         self.project_variables_container.setLayout(project_variables_layout)
         layout.addWidget(self.project_variables_container)
 
@@ -100,40 +104,63 @@ class MainWindow(QMainWindow):
         container = QWidget()
         container.setLayout(layout)
 
+        self.run_btn.setEnabled(False)
+        self.project_variables_container.setEnabled(False)
+        self.parameters_container.setEnabled(False)
+
         # Set the central widget of the Window.
         self.setCentralWidget(container)
 
+    def set_project_name(self):
+        self.parameters['project_name'] = self.project_name_ui.text()
+
+    def set_project_description(self):
+        self.parameters['project_description'] = self.project_description_ui.text()
+
+    def update_ui(self):
+        # TODO: Update the GUI with all parameters
+        self.project_directory_ui.setText(os.path.dirname(self.project_path))
+
     def new_project(self):
         print("new project")
-        path = QFileDialog.getExistingDirectory(
+        dir_path = QFileDialog.getExistingDirectory(
                 parent=self,
-                caption="Select project file",
+                caption="Select project directory",
                 directory=os.getcwd(),
         )
-        if len(path) > 0:
-            self.project_path = os.path.join(path, "parameters.json")
+        if len(dir_path) > 0:
+            # TODO: Check if the project file already exists and show a warning
+            # dialog to let the user overwrite it.
+            self.project_path = os.path.join(dir_path, "parameters.json")
             self.parameters = pastaq.default_parameters('orbitrap', 10)
             self.save_project_btn.setEnabled(True)
             self.save_project_as_btn.setEnabled(True)
+            self.run_btn.setEnabled(True)
+            self.project_variables_container.setEnabled(True)
+            self.parameters_container.setEnabled(True)
+            self.update_ui()
             self.save_project()
 
     def open_project(self):
-        path, _ = QFileDialog.getOpenFileName(
+        file_path, _ = QFileDialog.getOpenFileName(
                 parent=self,
                 caption="Select project file",
                 directory=os.getcwd(),
                 filter="Project file (*.json)",
         )
-        if len(path) > 0:
-            tmp = json.loads(open(path).read())
+        if len(file_path) > 0:
+            tmp = json.loads(open(file_path).read())
             # TODO: Validate parameters
             valid = True
             if valid:
                 self.parameters = tmp
+                self.project_path = file_path
                 self.save_project_btn.setEnabled(True)
                 self.save_project_as_btn.setEnabled(True)
-                # TODO: Update the GUI with new parameters
-        print("open project:", self.parameters)
+                self.run_btn.setEnabled(True)
+                self.project_variables_container.setEnabled(True)
+                self.parameters_container.setEnabled(True)
+                self.update_ui()
 
     def save_project(self):
         try:
@@ -167,7 +194,6 @@ class MainWindow(QMainWindow):
 
         # TODO: Open modal with log progress and cancel button.
         # TODO: Run pipeline in a different thread/fork.
-
         print("Running")
 
 # Initialize main window.
