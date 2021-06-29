@@ -8,30 +8,70 @@ from PyQt5.QtWidgets import *
 import pastaq
 
 class ParametersWidget(QTabWidget):
-   def __init__(self, parent = None):
-      super(ParametersWidget, self).__init__(parent)
-      self.input_files_tab = QWidget()
-      self.parameters_tab = QWidget()
+    input_files = [
+            {'reference': True,  'raw_path': '/path/to/mzxml/1_1.mzXML', 'group': 'a', 'ident_path': '/path/to/mzidentml/1_1.mzid'},
+            {'reference': True,  'raw_path': '/path/to/mzxml/1_2.mzXML', 'group': 'a', 'ident_path': '/path/to/mzidentml/1_2.mzid'},
+            {'reference': False, 'raw_path': '/path/to/mzxml/1_3.mzXML', 'group': 'a', 'ident_path': '/path/to/mzidentml/1_3.mzid'},
+    ]
 
-      self.addTab(self.input_files_tab, "Input files")
-      self.addTab(self.parameters_tab, "Parameters")
-      self.input_files_tab_ui()
-      self.parameters_tab_ui()
+    def __init__(self, parent = None):
+        super(ParametersWidget, self).__init__(parent)
+        self.input_files_tab = QWidget()
+        self.parameters_tab = QWidget()
 
-   def input_files_tab_ui(self):
-      layout = QFormLayout()
-      layout.addRow("files", QLineEdit())
-      layout.addRow("go", QLineEdit())
-      layout.addRow("here", QLineEdit())
-      self.input_files_tab.setLayout(layout)
+        self.addTab(self.input_files_tab, "Input files")
+        self.addTab(self.parameters_tab, "Parameters")
+        self.input_files_tab_ui()
+        self.parameters_tab_ui()
 
-   def parameters_tab_ui(self):
-      layout = QFormLayout()
-      sex = QHBoxLayout()
-      sex.addWidget(QRadioButton("parameters"))
-      sex.addWidget(QRadioButton("go"))
-      layout.addRow(QLabel("here"),sex)
-      self.parameters_tab.setLayout(layout)
+    def input_files_tab_ui(self):
+        self.input_files_table = QTableWidget()
+        self.input_files_table.setEditTriggers(QTableWidget.NoEditTriggers)
+        self.input_files_table.setSelectionBehavior(QTableWidget.SelectRows)
+        self.input_files_table.setRowCount(len(self.input_files))
+        self.input_files_table.setColumnCount(4)
+        column_names = [
+            "Raw File (mzXML/mzML)",
+            "Identification file (mzID)",
+            "Group",
+            "Reference"
+        ]
+        self.input_files_table.setHorizontalHeaderLabels(column_names)
+        self.input_files_table.verticalHeader().hide()
+        header = self.input_files_table.horizontalHeader()
+        header.setSectionResizeMode(0, QHeaderView.Stretch)
+        header.setSectionResizeMode(1, QHeaderView.Stretch)
+        header.setSectionResizeMode(2, QHeaderView.ResizeToContents)
+        header.setSectionResizeMode(3, QHeaderView.ResizeToContents)
+
+        for i, input_file in enumerate(self.input_files):
+            self.input_files_table.setCellWidget(i, 0, QLabel(input_file['raw_path']))
+            if 'ident_path' in input_file:
+                self.input_files_table.setCellWidget(i, 1, QLabel(input_file['ident_path']))
+            if 'group' in input_file:
+                label = QLabel(input_file['group'])
+                label.setAlignment(Qt.AlignCenter)
+                self.input_files_table.setCellWidget(i, 2, label)
+            if 'reference' in input_file:
+                cell_widget = QWidget()
+                checkbox = QCheckBox()
+                if input_file['reference']:
+                    checkbox.setCheckState(Qt.Checked)
+                lay_out = QHBoxLayout(cell_widget)
+                lay_out.addWidget(checkbox)
+                lay_out.setAlignment(Qt.AlignCenter)
+                lay_out.setContentsMargins(0, 0, 0, 0)
+                cell_widget.setLayout(lay_out)
+                self.input_files_table.setCellWidget(i, 3, cell_widget)
+                # TODO: Toggle the reference when the checkbox is ticked
+
+        layout = QVBoxLayout()
+        layout.addWidget(self.input_files_table)
+        self.input_files_tab.setLayout(layout)
+
+    def parameters_tab_ui(self):
+        layout = QFormLayout()
+        self.parameters_tab.setLayout(layout)
 
 class MainWindow(QMainWindow):
     parameters = {}
@@ -79,7 +119,7 @@ class MainWindow(QMainWindow):
         self.project_name_ui = QLineEdit()
         self.project_name_ui.textChanged.connect(self.set_project_name)
         self.project_description_ui = QLineEdit()
-        self.project_name_ui.textChanged.connect(self.set_project_description)
+        self.project_description_ui.textChanged.connect(self.set_project_description)
         self.project_directory_ui = QLineEdit()
         project_variables_layout.addRow("Project name", self.project_name_ui)
         project_variables_layout.addRow("Project description", self.project_description_ui)
@@ -120,6 +160,10 @@ class MainWindow(QMainWindow):
     def update_ui(self):
         # TODO: Update the GUI with all parameters
         self.project_directory_ui.setText(os.path.dirname(self.project_path))
+        if "project_name" in self.parameters:
+            self.project_name_ui.setText(self.parameters['project_name'])
+        if "project_description" in self.parameters:
+            self.project_description_ui.setText(self.parameters['project_description'])
 
     def new_project(self):
         print("new project")
@@ -182,6 +226,7 @@ class MainWindow(QMainWindow):
         )
         if len(path) > 0:
             self.project_path = os.path.join(path, "parameters.json")
+            self.update_ui()
             self.save_project()
 
     def run_pipeline(self):
