@@ -8,12 +8,7 @@ from PyQt5.QtWidgets import *
 import pastaq
 
 class ParametersWidget(QTabWidget):
-    # DEBUG: This should be initialized to an empty list
-    input_files = [
-            {'reference': True,  'raw_path': '/path/to/mzxml/1_1.mzXML', 'group': 'a', 'ident_path': '/path/to/mzidentml/1_1.mzid'},
-            {'reference': True,  'raw_path': '/path/to/mzxml/1_2.mzXML', 'group': 'a', 'ident_path': '/path/to/mzidentml/1_2.mzid'},
-            {'reference': False, 'raw_path': '/path/to/mzxml/1_3.mzXML', 'group': 'a', 'ident_path': '/path/to/mzidentml/1_3.mzid'},
-    ]
+    input_files = []
 
     def __init__(self, parent = None):
         super(ParametersWidget, self).__init__(parent)
@@ -29,7 +24,7 @@ class ParametersWidget(QTabWidget):
         self.input_files_table = QTableWidget()
         self.input_files_table.setEditTriggers(QTableWidget.NoEditTriggers)
         self.input_files_table.setSelectionBehavior(QTableWidget.SelectRows)
-        self.input_files_table.setRowCount(len(self.input_files))
+        self.input_files_table.setRowCount(0)
         self.input_files_table.setColumnCount(4)
         self.input_files_table.setFocusPolicy(False)
         column_names = [
@@ -46,6 +41,13 @@ class ParametersWidget(QTabWidget):
         header.setSectionResizeMode(2, QHeaderView.ResizeToContents)
         header.setSectionResizeMode(3, QHeaderView.ResizeToContents)
 
+        layout = QVBoxLayout()
+        layout.addWidget(self.input_files_table)
+        self.input_files_tab.setLayout(layout)
+
+    def update_input_files(self, input_files):
+        self.input_files = input_files
+        self.input_files_table.setRowCount(len(self.input_files))
         for i, input_file in enumerate(self.input_files):
             label = QLabel(input_file['raw_path'])
             self.input_files_table.setCellWidget(i, 0, label)
@@ -67,10 +69,6 @@ class ParametersWidget(QTabWidget):
                 cell_widget.setLayout(lay_out)
                 checkbox.stateChanged.connect(self.toggle_reference)
                 self.input_files_table.setCellWidget(i, 3, cell_widget)
-
-        layout = QVBoxLayout()
-        layout.addWidget(self.input_files_table)
-        self.input_files_tab.setLayout(layout)
 
     def toggle_reference(self):
         for row in range(self.input_files_table.rowCount()):
@@ -212,12 +210,16 @@ class MainWindow(QMainWindow):
                 self.run_btn.setEnabled(True)
                 self.project_variables_container.setEnabled(True)
                 self.parameters_container.setEnabled(True)
+                if "input_files" in self.parameters:
+                    self.parameters_container.update_input_files(self.parameters['input_files'])
                 self.update_ui()
 
     def save_project(self):
         try:
             with open(self.project_path, 'w') as json_file:
-                json.dump(self.parameters, json_file)
+                params = self.parameters
+                params['input_files'] = self.parameters_container.input_files
+                json.dump(params, json_file)
         except:
             error_dialog = QMessageBox()
             error_dialog.setIcon(QMessageBox.Critical)
@@ -256,6 +258,3 @@ window.show()
 
 # Start the event loop.
 app.exec()
-
-# DEBUG: This gets executed on exit.
-print("DONE: exiting")
