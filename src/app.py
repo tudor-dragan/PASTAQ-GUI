@@ -210,7 +210,39 @@ class ParametersWidget(QTabWidget):
             self.input_files[row]['reference'] = checkbox.isChecked()
 
     def parameters_tab_ui(self):
-        layout = QFormLayout()
+        # Instruments
+        self.inst_settings_box = QGroupBox("Instrument Settings")
+        grid_layout = QGridLayout()
+        grid_layout.addWidget(QPushButton('1'), 0, 0)
+        grid_layout.addWidget(QPushButton('2'), 0, 1)
+        grid_layout.addWidget(QPushButton('3'), 0, 2)
+        grid_layout.addWidget(QPushButton('4'), 1, 0)
+        grid_layout.addWidget(QPushButton('5'), 1, 1)
+        grid_layout.addWidget(QPushButton('6'), 1, 2)
+        grid_layout.addWidget(QPushButton('7'), 2, 0)
+        grid_layout.addWidget(QPushButton('8'), 2, 1)
+        grid_layout.addWidget(QPushButton('9'), 2, 2)
+        self.inst_settings_box.setLayout(grid_layout)
+
+        # Quality
+        self.quality_box = QGroupBox("Quality")
+        grid_layout = QGridLayout()
+        grid_layout.addWidget(QPushButton('1'), 0, 0)
+        grid_layout.addWidget(QPushButton('2'), 0, 1)
+        grid_layout.addWidget(QPushButton('3'), 0, 2)
+        grid_layout.addWidget(QPushButton('4'), 1, 0)
+        grid_layout.addWidget(QPushButton('5'), 1, 1)
+        grid_layout.addWidget(QPushButton('6'), 1, 2)
+        grid_layout.addWidget(QPushButton('7'), 2, 0)
+        grid_layout.addWidget(QPushButton('8'), 2, 1)
+        grid_layout.addWidget(QPushButton('9'), 2, 2)
+        self.quality_box.setLayout(grid_layout)
+
+        # TODO: Add all parameters.
+
+        layout = QVBoxLayout()
+        layout.addWidget(self.inst_settings_box)
+        layout.addWidget(self.quality_box)
         self.parameters_tab.setLayout(layout)
 
 class MainWindow(QMainWindow):
