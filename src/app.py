@@ -7,6 +7,42 @@ from PyQt5.QtWidgets import *
 
 import pastaq
 
+
+# TODO: Create custom file picker widget that shows the name of the picked files
+
+class EditFileDialog(QDialog):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+
+        # TODO: Set fixed size for this.
+
+        self.setWindowTitle("PASTAQ: DDA Pipeline - Add files")
+
+        # TODO: raw file picker
+        # TODO: mzid file picker
+        # TODO: textbox group
+        self.project_variables_container = QWidget()
+        project_variables_layout = QFormLayout()
+        self.project_name_ui = QLineEdit()
+        self.project_description_ui = QLineEdit()
+        self.project_directory_ui = QPushButton("Run")
+        project_variables_layout.addRow("Project name", self.project_name_ui)
+        project_variables_layout.addRow("Project description", self.project_description_ui)
+        project_variables_layout.addRow("Project directory", self.project_directory_ui)
+        self.project_directory_ui.setEnabled(False)
+        self.project_variables_container.setLayout(project_variables_layout)
+
+        # Dialog buttons (Ok/Cancel).
+        dialog_buttons = QDialogButtonBox.Ok | QDialogButtonBox.Cancel
+        self.buttons = QDialogButtonBox(dialog_buttons)
+        self.buttons.accepted.connect(self.accept)
+        self.buttons.rejected.connect(self.reject)
+
+        layout = QVBoxLayout()
+        layout.addWidget(self.project_variables_container)
+        layout.addWidget(self.buttons)
+        self.setLayout(layout)
+
 class ParametersWidget(QTabWidget):
     input_files = []
 
@@ -62,24 +98,44 @@ class ParametersWidget(QTabWidget):
         self.input_files_tab.setLayout(layout)
 
     def add_file(self):
-        print("adding file")
+        file_paths, _ = QFileDialog.getOpenFileNames(
+                parent=self,
+                caption="Select input files",
+                directory=os.getcwd(),
+                filter="MS files (*.mzXML *.mzML)",
+        )
+        if len(file_paths) > 0:
+            input_files = self.input_files
+            current_files = [file['raw_path'] for file in self.input_files]
+            for file_path in file_paths:
+                if file_path not in current_files:
+                    input_files.append({'raw_path': file_path, 'reference': False})
+            self.update_input_files(input_files)
 
     def edit_file(self):
-        print("editing file")
+        add_file_dialog = EditFileDialog(self)
+        if add_file_dialog.exec():
+            print("Success")
+        else:
+            print("Cancelled")
 
     def remove_file(self):
-        selected_ranges = self.input_files_table.selectedRanges()
-        remove_indexes = []
-        for sel in selected_ranges:
-            for i in range(sel.topRow(), sel.bottomRow() + 1):
-                remove_indexes += [i]
-        if len(remove_indexes) > 0:
+        indexes = self.find_selected_files()
+        if len(indexes) > 0:
             old_list = self.input_files
             new_list = []
             for i, file in enumerate(old_list):
-                if i not in remove_indexes:
+                if i not in indexes:
                     new_list += [file]
             self.update_input_files(new_list)
+
+    def find_selected_files(self):
+        selected_ranges = self.input_files_table.selectedRanges()
+        indexes = []
+        for sel in selected_ranges:
+            for i in range(sel.topRow(), sel.bottomRow() + 1):
+                indexes += [i]
+        return indexes
 
     def update_input_files(self, input_files):
         self.input_files = input_files
