@@ -246,6 +246,7 @@ class ParametersWidget(QTabWidget):
         self.parameters_tab.setLayout(layout)
 
 class MainWindow(QMainWindow):
+    # TODO: move parameters to the ParametersWidget
     parameters = {}
     project_path = ''
 
