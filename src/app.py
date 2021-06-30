@@ -9,39 +9,52 @@ import pastaq
 
 
 # TODO: Create custom file picker widget that shows the name of the picked files
+# TODO: Switch the cwd to the project directory and/or use it instead of os.getcwd()
 
 class EditFileDialog(QDialog):
+    group = ''
+    mzid_paths = []
+
     def __init__(self, parent=None):
         super().__init__(parent)
 
         # TODO: Set fixed size for this.
-
         self.setWindowTitle("PASTAQ: DDA Pipeline - Add files")
 
-        # TODO: raw file picker
-        # TODO: mzid file picker
-        # TODO: textbox group
-        self.project_variables_container = QWidget()
-        project_variables_layout = QFormLayout()
-        self.project_name_ui = QLineEdit()
-        self.project_description_ui = QLineEdit()
-        self.project_directory_ui = QPushButton("Run")
-        project_variables_layout.addRow("Project name", self.project_name_ui)
-        project_variables_layout.addRow("Project description", self.project_description_ui)
-        project_variables_layout.addRow("Project directory", self.project_directory_ui)
-        self.project_directory_ui.setEnabled(False)
-        self.project_variables_container.setLayout(project_variables_layout)
+        # Edit parameters.
+        form_container = QWidget()
+        form_layout = QFormLayout()
+        self.group_box = QLineEdit()
+        self.group_box.textChanged.connect(self.set_group)
+        mzid_picker = QPushButton("Find")
+        mzid_picker.clicked.connect(self.set_mzid_paths)
+        form_layout.addRow("Group", self.group_box)
+        form_layout.addRow("mzID", mzid_picker)
+        form_container.setLayout(form_layout)
 
         # Dialog buttons (Ok/Cancel).
         dialog_buttons = QDialogButtonBox.Ok | QDialogButtonBox.Cancel
-        self.buttons = QDialogButtonBox(dialog_buttons)
-        self.buttons.accepted.connect(self.accept)
-        self.buttons.rejected.connect(self.reject)
+        buttons = QDialogButtonBox(dialog_buttons)
+        buttons.accepted.connect(self.accept)
+        buttons.rejected.connect(self.reject)
 
         layout = QVBoxLayout()
-        layout.addWidget(self.project_variables_container)
-        layout.addWidget(self.buttons)
+        layout.addWidget(form_container)
+        layout.addWidget(buttons)
         self.setLayout(layout)
+
+    def set_group(self):
+        self.group = self.group_box.text()
+
+    def set_mzid_paths(self):
+        file_paths, _ = QFileDialog.getOpenFileNames(
+                parent=self,
+                caption="Select input files",
+                directory=os.getcwd(),
+                filter="Identification files (*.mzID *.mzIdentML)",
+        )
+        if len(file_paths) > 0:
+            self.mzid_paths = file_paths
 
 class ParametersWidget(QTabWidget):
     input_files = []
@@ -113,11 +126,40 @@ class ParametersWidget(QTabWidget):
             self.update_input_files(input_files)
 
     def edit_file(self):
-        add_file_dialog = EditFileDialog(self)
-        if add_file_dialog.exec():
-            print("Success")
-        else:
-            print("Cancelled")
+        indexes = self.find_selected_files()
+        if len(indexes) == 0:
+            return
+
+        edit_file_dialog = EditFileDialog(self)
+        if edit_file_dialog.exec():
+            old_list = self.input_files
+            new_list = []
+            for i, file in enumerate(old_list):
+                if i in indexes:
+                    new_file = file
+                    new_file['group'] = edit_file_dialog.group
+
+                    # When only 1 file is selected mzID can have any name, if
+                    # multiple files are selected, the stem of raw_path and
+                    # ident_path will be matched.
+                    if len(indexes) == 1 and len(edit_file_dialog.mzid_paths) == 1:
+                        new_file['ident_path'] = edit_file_dialog.mzid_paths[0]
+                    else:
+                        base_name = os.path.basename(file['raw_path'])
+                        base_name = os.path.splitext(base_name)
+                        stem = base_name[0]
+                        for mzid in edit_file_dialog.mzid_paths:
+                            base_name = os.path.basename(mzid)
+                            base_name = os.path.splitext(base_name)
+                            mzid_stem = base_name[0]
+                            if mzid_stem == stem:
+                                new_file['ident_path'] = mzid
+                                break
+
+                    new_list += [new_file]
+                else:
+                    new_list += [file]
+            self.update_input_files(new_list)
 
     def remove_file(self):
         indexes = self.find_selected_files()
@@ -264,7 +306,6 @@ class MainWindow(QMainWindow):
             self.project_description_ui.setText(self.parameters['project_description'])
 
     def new_project(self):
-        print("new project")
         dir_path = QFileDialog.getExistingDirectory(
                 parent=self,
                 caption="Select project directory",
@@ -341,7 +382,6 @@ class MainWindow(QMainWindow):
 
         # TODO: Open modal with log progress and cancel button.
         # TODO: Run pipeline in a different thread/fork.
-        print("Running")
 
 # Initialize main window.
 app = QApplication(sys.argv)
