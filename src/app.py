@@ -65,6 +65,7 @@ class ParameterItem(QWidget):
 
 class ParametersWidget(QTabWidget):
     input_files = []
+    parameters = {}
 
     def __init__(self, parent = None):
         super(ParametersWidget, self).__init__(parent)
@@ -359,8 +360,6 @@ class ParametersWidget(QTabWidget):
         content_widget.setLayout(vbox)
 
 class MainWindow(QMainWindow):
-    # TODO: move parameters to the ParametersWidget
-    parameters = {}
     project_path = ''
 
     def __init__(self):
@@ -438,18 +437,18 @@ class MainWindow(QMainWindow):
         self.setCentralWidget(container)
 
     def set_project_name(self):
-        self.parameters['project_name'] = self.project_name_ui.text()
+        self.parameters_container.parameters['project_name'] = self.project_name_ui.text()
 
     def set_project_description(self):
-        self.parameters['project_description'] = self.project_description_ui.text()
+        self.parameters_container.parameters['project_description'] = self.project_description_ui.text()
 
     def update_ui(self):
         # TODO: Update the GUI with all parameters
         self.project_directory_ui.setText(os.path.dirname(self.project_path))
-        if "project_name" in self.parameters:
-            self.project_name_ui.setText(self.parameters['project_name'])
-        if "project_description" in self.parameters:
-            self.project_description_ui.setText(self.parameters['project_description'])
+        if "project_name" in self.parameters_container.parameters:
+            self.project_name_ui.setText(self.parameters_container.parameters['project_name'])
+        if "project_description" in self.parameters_container.parameters:
+            self.project_description_ui.setText(self.parameters_container.parameters['project_description'])
 
     def new_project(self):
         dir_path = QFileDialog.getExistingDirectory(
@@ -461,7 +460,7 @@ class MainWindow(QMainWindow):
             # TODO: Check if the project file already exists and show a warning
             # dialog to let the user overwrite it.
             self.project_path = os.path.join(dir_path, "parameters.json")
-            self.parameters = pastaq.default_parameters('orbitrap', 10)
+            self.parameters_container.parameters = pastaq.default_parameters('orbitrap', 10)
             self.save_project_btn.setEnabled(True)
             self.save_project_as_btn.setEnabled(True)
             self.run_btn.setEnabled(True)
@@ -482,21 +481,21 @@ class MainWindow(QMainWindow):
             # TODO: Validate parameters
             valid = True
             if valid:
-                self.parameters = tmp
+                self.parameters_container.parameters = tmp
                 self.project_path = file_path
                 self.save_project_btn.setEnabled(True)
                 self.save_project_as_btn.setEnabled(True)
                 self.run_btn.setEnabled(True)
                 self.project_variables_container.setEnabled(True)
                 self.parameters_container.setEnabled(True)
-                if "input_files" in self.parameters:
-                    self.parameters_container.update_input_files(self.parameters['input_files'])
+                if "input_files" in self.parameters_container.parameters:
+                    self.parameters_container.update_input_files(self.parameters_container.parameters['input_files'])
                 self.update_ui()
 
     def save_project(self):
         try:
             with open(self.project_path, 'w') as json_file:
-                params = self.parameters
+                params = self.parameters_container.parameters
                 params['input_files'] = self.parameters_container.input_files
                 json.dump(params, json_file)
         except:
