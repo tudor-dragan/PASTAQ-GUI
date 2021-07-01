@@ -56,13 +56,20 @@ class EditFileDialog(QDialog):
         if len(file_paths) > 0:
             self.mzid_paths = file_paths
 
+class ParameterItem(QWidget):
+    def __init__(self, label, widget, parent=None):
+        QWidget.__init__(self, parent=parent)
+        layout = QVBoxLayout(self)
+        layout.addWidget(QLabel(label))
+        layout.addWidget(widget)
+
 class ParametersWidget(QTabWidget):
     input_files = []
 
     def __init__(self, parent = None):
         super(ParametersWidget, self).__init__(parent)
         self.input_files_tab = QWidget()
-        self.parameters_tab = QWidget()
+        self.parameters_tab = QScrollArea()
 
         self.addTab(self.input_files_tab, "Input files")
         self.addTab(self.parameters_tab, "Parameters")
@@ -210,40 +217,146 @@ class ParametersWidget(QTabWidget):
             self.input_files[row]['reference'] = checkbox.isChecked()
 
     def parameters_tab_ui(self):
+        # TODO: Maybe we should add the constrains and default values in
+        # a dictionary format. Parameters are not going to change often, so
+        # probably is fine with hardcoding the ranges here.
+        LARGE = 1000000000
+
         # Instruments
         self.inst_settings_box = QGroupBox("Instrument Settings")
-        grid_layout = QGridLayout()
-        grid_layout.addWidget(QPushButton('1'), 0, 0)
-        grid_layout.addWidget(QPushButton('2'), 0, 1)
-        grid_layout.addWidget(QPushButton('3'), 0, 2)
-        grid_layout.addWidget(QPushButton('4'), 1, 0)
-        grid_layout.addWidget(QPushButton('5'), 1, 1)
-        grid_layout.addWidget(QPushButton('6'), 1, 2)
-        grid_layout.addWidget(QPushButton('7'), 2, 0)
-        grid_layout.addWidget(QPushButton('8'), 2, 1)
-        grid_layout.addWidget(QPushButton('9'), 2, 2)
-        self.inst_settings_box.setLayout(grid_layout)
+        grid_layout_inst = QGridLayout()
 
-        # Quality
-        self.quality_box = QGroupBox("Quality")
-        grid_layout = QGridLayout()
-        grid_layout.addWidget(QPushButton('1'), 0, 0)
-        grid_layout.addWidget(QPushButton('2'), 0, 1)
-        grid_layout.addWidget(QPushButton('3'), 0, 2)
-        grid_layout.addWidget(QPushButton('4'), 1, 0)
-        grid_layout.addWidget(QPushButton('5'), 1, 1)
-        grid_layout.addWidget(QPushButton('6'), 1, 2)
-        grid_layout.addWidget(QPushButton('7'), 2, 0)
-        grid_layout.addWidget(QPushButton('8'), 2, 1)
-        grid_layout.addWidget(QPushButton('9'), 2, 2)
-        self.quality_box.setLayout(grid_layout)
+        self.inst_type = QComboBox()
+        self.inst_type.addItems(["Orbitrap", "TOF", "FT-ICR", "Quadrupole"])
+        grid_layout_inst.addWidget(ParameterItem("Instrument Type", self.inst_type), 0, 0)
+
+        self.res_ms1 = QSpinBox()
+        self.res_ms1.setRange(-LARGE, LARGE)
+        self.res_ms1.setValue(70000)
+        grid_layout_inst.addWidget(ParameterItem("Resolution MS1", self.res_ms1), 0, 1)
+
+        self.res_ms2 = QSpinBox()
+        self.res_ms2.setRange(-LARGE, LARGE)
+        self.res_ms2.setValue(30000)
+        grid_layout_inst.addWidget(ParameterItem("Resolution MS2", self.res_ms2), 0, 2)
+
+        self.reference_mz = QSpinBox()
+        self.reference_mz.setRange(-LARGE, LARGE)
+        self.reference_mz.setValue(70000)
+        grid_layout_inst.addWidget(ParameterItem("Reference m/z", self.reference_mz), 1, 0)
+
+        self.avg_fwhm_rt = QSpinBox()
+        self.avg_fwhm_rt.setRange(-LARGE, LARGE)
+        self.avg_fwhm_rt.setValue(30000)
+        grid_layout_inst.addWidget(ParameterItem("Avg FWHM RT", self.avg_fwhm_rt), 1, 1)
+
+        self.inst_settings_box.setLayout(grid_layout_inst)
+
+        # Resampling
+        self.resampling_box = QGroupBox("Resampling")
+        grid_layout_resamp = QGridLayout()
+
+        self.num_samples_mz = QSpinBox()
+        self.num_samples_mz.setRange(-LARGE, LARGE)
+        self.num_samples_mz.setValue(5)
+        grid_layout_resamp.addWidget(ParameterItem("Num Samples MZ", self.num_samples_mz), 0, 0)
+
+        self.num_samples_rt = QSpinBox()
+        self.num_samples_rt.setRange(-LARGE, LARGE)
+        self.num_samples_rt.setValue(5)
+        grid_layout_resamp.addWidget(ParameterItem("Num Samples RT", self.num_samples_rt), 0, 1)
+
+        self.smoothing_coefficient_mz = QSpinBox()
+        self.smoothing_coefficient_mz.setRange(-LARGE, LARGE)
+        self.smoothing_coefficient_mz.setValue(70000)
+        grid_layout_resamp.addWidget(ParameterItem("Smoothing Coefficient MZ", self.smoothing_coefficient_mz), 0, 2)
+
+        self.smoothing_coefficient_rt = QSpinBox()
+        self.smoothing_coefficient_rt.setRange(-LARGE, LARGE)
+        self.smoothing_coefficient_rt.setValue(70000)
+        grid_layout_resamp.addWidget(ParameterItem("Smoothing Coefficient RT", self.smoothing_coefficient_rt), 1, 0)
+        self.resampling_box.setLayout(grid_layout_resamp)
+
+        # Warp2D
+        self.warp_box = QGroupBox("Warp2D")
+        grid_layout_warp = QGridLayout()
+
+        self.warp2d_slack = QSpinBox()
+        self.warp2d_slack.setRange(-LARGE, LARGE)
+        self.warp2d_slack.setValue(5)
+        grid_layout_warp.addWidget(ParameterItem("Slack", self.warp2d_slack), 0, 0)
+
+        self.warp2d_window_size = QSpinBox()
+        self.warp2d_window_size.setRange(-LARGE, LARGE)
+        self.warp2d_window_size.setValue(5)
+        grid_layout_warp.addWidget(ParameterItem("Window Size", self.warp2d_window_size), 0, 1)
+
+        self.warp2d_num_points = QSpinBox()
+        self.warp2d_num_points.setRange(-LARGE, LARGE)
+        self.warp2d_num_points.setValue(70000)
+        grid_layout_warp.addWidget(ParameterItem("Number of Points", self.warp2d_num_points), 0, 2)
+
+        self.warp2d_rt_expand_factor = QSpinBox()
+        self.warp2d_rt_expand_factor.setRange(-LARGE, LARGE)
+        self.warp2d_rt_expand_factor.setValue(70000)
+        grid_layout_warp.addWidget(ParameterItem("RT Expand Factor", self.warp2d_rt_expand_factor), 1, 0)
+        self.warp_box.setLayout(grid_layout_warp)
+
+        self.warp2d_peaks_per_window = QSpinBox()
+        self.warp2d_peaks_per_window.setRange(-LARGE, LARGE)
+        self.warp2d_peaks_per_window.setValue(70000)
+        grid_layout_warp.addWidget(ParameterItem("Peaks Per Window", self.warp2d_peaks_per_window), 1, 1)
+        self.warp_box.setLayout(grid_layout_warp)
+
+        # MetaMatch
+        self.meta_box = QGroupBox("MetaMatch")
+        grid_layout_meta = QGridLayout()
+
+        self.metamatch_fraction = QSpinBox()
+        self.metamatch_fraction.setRange(-LARGE, LARGE)
+        self.metamatch_fraction.setValue(5)
+        grid_layout_meta.addWidget(ParameterItem("Slack", self.metamatch_fraction), 0, 0)
+
+        self.metamatch_n_sig_mz = QSpinBox()
+        self.metamatch_n_sig_mz.setRange(-LARGE, LARGE)
+        self.metamatch_n_sig_mz.setValue(5)
+        grid_layout_meta.addWidget(ParameterItem("Window Size", self.metamatch_n_sig_mz), 0, 1)
+
+        self.metamatch_n_sig_rt = QSpinBox()
+        self.metamatch_n_sig_rt.setRange(-LARGE, LARGE)
+        self.metamatch_n_sig_rt.setValue(70000)
+        grid_layout_meta.addWidget(ParameterItem("Number of Points", self.metamatch_n_sig_rt), 0, 2)
+        self.meta_box.setLayout(grid_layout_meta)
+
+        # Identification
+        self.ident_box = QGroupBox("Identification")
+        grid_layout_ident = QGridLayout()
+
+        self.ident_max_rank_only = QCheckBox()
+        grid_layout_ident.addWidget(ParameterItem("Max Rank Only", self.ident_max_rank_only), 0, 0)
+
+        self.metamatch_n_sig_mz = QCheckBox()
+        grid_layout_ident.addWidget(ParameterItem("Require Threshold", self.metamatch_n_sig_mz), 0, 1)
+
+        self.metamatch_n_sig_rt = QCheckBox()
+        grid_layout_ident.addWidget(ParameterItem("Ignore Decoy", self.metamatch_n_sig_rt), 0, 2)
+        self.ident_box.setLayout(grid_layout_ident)
 
         # TODO: Add all parameters.
 
-        layout = QVBoxLayout()
-        layout.addWidget(self.inst_settings_box)
-        layout.addWidget(self.quality_box)
-        self.parameters_tab.setLayout(layout)
+        # Enable scrolling
+        content_widget = QWidget()
+        self.parameters_tab.setWidget(content_widget)
+        self.parameters_tab.setWidgetResizable(True)
+
+        vbox = QVBoxLayout()
+        vbox.addWidget(self.inst_settings_box)
+        vbox.addWidget(self.resampling_box)
+        vbox.addWidget(self.warp_box)
+        vbox.addWidget(self.meta_box)
+        vbox.addWidget(self.ident_box)
+
+        content_widget.setLayout(vbox)
 
 class MainWindow(QMainWindow):
     # TODO: move parameters to the ParametersWidget
