@@ -71,7 +71,12 @@ class TextStream(QObject):
         self.text_written.emit(str(text))
 
 class PipelineRunner(QThread):
-    done = pyqtSignal()
+    finished = pyqtSignal()
+
+    params = {}
+    input_files = []
+    output_dir = ''
+
     def __init__(self):
         QThread.__init__(self)
 
@@ -79,17 +84,21 @@ class PipelineRunner(QThread):
         self.wait()
 
     def run(self):
-        # TODO: MOCKUP run pipeline here.
-        print("Starting thread")
-        time.sleep(2)
-        print("Finished thread")
-        self.done.emit()
+        print("Starting DDA Pipeline")
+        time.sleep(1)
 
-class PipelineLog(QDialog):
+        try:
+            pastaq.dda_pipeline(self.params, self.input_files, self.output_dir)
+        except Exception as e:
+            print("ERROR:", e)
+
+        self.finished.emit()
+
+class PipelineLogDialog(QDialog):
     group = ''
     mzid_paths = []
 
-    def __init__(self, parent=None):
+    def __init__(self, params, input_files, output_dir, parent=None):
         super().__init__(parent)
 
         # TODO: Set fixed size for this.
@@ -100,19 +109,23 @@ class PipelineLog(QDialog):
 
         # Log text box.
         self.text_box = QTextEdit()
+        self.text_box.setReadOnly(True)
 
         # Dialog buttons (Ok/Cancel).
         self.buttons = QDialogButtonBox(QDialogButtonBox.Cancel)
         self.buttons.rejected.connect(self.exit_failure)
 
+        # Prepare layout.
         self.layout = QVBoxLayout()
         self.layout.addWidget(self.text_box)
         self.layout.addWidget(self.buttons)
         self.setLayout(self.layout)
 
-        # Setup pipeline thread.
         self.pipeline_thread = PipelineRunner()
-        self.pipeline_thread.done.connect(self.exit_success)
+        self.pipeline_thread.params = params
+        self.pipeline_thread.input_files = input_files
+        self.pipeline_thread.output_dir = output_dir
+        self.pipeline_thread.finished.connect(self.exit_success)
         self.pipeline_thread.start()
 
     def __del__(self):
@@ -122,6 +135,8 @@ class PipelineLog(QDialog):
         cursor = self.text_box.textCursor()
         cursor.movePosition(cursor.End)
         cursor.insertText(text)
+        self.text_box.setTextCursor(cursor)
+        self.text_box.ensureCursorVisible()
 
     def exit_success(self):
         # Restore stdout pipe.
@@ -134,9 +149,12 @@ class PipelineLog(QDialog):
         self.buttons = new_buttons
 
     def exit_failure(self):
+        # TODO: Confirm we want to exit, since this could lead to corrupt
+        # temporary files.
+
         # Restore stdout pipe.
         sys.stdout = sys.__stdout__
-        self.pipeline_thread.terminate()
+        self.pipeline_thread.quit()
         self.reject()
 
 class ParametersWidget(QTabWidget):
@@ -485,7 +503,7 @@ class MainWindow(QMainWindow):
         project_variables_layout.addRow("Project name", self.project_name_ui)
         project_variables_layout.addRow("Project description", self.project_description_ui)
         project_variables_layout.addRow("Project directory", self.project_directory_ui)
-        self.project_directory_ui.setEnabled(False)
+        self.project_directory_ui.setReadOnly(True)
         self.project_variables_container.setLayout(project_variables_layout)
         layout.addWidget(self.project_variables_container)
 
@@ -594,6 +612,9 @@ class MainWindow(QMainWindow):
             self.save_project()
 
     def run_pipeline(self):
+        # Save changes before running.
+        self.save_project()
+
         # Disable this window so that buttons can't be clicked.
         self.run_btn.setText("Running...")
         self.run_btn.setEnabled(False)
@@ -603,7 +624,11 @@ class MainWindow(QMainWindow):
 
         # Open modal with log progress and cancel button and run pipeline
         # in a different thread/fork.
-        pipeline_log_dialog = PipelineLog(self)
+        pipeline_log_dialog = PipelineLogDialog(
+                parent=self,
+                params=self.parameters_container.parameters,
+                input_files=self.parameters_container.input_files,
+                output_dir=os.path.dirname(self.project_path))
         if pipeline_log_dialog.exec():
             print("EXIT SUCCESS")
         else:
