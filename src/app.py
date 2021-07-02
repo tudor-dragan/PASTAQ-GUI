@@ -1,6 +1,7 @@
 import sys
 import os
 import json
+import time
 
 from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
@@ -62,6 +63,81 @@ class ParameterItem(QWidget):
         layout = QVBoxLayout(self)
         layout.addWidget(QLabel(label))
         layout.addWidget(widget)
+
+class TextStream(QObject):
+    text_written = pyqtSignal(str)
+
+    def write(self, text):
+        self.text_written.emit(str(text))
+
+class PipelineRunner(QThread):
+    done = pyqtSignal()
+    def __init__(self):
+        QThread.__init__(self)
+
+    def __del__(self):
+        self.wait()
+
+    def run(self):
+        # TODO: MOCKUP run pipeline here.
+        print("Starting thread")
+        time.sleep(2)
+        print("Finished thread")
+        self.done.emit()
+
+class PipelineLog(QDialog):
+    group = ''
+    mzid_paths = []
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+
+        # TODO: Set fixed size for this.
+        self.setWindowTitle("PASTAQ: DDA Pipeline (Running)")
+
+        # Add custom output to text stream.
+        sys.stdout = TextStream(text_written=self.append_text)
+
+        # Log text box.
+        self.text_box = QTextEdit()
+
+        # Dialog buttons (Ok/Cancel).
+        self.buttons = QDialogButtonBox(QDialogButtonBox.Cancel)
+        self.buttons.rejected.connect(self.exit_failure)
+
+        self.layout = QVBoxLayout()
+        self.layout.addWidget(self.text_box)
+        self.layout.addWidget(self.buttons)
+        self.setLayout(self.layout)
+
+        # Setup pipeline thread.
+        self.pipeline_thread = PipelineRunner()
+        self.pipeline_thread.done.connect(self.exit_success)
+        self.pipeline_thread.start()
+
+    def __del__(self):
+        sys.stdout = sys.__stdout__
+
+    def append_text(self, text):
+        cursor = self.text_box.textCursor()
+        cursor.movePosition(cursor.End)
+        cursor.insertText(text)
+
+    def exit_success(self):
+        # Restore stdout pipe.
+        sys.stdout = sys.__stdout__
+
+        # Replace button to OK instead of Cancel.
+        new_buttons = QDialogButtonBox(QDialogButtonBox.Ok)
+        new_buttons.accepted.connect(self.accept)
+        self.layout.replaceWidget(self.buttons, new_buttons)
+        self.buttons = new_buttons
+
+    def exit_failure(self):
+        # Restore stdout pipe.
+        sys.stdout = sys.__stdout__
+        self.pipeline_thread.terminate()
+        self.reject()
 
 class ParametersWidget(QTabWidget):
     input_files = []
@@ -526,6 +602,10 @@ class MainWindow(QMainWindow):
         self.parameters_container.setEnabled(False)
 
         # TODO: Open modal with log progress and cancel button.
+        pipeline_log_dialog = PipelineLog(self)
+        print("Running pipeline")
+        if pipeline_log_dialog.exec():
+            print("DONE")
         # TODO: Run pipeline in a different thread/fork.
 
 # Initialize main window.
