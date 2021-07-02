@@ -601,12 +601,20 @@ class MainWindow(QMainWindow):
         self.project_variables_container.setEnabled(False)
         self.parameters_container.setEnabled(False)
 
-        # TODO: Open modal with log progress and cancel button.
+        # Open modal with log progress and cancel button and run pipeline
+        # in a different thread/fork.
         pipeline_log_dialog = PipelineLog(self)
-        print("Running pipeline")
         if pipeline_log_dialog.exec():
-            print("DONE")
-        # TODO: Run pipeline in a different thread/fork.
+            print("EXIT SUCCESS")
+        else:
+            print("EXIT CANCEL")
+
+        # Restore previous button statuses.
+        self.run_btn.setText("Run")
+        self.run_btn.setEnabled(True)
+        self.controls_container.setEnabled(True)
+        self.project_variables_container.setEnabled(True)
+        self.parameters_container.setEnabled(True)
 
 # Initialize main window.
 app = QApplication(sys.argv)
