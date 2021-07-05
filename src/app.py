@@ -317,32 +317,40 @@ class ParametersWidget(QTabWidget):
         # probably is fine with hardcoding the ranges here.
         LARGE = 1000000000
 
+        # TODO: Add tooltips.
+        # TODO: Make sure constrains are set properly.
+
         # Instruments
         self.inst_settings_box = QGroupBox("Instrument Settings")
         grid_layout_inst = QGridLayout()
 
         self.inst_type = QComboBox()
         self.inst_type.addItems(["Orbitrap", "TOF", "FT-ICR", "Quadrupole"])
+        self.inst_type.currentIndexChanged.connect(self.update_parameters)
         grid_layout_inst.addWidget(ParameterItem("Instrument Type", self.inst_type), 0, 0)
 
         self.res_ms1 = QSpinBox()
         self.res_ms1.setRange(-LARGE, LARGE)
         self.res_ms1.setValue(70000)
+        self.res_ms1.valueChanged.connect(self.update_parameters)
         grid_layout_inst.addWidget(ParameterItem("Resolution MS1", self.res_ms1), 0, 1)
 
         self.res_ms2 = QSpinBox()
         self.res_ms2.setRange(-LARGE, LARGE)
         self.res_ms2.setValue(30000)
+        self.res_ms2.valueChanged.connect(self.update_parameters)
         grid_layout_inst.addWidget(ParameterItem("Resolution MS2", self.res_ms2), 0, 2)
 
         self.reference_mz = QSpinBox()
         self.reference_mz.setRange(-LARGE, LARGE)
         self.reference_mz.setValue(70000)
+        self.reference_mz.valueChanged.connect(self.update_parameters)
         grid_layout_inst.addWidget(ParameterItem("Reference m/z", self.reference_mz), 1, 0)
 
         self.avg_fwhm_rt = QSpinBox()
         self.avg_fwhm_rt.setRange(-LARGE, LARGE)
         self.avg_fwhm_rt.setValue(30000)
+        self.avg_fwhm_rt.valueChanged.connect(self.update_parameters)
         grid_layout_inst.addWidget(ParameterItem("Avg FWHM RT", self.avg_fwhm_rt), 1, 1)
 
         self.inst_settings_box.setLayout(grid_layout_inst)
@@ -354,22 +362,26 @@ class ParametersWidget(QTabWidget):
         self.num_samples_mz = QSpinBox()
         self.num_samples_mz.setRange(-LARGE, LARGE)
         self.num_samples_mz.setValue(5)
-        grid_layout_resamp.addWidget(ParameterItem("Num Samples MZ", self.num_samples_mz), 0, 0)
+        self.num_samples_mz.valueChanged.connect(self.update_parameters)
+        grid_layout_resamp.addWidget(ParameterItem("Number of samples m/z", self.num_samples_mz), 0, 0)
 
         self.num_samples_rt = QSpinBox()
         self.num_samples_rt.setRange(-LARGE, LARGE)
         self.num_samples_rt.setValue(5)
-        grid_layout_resamp.addWidget(ParameterItem("Num Samples RT", self.num_samples_rt), 0, 1)
+        self.num_samples_rt.valueChanged.connect(self.update_parameters)
+        grid_layout_resamp.addWidget(ParameterItem("Number of samples rt", self.num_samples_rt), 0, 1)
 
         self.smoothing_coefficient_mz = QSpinBox()
         self.smoothing_coefficient_mz.setRange(-LARGE, LARGE)
         self.smoothing_coefficient_mz.setValue(70000)
-        grid_layout_resamp.addWidget(ParameterItem("Smoothing Coefficient MZ", self.smoothing_coefficient_mz), 0, 2)
+        self.smoothing_coefficient_mz.valueChanged.connect(self.update_parameters)
+        grid_layout_resamp.addWidget(ParameterItem("Smoothing coefficient (m/z)", self.smoothing_coefficient_mz), 0, 2)
 
         self.smoothing_coefficient_rt = QSpinBox()
         self.smoothing_coefficient_rt.setRange(-LARGE, LARGE)
         self.smoothing_coefficient_rt.setValue(70000)
-        grid_layout_resamp.addWidget(ParameterItem("Smoothing Coefficient RT", self.smoothing_coefficient_rt), 1, 0)
+        self.smoothing_coefficient_rt.valueChanged.connect(self.update_parameters)
+        grid_layout_resamp.addWidget(ParameterItem("Smoothing coefficient (rt)", self.smoothing_coefficient_rt), 1, 0)
         self.resampling_box.setLayout(grid_layout_resamp)
 
         # Warp2D
@@ -379,28 +391,33 @@ class ParametersWidget(QTabWidget):
         self.warp2d_slack = QSpinBox()
         self.warp2d_slack.setRange(-LARGE, LARGE)
         self.warp2d_slack.setValue(5)
+        self.warp2d_slack.valueChanged.connect(self.update_parameters)
         grid_layout_warp.addWidget(ParameterItem("Slack", self.warp2d_slack), 0, 0)
 
         self.warp2d_window_size = QSpinBox()
         self.warp2d_window_size.setRange(-LARGE, LARGE)
         self.warp2d_window_size.setValue(5)
+        self.warp2d_window_size.valueChanged.connect(self.update_parameters)
         grid_layout_warp.addWidget(ParameterItem("Window Size", self.warp2d_window_size), 0, 1)
 
         self.warp2d_num_points = QSpinBox()
         self.warp2d_num_points.setRange(-LARGE, LARGE)
         self.warp2d_num_points.setValue(70000)
-        grid_layout_warp.addWidget(ParameterItem("Number of Points", self.warp2d_num_points), 0, 2)
+        self.warp2d_num_points.valueChanged.connect(self.update_parameters)
+        grid_layout_warp.addWidget(ParameterItem("Number of points", self.warp2d_num_points), 0, 2)
 
         self.warp2d_rt_expand_factor = QSpinBox()
         self.warp2d_rt_expand_factor.setRange(-LARGE, LARGE)
         self.warp2d_rt_expand_factor.setValue(70000)
-        grid_layout_warp.addWidget(ParameterItem("RT Expand Factor", self.warp2d_rt_expand_factor), 1, 0)
+        self.warp2d_rt_expand_factor.valueChanged.connect(self.update_parameters)
+        grid_layout_warp.addWidget(ParameterItem("Expand factor rt", self.warp2d_rt_expand_factor), 1, 0)
         self.warp_box.setLayout(grid_layout_warp)
 
         self.warp2d_peaks_per_window = QSpinBox()
         self.warp2d_peaks_per_window.setRange(-LARGE, LARGE)
         self.warp2d_peaks_per_window.setValue(70000)
-        grid_layout_warp.addWidget(ParameterItem("Peaks Per Window", self.warp2d_peaks_per_window), 1, 1)
+        self.warp2d_peaks_per_window.valueChanged.connect(self.update_parameters)
+        grid_layout_warp.addWidget(ParameterItem("Peaks per window", self.warp2d_peaks_per_window), 1, 1)
         self.warp_box.setLayout(grid_layout_warp)
 
         # MetaMatch
@@ -410,17 +427,20 @@ class ParametersWidget(QTabWidget):
         self.metamatch_fraction = QSpinBox()
         self.metamatch_fraction.setRange(-LARGE, LARGE)
         self.metamatch_fraction.setValue(5)
-        grid_layout_meta.addWidget(ParameterItem("Slack", self.metamatch_fraction), 0, 0)
+        self.metamatch_fraction.valueChanged.connect(self.update_parameters)
+        grid_layout_meta.addWidget(ParameterItem("Fraction of samples", self.metamatch_fraction), 0, 0)
 
         self.metamatch_n_sig_mz = QSpinBox()
         self.metamatch_n_sig_mz.setRange(-LARGE, LARGE)
         self.metamatch_n_sig_mz.setValue(5)
-        grid_layout_meta.addWidget(ParameterItem("Window Size", self.metamatch_n_sig_mz), 0, 1)
+        self.metamatch_n_sig_mz.valueChanged.connect(self.update_parameters)
+        grid_layout_meta.addWidget(ParameterItem("Number of sigma (m/z)", self.metamatch_n_sig_mz), 0, 1)
 
         self.metamatch_n_sig_rt = QSpinBox()
         self.metamatch_n_sig_rt.setRange(-LARGE, LARGE)
         self.metamatch_n_sig_rt.setValue(70000)
-        grid_layout_meta.addWidget(ParameterItem("Number of Points", self.metamatch_n_sig_rt), 0, 2)
+        self.metamatch_n_sig_rt.valueChanged.connect(self.update_parameters)
+        grid_layout_meta.addWidget(ParameterItem("Number of sigma (rt)", self.metamatch_n_sig_rt), 0, 2)
         self.meta_box.setLayout(grid_layout_meta)
 
         # Identification
@@ -428,30 +448,95 @@ class ParametersWidget(QTabWidget):
         grid_layout_ident = QGridLayout()
 
         self.ident_max_rank_only = QCheckBox()
+        self.ident_max_rank_only.stateChanged.connect(self.update_parameters)
         grid_layout_ident.addWidget(ParameterItem("Max Rank Only", self.ident_max_rank_only), 0, 0)
 
-        self.metamatch_n_sig_mz = QCheckBox()
-        grid_layout_ident.addWidget(ParameterItem("Require Threshold", self.metamatch_n_sig_mz), 0, 1)
+        self.ident_require_threshold = QCheckBox()
+        self.ident_require_threshold.stateChanged.connect(self.update_parameters)
+        grid_layout_ident.addWidget(ParameterItem("Require Threshold", self.ident_require_threshold), 0, 1)
 
-        self.metamatch_n_sig_rt = QCheckBox()
-        grid_layout_ident.addWidget(ParameterItem("Ignore Decoy", self.metamatch_n_sig_rt), 0, 2)
+        self.ident_ignore_decoy = QCheckBox()
+        self.ident_ignore_decoy.stateChanged.connect(self.update_parameters)
+        grid_layout_ident.addWidget(ParameterItem("Ignore Decoy", self.ident_ignore_decoy), 0, 2)
         self.ident_box.setLayout(grid_layout_ident)
 
-        # TODO: Add all parameters.
+        # TODO: Add the rest of parameters.
 
         # Enable scrolling
         content_widget = QWidget()
         self.parameters_tab.setWidget(content_widget)
         self.parameters_tab.setWidgetResizable(True)
 
-        vbox = QVBoxLayout()
-        vbox.addWidget(self.inst_settings_box)
-        vbox.addWidget(self.resampling_box)
-        vbox.addWidget(self.warp_box)
-        vbox.addWidget(self.meta_box)
-        vbox.addWidget(self.ident_box)
+        layout = QVBoxLayout()
+        layout.addWidget(self.inst_settings_box)
+        layout.addWidget(self.resampling_box)
+        layout.addWidget(self.warp_box)
+        layout.addWidget(self.meta_box)
+        layout.addWidget(self.ident_box)
 
-        content_widget.setLayout(vbox)
+        content_widget.setLayout(layout)
+
+    def update_parameters(self):
+        # TODO: Add remaining parameters
+        print("updating params:") # DEBUG: ...
+        self.parameters['instrument_type'] = self.inst_type.currentText().lower()
+        self.parameters['resolution_ms1'] = self.res_ms1.value()
+        self.parameters['resolution_msn'] = self.res_ms2.value()
+        self.parameters['reference_mz'] = self.reference_mz.value()
+        self.parameters['avg_fwhm_rt'] = self.avg_fwhm_rt.value()
+        self.parameters['num_samples_mz'] = self.num_samples_mz.value()
+        self.parameters['num_samples_rt'] = self.num_samples_rt.value()
+        self.parameters['smoothing_coefficient_mz'] = self.smoothing_coefficient_mz.value()
+        self.parameters['smoothing_coefficient_rt'] = self.smoothing_coefficient_rt.value()
+        self.parameters['warp2d_slack'] = self.warp2d_slack.value()
+        self.parameters['warp2d_window_size'] = self.warp2d_window_size.value()
+        self.parameters['warp2d_num_points'] = self.warp2d_num_points.value()
+        self.parameters['warp2d_rt_expand_factor'] = self.warp2d_rt_expand_factor.value()
+        self.parameters['warp2d_peaks_per_window'] = self.warp2d_peaks_per_window.value()
+        self.parameters['metamatch_fraction'] = self.metamatch_fraction.value()
+        self.parameters['metamatch_n_sig_mz'] = self.metamatch_n_sig_mz.value()
+        self.parameters['metamatch_n_sig_rt'] = self.metamatch_n_sig_rt.value()
+        # self.parameters['feature_detection_charge_states'] = [5, 4, 3, 2, 1]
+        # self.parameters['max_peaks'] = 1000000
+        # self.parameters['polarity'] = 'both'
+        # self.parameters['min_mz'] = 0
+        # self.parameters['max_mz'] = 100000
+        # self.parameters['min_rt'] = 0
+        # self.parameters['max_rt'] = 100000
+        # self.parameters['link_n_sig_mz'] = 3
+        # self.parameters['link_n_sig_rt'] = 3
+        self.parameters['ident_max_rank_only'] = self.ident_max_rank_only.isChecked()
+        self.parameters['ident_require_threshold'] = self.ident_require_threshold.isChecked()
+        self.parameters['ident_ignore_decoy'] = self.ident_ignore_decoy.isChecked()
+        # self.parameters['similarity_num_peaks'] = 2000
+        # self.parameters['qc_plot_palette'] = 'husl'
+        # self.parameters['qc_plot_extension'] = 'png'
+        # self.parameters['qc_plot_fill_alpha'] = 'dynamic'
+        # self.parameters['qc_plot_line_alpha'] = 0.5
+        # self.parameters['qc_plot_scatter_alpha'] = 0.3
+        # self.parameters['qc_plot_scatter_size'] = 2
+        # self.parameters['qc_plot_min_dynamic_alpha'] = 0.1
+        # self.parameters['qc_plot_per_file'] = False
+        # self.parameters['qc_plot_line_style'] = 'fill'
+        # self.parameters['qc_plot_dpi'] = 300
+        # self.parameters['qc_plot_font_family'] = 'sans-serif'
+        # self.parameters['qc_plot_font_size'] = 7
+        # self.parameters['qc_plot_fig_size_x'] = 7.08661
+        # self.parameters['qc_plot_fig_size_y'] = 7.08661/1.618034
+        # self.parameters['qc_plot_fig_legend'] = False
+        # self.parameters['qc_plot_mz_vs_sigma_mz_max_peaks'] = 200000
+        # self.parameters['quant_isotopes'] = 'height'
+        # self.parameters['quant_features'] = 'max_height'
+        # self.parameters['quant_features_charge_state_filter'] = True
+        # self.parameters['quant_ident_linkage'] = 'msms_event'
+        # self.parameters['quant_consensus'] = True
+        # self.parameters['quant_consensus_min_ident'] = 2
+        # self.parameters['quant_save_all_annotations'] = True
+        # self.parameters['quant_proteins_min_peptides'] = 1
+        # self.parameters['quant_proteins_remove_subset_proteins'] = True
+        # self.parameters['quant_proteins_ignore_ambiguous_peptides'] = True
+        # self.parameters['quant_proteins_quant_type'] = 'razor'
+        print(self.parameters)
 
 class MainWindow(QMainWindow):
     project_path = ''
