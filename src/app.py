@@ -320,36 +320,34 @@ class ParametersWidget(QTabWidget):
         # TODO: Add tooltips.
         # TODO: Make sure constrains are set properly.
 
+        self.update_allowed = False
+
         # Instruments
         self.inst_settings_box = QGroupBox("Instrument Settings")
         grid_layout_inst = QGridLayout()
 
         self.inst_type = QComboBox()
-        self.inst_type.addItems(["Orbitrap", "TOF", "FT-ICR", "Quadrupole"])
+        self.inst_type.addItems(["orbitrap", "tof", "ft-icr", "quadrupole"])
         self.inst_type.currentIndexChanged.connect(self.update_parameters)
         grid_layout_inst.addWidget(ParameterItem("Instrument Type", self.inst_type), 0, 0)
 
         self.res_ms1 = QSpinBox()
         self.res_ms1.setRange(-LARGE, LARGE)
-        self.res_ms1.setValue(70000)
         self.res_ms1.valueChanged.connect(self.update_parameters)
         grid_layout_inst.addWidget(ParameterItem("Resolution MS1", self.res_ms1), 0, 1)
 
         self.res_ms2 = QSpinBox()
         self.res_ms2.setRange(-LARGE, LARGE)
-        self.res_ms2.setValue(30000)
         self.res_ms2.valueChanged.connect(self.update_parameters)
         grid_layout_inst.addWidget(ParameterItem("Resolution MS2", self.res_ms2), 0, 2)
 
         self.reference_mz = QSpinBox()
         self.reference_mz.setRange(-LARGE, LARGE)
-        self.reference_mz.setValue(70000)
         self.reference_mz.valueChanged.connect(self.update_parameters)
         grid_layout_inst.addWidget(ParameterItem("Reference m/z", self.reference_mz), 1, 0)
 
         self.avg_fwhm_rt = QSpinBox()
         self.avg_fwhm_rt.setRange(-LARGE, LARGE)
-        self.avg_fwhm_rt.setValue(30000)
         self.avg_fwhm_rt.valueChanged.connect(self.update_parameters)
         grid_layout_inst.addWidget(ParameterItem("Avg FWHM RT", self.avg_fwhm_rt), 1, 1)
 
@@ -361,25 +359,23 @@ class ParametersWidget(QTabWidget):
 
         self.num_samples_mz = QSpinBox()
         self.num_samples_mz.setRange(-LARGE, LARGE)
-        self.num_samples_mz.setValue(5)
         self.num_samples_mz.valueChanged.connect(self.update_parameters)
         grid_layout_resamp.addWidget(ParameterItem("Number of samples m/z", self.num_samples_mz), 0, 0)
 
         self.num_samples_rt = QSpinBox()
         self.num_samples_rt.setRange(-LARGE, LARGE)
-        self.num_samples_rt.setValue(5)
         self.num_samples_rt.valueChanged.connect(self.update_parameters)
         grid_layout_resamp.addWidget(ParameterItem("Number of samples rt", self.num_samples_rt), 0, 1)
 
-        self.smoothing_coefficient_mz = QSpinBox()
+        self.smoothing_coefficient_mz = QDoubleSpinBox()
         self.smoothing_coefficient_mz.setRange(-LARGE, LARGE)
-        self.smoothing_coefficient_mz.setValue(70000)
+        self.smoothing_coefficient_mz.setStepType(QAbstractSpinBox.AdaptiveDecimalStepType)
         self.smoothing_coefficient_mz.valueChanged.connect(self.update_parameters)
         grid_layout_resamp.addWidget(ParameterItem("Smoothing coefficient (m/z)", self.smoothing_coefficient_mz), 0, 2)
 
-        self.smoothing_coefficient_rt = QSpinBox()
+        self.smoothing_coefficient_rt = QDoubleSpinBox()
         self.smoothing_coefficient_rt.setRange(-LARGE, LARGE)
-        self.smoothing_coefficient_rt.setValue(70000)
+        self.smoothing_coefficient_mz.setStepType(QAbstractSpinBox.AdaptiveDecimalStepType)
         self.smoothing_coefficient_rt.valueChanged.connect(self.update_parameters)
         grid_layout_resamp.addWidget(ParameterItem("Smoothing coefficient (rt)", self.smoothing_coefficient_rt), 1, 0)
         self.resampling_box.setLayout(grid_layout_resamp)
@@ -390,32 +386,29 @@ class ParametersWidget(QTabWidget):
 
         self.warp2d_slack = QSpinBox()
         self.warp2d_slack.setRange(-LARGE, LARGE)
-        self.warp2d_slack.setValue(5)
         self.warp2d_slack.valueChanged.connect(self.update_parameters)
         grid_layout_warp.addWidget(ParameterItem("Slack", self.warp2d_slack), 0, 0)
 
         self.warp2d_window_size = QSpinBox()
         self.warp2d_window_size.setRange(-LARGE, LARGE)
-        self.warp2d_window_size.setValue(5)
         self.warp2d_window_size.valueChanged.connect(self.update_parameters)
         grid_layout_warp.addWidget(ParameterItem("Window Size", self.warp2d_window_size), 0, 1)
 
         self.warp2d_num_points = QSpinBox()
         self.warp2d_num_points.setRange(-LARGE, LARGE)
-        self.warp2d_num_points.setValue(70000)
         self.warp2d_num_points.valueChanged.connect(self.update_parameters)
         grid_layout_warp.addWidget(ParameterItem("Number of points", self.warp2d_num_points), 0, 2)
 
-        self.warp2d_rt_expand_factor = QSpinBox()
+        self.warp2d_rt_expand_factor = QDoubleSpinBox()
         self.warp2d_rt_expand_factor.setRange(-LARGE, LARGE)
-        self.warp2d_rt_expand_factor.setValue(70000)
+        self.warp2d_rt_expand_factor.setStepType(QAbstractSpinBox.AdaptiveDecimalStepType)
         self.warp2d_rt_expand_factor.valueChanged.connect(self.update_parameters)
         grid_layout_warp.addWidget(ParameterItem("Expand factor rt", self.warp2d_rt_expand_factor), 1, 0)
         self.warp_box.setLayout(grid_layout_warp)
 
         self.warp2d_peaks_per_window = QSpinBox()
         self.warp2d_peaks_per_window.setRange(-LARGE, LARGE)
-        self.warp2d_peaks_per_window.setValue(70000)
+        # self.warp2d_peaks_per_window.setValue(70000)
         self.warp2d_peaks_per_window.valueChanged.connect(self.update_parameters)
         grid_layout_warp.addWidget(ParameterItem("Peaks per window", self.warp2d_peaks_per_window), 1, 1)
         self.warp_box.setLayout(grid_layout_warp)
@@ -424,21 +417,21 @@ class ParametersWidget(QTabWidget):
         self.meta_box = QGroupBox("MetaMatch")
         grid_layout_meta = QGridLayout()
 
-        self.metamatch_fraction = QSpinBox()
+        self.metamatch_fraction = QDoubleSpinBox()
         self.metamatch_fraction.setRange(-LARGE, LARGE)
-        self.metamatch_fraction.setValue(5)
+        self.metamatch_fraction.setStepType(QAbstractSpinBox.AdaptiveDecimalStepType)
         self.metamatch_fraction.valueChanged.connect(self.update_parameters)
         grid_layout_meta.addWidget(ParameterItem("Fraction of samples", self.metamatch_fraction), 0, 0)
 
-        self.metamatch_n_sig_mz = QSpinBox()
+        self.metamatch_n_sig_mz = QDoubleSpinBox()
         self.metamatch_n_sig_mz.setRange(-LARGE, LARGE)
-        self.metamatch_n_sig_mz.setValue(5)
+        self.metamatch_n_sig_mz.setStepType(QAbstractSpinBox.AdaptiveDecimalStepType)
         self.metamatch_n_sig_mz.valueChanged.connect(self.update_parameters)
         grid_layout_meta.addWidget(ParameterItem("Number of sigma (m/z)", self.metamatch_n_sig_mz), 0, 1)
 
-        self.metamatch_n_sig_rt = QSpinBox()
+        self.metamatch_n_sig_rt = QDoubleSpinBox()
         self.metamatch_n_sig_rt.setRange(-LARGE, LARGE)
-        self.metamatch_n_sig_rt.setValue(70000)
+        self.metamatch_n_sig_rt.setStepType(QAbstractSpinBox.AdaptiveDecimalStepType)
         self.metamatch_n_sig_rt.valueChanged.connect(self.update_parameters)
         grid_layout_meta.addWidget(ParameterItem("Number of sigma (rt)", self.metamatch_n_sig_rt), 0, 2)
         self.meta_box.setLayout(grid_layout_meta)
@@ -475,8 +468,12 @@ class ParametersWidget(QTabWidget):
         layout.addWidget(self.ident_box)
 
         content_widget.setLayout(layout)
+        self.update_allowed = True
 
     def update_parameters(self):
+        if not self.update_allowed:
+            return
+
         # TODO: Add remaining parameters
         print("updating params:") # DEBUG: ...
         self.parameters['instrument_type'] = self.inst_type.currentText().lower()
@@ -622,12 +619,48 @@ class MainWindow(QMainWindow):
         self.parameters_container.parameters['project_description'] = self.project_description_ui.text()
 
     def update_ui(self):
-        # TODO: Update the GUI with all parameters
+        # Project metadata.
         self.project_directory_ui.setText(os.path.dirname(self.project_path))
         if "project_name" in self.parameters_container.parameters:
             self.project_name_ui.setText(self.parameters_container.parameters['project_name'])
         if "project_description" in self.parameters_container.parameters:
             self.project_description_ui.setText(self.parameters_container.parameters['project_description'])
+        params = self.parameters_container.parameters
+
+        # Parameters.
+        self.parameters_container.update_allowed = False
+        self.parameters_container.inst_type.setCurrentText(params['instrument_type'])
+        self.parameters_container.res_ms1.setValue(params['resolution_ms1'])
+        self.parameters_container.res_ms2.setValue(params['resolution_msn'])
+        self.parameters_container.reference_mz.setValue(params['reference_mz'])
+        self.parameters_container.avg_fwhm_rt.setValue(params['avg_fwhm_rt'])
+        self.parameters_container.num_samples_mz.setValue(params['num_samples_mz'])
+        self.parameters_container.num_samples_rt.setValue(params['num_samples_rt'])
+        self.parameters_container.smoothing_coefficient_mz.setValue(params['smoothing_coefficient_mz'])
+        self.parameters_container.smoothing_coefficient_rt.setValue(params['smoothing_coefficient_rt'])
+        self.parameters_container.warp2d_slack.setValue(params['warp2d_slack'])
+        self.parameters_container.warp2d_window_size.setValue(params['warp2d_window_size'])
+        self.parameters_container.warp2d_num_points.setValue(params['warp2d_num_points'])
+        self.parameters_container.warp2d_rt_expand_factor.setValue(params['warp2d_rt_expand_factor'])
+        self.parameters_container.warp2d_peaks_per_window.setValue(params['warp2d_peaks_per_window'])
+        self.parameters_container.metamatch_fraction.setValue(params['metamatch_fraction'])
+        self.parameters_container.metamatch_n_sig_mz.setValue(params['metamatch_n_sig_mz'])
+        self.parameters_container.metamatch_n_sig_rt.setValue(params['metamatch_n_sig_rt'])
+        # TODO: Rest of parameters
+        if params['ident_max_rank_only']:
+            self.parameters_container.ident_max_rank_only.setCheckState(Qt.Checked)
+        else:
+            self.parameters_container.ident_max_rank_only.setCheckState(Qt.Unchecked)
+        if params['ident_require_threshold']:
+            self.parameters_container.ident_require_threshold.setCheckState(Qt.Checked)
+        else:
+            self.parameters_container.ident_require_threshold.setCheckState(Qt.Unchecked)
+        if params['ident_ignore_decoy']:
+            self.parameters_container.ident_ignore_decoy.setCheckState(Qt.Checked)
+        else:
+            self.parameters_container.ident_ignore_decoy.setCheckState(Qt.Unchecked)
+
+        self.parameters_container.update_allowed = True
 
     def new_project(self):
         dir_path = QFileDialog.getExistingDirectory(
