@@ -323,7 +323,9 @@ class ParametersWidget(QTabWidget):
 
         self.update_allowed = False
 
+        #
         # Instruments
+        #
         self.inst_settings_box = QGroupBox("Instrument Settings")
         grid_layout_inst = QGridLayout()
 
@@ -354,7 +356,9 @@ class ParametersWidget(QTabWidget):
 
         self.inst_settings_box.setLayout(grid_layout_inst)
 
+        #
         # Resampling
+        #
         self.resampling_box = QGroupBox("Resampling")
         grid_layout_resamp = QGridLayout()
 
@@ -379,9 +383,12 @@ class ParametersWidget(QTabWidget):
         self.smoothing_coefficient_mz.setStepType(QAbstractSpinBox.AdaptiveDecimalStepType)
         self.smoothing_coefficient_rt.valueChanged.connect(self.update_parameters)
         grid_layout_resamp.addWidget(ParameterItem("Smoothing coefficient (rt)", self.smoothing_coefficient_rt), 1, 0)
+
         self.resampling_box.setLayout(grid_layout_resamp)
 
+        #
         # Warp2D
+        #
         self.warp_box = QGroupBox("Warp2D")
         grid_layout_warp = QGridLayout()
 
@@ -412,9 +419,12 @@ class ParametersWidget(QTabWidget):
         # self.warp2d_peaks_per_window.setValue(70000)
         self.warp2d_peaks_per_window.valueChanged.connect(self.update_parameters)
         grid_layout_warp.addWidget(ParameterItem("Peaks per window", self.warp2d_peaks_per_window), 1, 1)
+
         self.warp_box.setLayout(grid_layout_warp)
 
+        #
         # MetaMatch
+        #
         self.meta_box = QGroupBox("MetaMatch")
         grid_layout_meta = QGridLayout()
 
@@ -435,26 +445,177 @@ class ParametersWidget(QTabWidget):
         self.metamatch_n_sig_rt.setStepType(QAbstractSpinBox.AdaptiveDecimalStepType)
         self.metamatch_n_sig_rt.valueChanged.connect(self.update_parameters)
         grid_layout_meta.addWidget(ParameterItem("Number of sigma (rt)", self.metamatch_n_sig_rt), 0, 2)
+
         self.meta_box.setLayout(grid_layout_meta)
 
+        #
         # Identification
+        #
         self.ident_box = QGroupBox("Identification")
         grid_layout_ident = QGridLayout()
 
         self.ident_max_rank_only = QCheckBox()
         self.ident_max_rank_only.stateChanged.connect(self.update_parameters)
-        grid_layout_ident.addWidget(ParameterItem("Max Rank Only", self.ident_max_rank_only), 0, 0)
+        grid_layout_ident.addWidget(ParameterItem("Max rank only", self.ident_max_rank_only), 0, 0)
 
         self.ident_require_threshold = QCheckBox()
         self.ident_require_threshold.stateChanged.connect(self.update_parameters)
-        grid_layout_ident.addWidget(ParameterItem("Require Threshold", self.ident_require_threshold), 0, 1)
+        grid_layout_ident.addWidget(ParameterItem("Require threshold", self.ident_require_threshold), 0, 1)
 
         self.ident_ignore_decoy = QCheckBox()
         self.ident_ignore_decoy.stateChanged.connect(self.update_parameters)
-        grid_layout_ident.addWidget(ParameterItem("Ignore Decoy", self.ident_ignore_decoy), 0, 2)
+        grid_layout_ident.addWidget(ParameterItem("Ignore decoy", self.ident_ignore_decoy), 0, 2)
+
         self.ident_box.setLayout(grid_layout_ident)
 
-        # TODO: Add the rest of parameters.
+        #
+        # Quality Control
+        #
+        self.qual_box = QGroupBox("Quality Control")
+        grid_layout_qual = QGridLayout()
+
+        self.similarity_num_peaks = QSpinBox()
+        self.similarity_num_peaks.setRange(-LARGE, LARGE)
+        self.similarity_num_peaks.valueChanged.connect(self.update_parameters)
+        grid_layout_qual.addWidget(ParameterItem("Similarity number of peaks", self.similarity_num_peaks), 0, 0)
+
+        self.qc_plot_palette = QComboBox()
+        self.qc_plot_palette.addItems(["husl", "crest", "Spectral"])
+        self.qc_plot_palette.currentIndexChanged.connect(self.update_parameters)
+        grid_layout_qual.addWidget(ParameterItem("Plot color palette", self.qc_plot_palette), 0, 1)
+
+        self.qc_plot_extension = QComboBox()
+        self.qc_plot_extension.addItems(["png", "pdf", "eps"])
+        self.qc_plot_extension.currentIndexChanged.connect(self.update_parameters)
+        grid_layout_qual.addWidget(ParameterItem("Plot image format", self.qc_plot_extension), 0, 2)
+
+        self.qc_plot_fill_alpha = QComboBox()
+        self.qc_plot_fill_alpha.addItems(["dynamic"])
+        self.qc_plot_fill_alpha.currentIndexChanged.connect(self.update_parameters)
+        grid_layout_qual.addWidget(ParameterItem("Fill alpha", self.qc_plot_fill_alpha), 1, 0)
+
+        self.qc_plot_line_style = QComboBox()
+        self.qc_plot_line_style.addItems(["fill"])
+        self.qc_plot_line_style.currentIndexChanged.connect(self.update_parameters)
+        grid_layout_qual.addWidget(ParameterItem("Line style", self.qc_plot_line_style), 1, 1)
+
+        self.qc_plot_font_family = QComboBox()
+        self.qc_plot_font_family.addItems(["sans-serif", "serif"])
+        self.qc_plot_font_family.currentIndexChanged.connect(self.update_parameters)
+        grid_layout_qual.addWidget(ParameterItem("Font family", self.qc_plot_font_family), 1, 2)
+
+        self.qc_plot_dpi = QSpinBox()
+        self.qc_plot_dpi.setRange(1, 1000)
+        self.qc_plot_dpi.valueChanged.connect(self.update_parameters)
+        grid_layout_qual.addWidget(ParameterItem("Plot dpi", self.qc_plot_dpi), 2, 0)
+
+        self.qc_plot_mz_vs_sigma_mz_max_peaks = QSpinBox()
+        self.qc_plot_mz_vs_sigma_mz_max_peaks.setRange(10, LARGE)
+        self.qc_plot_mz_vs_sigma_mz_max_peaks.valueChanged.connect(self.update_parameters)
+        grid_layout_qual.addWidget(ParameterItem("Max peaks for m/z vs peak width m/z", self.qc_plot_mz_vs_sigma_mz_max_peaks), 2, 1)
+
+        self.qc_plot_line_alpha = QDoubleSpinBox()
+        self.qc_plot_line_alpha.setRange(0.0, 1.0)
+        self.qc_plot_line_alpha.valueChanged.connect(self.update_parameters)
+        grid_layout_qual.addWidget(ParameterItem("Line alpha", self.qc_plot_line_alpha), 2, 2)
+
+        self.qc_plot_scatter_alpha = QDoubleSpinBox()
+        self.qc_plot_scatter_alpha.setRange(0.0, 1.0)
+        self.qc_plot_scatter_alpha.valueChanged.connect(self.update_parameters)
+        grid_layout_qual.addWidget(ParameterItem("Scatter alpha", self.qc_plot_scatter_alpha), 3, 0)
+
+        self.qc_plot_scatter_size = QDoubleSpinBox()
+        self.qc_plot_scatter_size.setRange(0.1, 10.0)
+        self.qc_plot_scatter_size.valueChanged.connect(self.update_parameters)
+        grid_layout_qual.addWidget(ParameterItem("Scatter size", self.qc_plot_scatter_size), 3, 1)
+
+        self.qc_plot_min_dynamic_alpha = QDoubleSpinBox()
+        self.qc_plot_min_dynamic_alpha.setRange(0.1, 10.0)
+        self.qc_plot_min_dynamic_alpha.valueChanged.connect(self.update_parameters)
+        grid_layout_qual.addWidget(ParameterItem("Min dynamic alpha", self.qc_plot_min_dynamic_alpha), 3, 2)
+
+        self.qc_plot_font_size = QDoubleSpinBox()
+        self.qc_plot_font_size.setRange(1.0, 15.0)
+        self.qc_plot_font_size.valueChanged.connect(self.update_parameters)
+        grid_layout_qual.addWidget(ParameterItem("Font size", self.qc_plot_font_size), 4, 0)
+
+        self.qc_plot_fig_size_x = QDoubleSpinBox()
+        self.qc_plot_fig_size_x.setRange(1.0, 15.0)
+        self.qc_plot_fig_size_x.valueChanged.connect(self.update_parameters)
+        grid_layout_qual.addWidget(ParameterItem("Figure size X", self.qc_plot_fig_size_x), 4, 1)
+
+        self.qc_plot_fig_size_y = QDoubleSpinBox()
+        self.qc_plot_fig_size_y.setRange(1.0, 15.0)
+        self.qc_plot_fig_size_y.valueChanged.connect(self.update_parameters)
+        grid_layout_qual.addWidget(ParameterItem("Figure size Y", self.qc_plot_fig_size_y), 4, 2)
+
+        self.qc_plot_per_file = QCheckBox()
+        self.qc_plot_per_file.stateChanged.connect(self.update_parameters)
+        grid_layout_qual.addWidget(ParameterItem("Plot per file", self.qc_plot_per_file), 5, 0)
+
+        self.qc_plot_fig_legend = QCheckBox()
+        self.qc_plot_fig_legend.stateChanged.connect(self.update_parameters)
+        grid_layout_qual.addWidget(ParameterItem("Figure legend", self.qc_plot_fig_legend), 5, 1)
+
+        self.qual_box.setLayout(grid_layout_qual)
+
+        #
+        # Quantitive Table Generation
+        #
+        self.quantt_box = QGroupBox("Quantitive Table Generation")
+        grid_layout_quantt = QGridLayout()
+
+        self.quant_isotopes = QComboBox()
+        self.quant_isotopes.addItems(["Height", "Volume"])
+        self.quant_isotopes.currentIndexChanged.connect(self.update_parameters)
+        grid_layout_quantt.addWidget(ParameterItem("Isotopes", self.quant_isotopes), 0, 0)
+
+        self.quant_features = QComboBox()
+        self.quant_features.addItems(["Monoisotopic Height", "Monoisotopic Volume", "Total Height", "Total Volume", "Max Height", "Max Volume"])
+        self.quant_features.currentIndexChanged.connect(self.update_parameters)
+        grid_layout_quantt.addWidget(ParameterItem("Features", self.quant_features), 0, 1)
+
+        self.quant_features_charge_state_filter = QCheckBox()
+        self.quant_features_charge_state_filter.stateChanged.connect(self.update_parameters)
+        grid_layout_quantt.addWidget(ParameterItem("Features charge state filter", self.quant_features_charge_state_filter), 0, 2)
+
+        self.quant_ident_linkage = QComboBox()
+        self.quant_ident_linkage.addItems(["Theoretical MZ", "MSMS Event"])
+        self.quant_ident_linkage.currentIndexChanged.connect(self.update_parameters)
+        grid_layout_quantt.addWidget(ParameterItem("Ident linkage", self.quant_ident_linkage), 1, 0)
+
+        self.quant_consensus = QCheckBox()
+        self.quant_consensus.stateChanged.connect(self.update_parameters)
+        grid_layout_quantt.addWidget(ParameterItem("Consensus", self.quant_consensus), 1, 1)
+
+        self.quant_consensus_min_ident = QSpinBox()
+        self.quant_consensus_min_ident.setRange(-LARGE, LARGE)
+        self.quant_consensus_min_ident.valueChanged.connect(self.update_parameters)
+        grid_layout_quantt.addWidget(ParameterItem("Consensus min ident", self.quant_consensus_min_ident), 1, 2)
+
+        self.quant_save_all_annotations = QCheckBox()
+        self.quant_save_all_annotations.stateChanged.connect(self.update_parameters)
+        grid_layout_quantt.addWidget(ParameterItem("Save all annotations", self.quant_save_all_annotations), 2, 0)
+
+        self.quant_proteins_min_peptides = QSpinBox()
+        self.quant_proteins_min_peptides.setRange(1, 50)
+        self.quant_proteins_min_peptides.valueChanged.connect(self.update_parameters)
+        grid_layout_quantt.addWidget(ParameterItem("Consensus min peptide", self.quant_proteins_min_peptides), 2, 1)
+
+        self.quant_proteins_remove_subset_proteins = QCheckBox()
+        self.quant_proteins_remove_subset_proteins.stateChanged.connect(self.update_parameters)
+        grid_layout_quantt.addWidget(ParameterItem("Remove subset proteins", self.quant_proteins_remove_subset_proteins), 2, 2)
+
+        self.quant_proteins_ignore_ambiguous_peptides = QCheckBox()
+        self.quant_proteins_ignore_ambiguous_peptides.stateChanged.connect(self.update_parameters)
+        grid_layout_quantt.addWidget(ParameterItem("Ignore ambiguous peptides", self.quant_proteins_ignore_ambiguous_peptides), 3, 0)
+
+        self.quant_proteins_quant_type = QComboBox()
+        self.quant_proteins_quant_type.addItems(["razor", "not razor"])
+        self.quant_proteins_quant_type.currentIndexChanged.connect(self.update_parameters)
+        grid_layout_quantt.addWidget(ParameterItem("Protein quantification type", self.quant_proteins_quant_type), 3, 1)
+
+        self.quantt_box.setLayout(grid_layout_quantt)
 
         # Enable scrolling
         content_widget = QWidget()
@@ -467,6 +628,8 @@ class ParametersWidget(QTabWidget):
         layout.addWidget(self.warp_box)
         layout.addWidget(self.meta_box)
         layout.addWidget(self.ident_box)
+        layout.addWidget(self.qual_box)
+        layout.addWidget(self.quantt_box)
 
         content_widget.setLayout(layout)
         self.update_allowed = True
