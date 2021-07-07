@@ -11,6 +11,7 @@ import pastaq
 
 # TODO: Create custom file picker widget that shows the name of the picked files
 # TODO: Switch the cwd to the project directory and/or use it instead of os.getcwd()
+# TODO: The RUN button should only be access when there is at least 1 sample active.
 
 class EditFileDialog(QDialog):
     group = ''
