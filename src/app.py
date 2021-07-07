@@ -489,12 +489,13 @@ class ParametersWidget(QTabWidget):
         self.qc_plot_extension.currentIndexChanged.connect(self.update_parameters)
         grid_layout_qual.addWidget(ParameterItem("Plot image format", self.qc_plot_extension), 0, 2)
 
-        # TODO: This could be either text 'dynamic' or a double between 0.0-1.0,
-        # maybe we can set it to 0 to be dynamic?
-        # self.qc_plot_fill_alpha = QComboBox()
-        # self.qc_plot_fill_alpha.addItems(["dynamic"])
-        # self.qc_plot_fill_alpha.currentIndexChanged.connect(self.update_parameters)
-        # grid_layout_qual.addWidget(ParameterItem("Fill alpha", self.qc_plot_fill_alpha), 1, 0)
+        # This could be either text 'dynamic' or a double between 0.0-1.0. If
+        # set to 0.0 it will be considered dynamic.
+        self.qc_plot_fill_alpha = QDoubleSpinBox()
+        self.qc_plot_fill_alpha.setRange(0.0, 1.0)
+        self.qc_plot_fill_alpha.setStepType(QAbstractSpinBox.AdaptiveDecimalStepType)
+        self.qc_plot_fill_alpha.valueChanged.connect(self.update_parameters)
+        grid_layout_qual.addWidget(ParameterItem("Fill alpha", self.qc_plot_fill_alpha), 1, 0)
 
         self.qc_plot_line_style = QComboBox()
         self.qc_plot_line_style.addItems(["fill", "line"])
@@ -518,36 +519,43 @@ class ParametersWidget(QTabWidget):
 
         self.qc_plot_line_alpha = QDoubleSpinBox()
         self.qc_plot_line_alpha.setRange(0.0, 1.0)
+        self.qc_plot_line_alpha.setStepType(QAbstractSpinBox.AdaptiveDecimalStepType)
         self.qc_plot_line_alpha.valueChanged.connect(self.update_parameters)
         grid_layout_qual.addWidget(ParameterItem("Line alpha", self.qc_plot_line_alpha), 2, 2)
 
         self.qc_plot_scatter_alpha = QDoubleSpinBox()
         self.qc_plot_scatter_alpha.setRange(0.0, 1.0)
+        self.qc_plot_scatter_alpha.setStepType(QAbstractSpinBox.AdaptiveDecimalStepType)
         self.qc_plot_scatter_alpha.valueChanged.connect(self.update_parameters)
         grid_layout_qual.addWidget(ParameterItem("Scatter alpha", self.qc_plot_scatter_alpha), 3, 0)
 
         self.qc_plot_scatter_size = QDoubleSpinBox()
         self.qc_plot_scatter_size.setRange(0.1, 10.0)
+        self.qc_plot_scatter_size.setStepType(QAbstractSpinBox.AdaptiveDecimalStepType)
         self.qc_plot_scatter_size.valueChanged.connect(self.update_parameters)
         grid_layout_qual.addWidget(ParameterItem("Scatter size", self.qc_plot_scatter_size), 3, 1)
 
         self.qc_plot_min_dynamic_alpha = QDoubleSpinBox()
         self.qc_plot_min_dynamic_alpha.setRange(0.1, 10.0)
+        self.qc_plot_min_dynamic_alpha.setStepType(QAbstractSpinBox.AdaptiveDecimalStepType)
         self.qc_plot_min_dynamic_alpha.valueChanged.connect(self.update_parameters)
         grid_layout_qual.addWidget(ParameterItem("Min dynamic alpha", self.qc_plot_min_dynamic_alpha), 3, 2)
 
         self.qc_plot_font_size = QDoubleSpinBox()
         self.qc_plot_font_size.setRange(1.0, 15.0)
+        self.qc_plot_font_size.setStepType(QAbstractSpinBox.AdaptiveDecimalStepType)
         self.qc_plot_font_size.valueChanged.connect(self.update_parameters)
         grid_layout_qual.addWidget(ParameterItem("Font size", self.qc_plot_font_size), 4, 0)
 
         self.qc_plot_fig_size_x = QDoubleSpinBox()
         self.qc_plot_fig_size_x.setRange(1.0, 15.0)
+        self.qc_plot_fig_size_x.setStepType(QAbstractSpinBox.AdaptiveDecimalStepType)
         self.qc_plot_fig_size_x.valueChanged.connect(self.update_parameters)
         grid_layout_qual.addWidget(ParameterItem("Figure size X", self.qc_plot_fig_size_x), 4, 1)
 
         self.qc_plot_fig_size_y = QDoubleSpinBox()
         self.qc_plot_fig_size_y.setRange(1.0, 15.0)
+        self.qc_plot_fig_size_y.setStepType(QAbstractSpinBox.AdaptiveDecimalStepType)
         self.qc_plot_fig_size_y.valueChanged.connect(self.update_parameters)
         grid_layout_qual.addWidget(ParameterItem("Figure size Y", self.qc_plot_fig_size_y), 4, 2)
 
@@ -674,7 +682,10 @@ class ParametersWidget(QTabWidget):
         self.parameters['similarity_num_peaks'] = self.similarity_num_peaks.value()
         self.parameters['qc_plot_palette'] = self.qc_plot_palette.currentText()
         self.parameters['qc_plot_extension'] = self.qc_plot_extension.currentText()
-        # self.parameters['qc_plot_fill_alpha'] = 'dynamic'
+        if self.qc_plot_fill_alpha.value() == 0.0:
+            self.parameters['qc_plot_fill_alpha'] = 'dynamic'
+        else:
+            self.parameters['qc_plot_fill_alpha'] = self.qc_plot_fill_alpha.value()
         self.parameters['qc_plot_line_alpha'] = self.qc_plot_line_alpha.value()
         self.parameters['qc_plot_scatter_alpha'] = self.qc_plot_scatter_alpha.value()
         self.parameters['qc_plot_scatter_size'] = self.qc_plot_scatter_size.value()
@@ -815,6 +826,10 @@ class MainWindow(QMainWindow):
         self.parameters_container.similarity_num_peaks.setValue(params['similarity_num_peaks'])
         self.parameters_container.qc_plot_palette.setCurrentText(params['qc_plot_palette'])
         self.parameters_container.qc_plot_extension.setCurrentText(params['qc_plot_extension'])
+        if params['qc_plot_fill_alpha'] == 'dynamic':
+            self.parameters_container.qc_plot_fill_alpha.setValue(0.0)
+        else:
+            self.parameters_container.qc_plot_fill_alpha.setValue(params['qc_plot_fill_alpha'])
         self.parameters_container.qc_plot_line_alpha.setValue(params['qc_plot_line_alpha'])
         self.parameters_container.qc_plot_scatter_alpha.setValue(params['qc_plot_scatter_alpha'])
         self.parameters_container.qc_plot_scatter_size.setValue(params['qc_plot_scatter_size'])
