@@ -480,7 +480,7 @@ class ParametersWidget(QTabWidget):
         grid_layout_qual.addWidget(ParameterItem("Similarity number of peaks", self.similarity_num_peaks), 0, 0)
 
         self.qc_plot_palette = QComboBox()
-        self.qc_plot_palette.addItems(["husl", "crest", "Spectral"])
+        self.qc_plot_palette.addItems(["husl", "crest", "Spectral", "flare", "mako"])
         self.qc_plot_palette.currentIndexChanged.connect(self.update_parameters)
         grid_layout_qual.addWidget(ParameterItem("Plot color palette", self.qc_plot_palette), 0, 1)
 
@@ -489,13 +489,15 @@ class ParametersWidget(QTabWidget):
         self.qc_plot_extension.currentIndexChanged.connect(self.update_parameters)
         grid_layout_qual.addWidget(ParameterItem("Plot image format", self.qc_plot_extension), 0, 2)
 
-        self.qc_plot_fill_alpha = QComboBox()
-        self.qc_plot_fill_alpha.addItems(["dynamic"])
-        self.qc_plot_fill_alpha.currentIndexChanged.connect(self.update_parameters)
-        grid_layout_qual.addWidget(ParameterItem("Fill alpha", self.qc_plot_fill_alpha), 1, 0)
+        # TODO: This could be either text 'dynamic' or a double between 0.0-1.0,
+        # maybe we can set it to 0 to be dynamic?
+        # self.qc_plot_fill_alpha = QComboBox()
+        # self.qc_plot_fill_alpha.addItems(["dynamic"])
+        # self.qc_plot_fill_alpha.currentIndexChanged.connect(self.update_parameters)
+        # grid_layout_qual.addWidget(ParameterItem("Fill alpha", self.qc_plot_fill_alpha), 1, 0)
 
         self.qc_plot_line_style = QComboBox()
-        self.qc_plot_line_style.addItems(["fill"])
+        self.qc_plot_line_style.addItems(["fill", "line"])
         self.qc_plot_line_style.currentIndexChanged.connect(self.update_parameters)
         grid_layout_qual.addWidget(ParameterItem("Line style", self.qc_plot_line_style), 1, 1)
 
@@ -566,12 +568,12 @@ class ParametersWidget(QTabWidget):
         grid_layout_quantt = QGridLayout()
 
         self.quant_isotopes = QComboBox()
-        self.quant_isotopes.addItems(["Height", "Volume"])
+        self.quant_isotopes.addItems(["height", "volume"])
         self.quant_isotopes.currentIndexChanged.connect(self.update_parameters)
         grid_layout_quantt.addWidget(ParameterItem("Isotopes", self.quant_isotopes), 0, 0)
 
         self.quant_features = QComboBox()
-        self.quant_features.addItems(["Monoisotopic Height", "Monoisotopic Volume", "Total Height", "Total Volume", "Max Height", "Max Volume"])
+        self.quant_features.addItems(["monoisotopic_height", "monoisotopic_volume", "total_height", "total_volume", "max_height", "max_volume"])
         self.quant_features.currentIndexChanged.connect(self.update_parameters)
         grid_layout_quantt.addWidget(ParameterItem("Features", self.quant_features), 0, 1)
 
@@ -580,7 +582,7 @@ class ParametersWidget(QTabWidget):
         grid_layout_quantt.addWidget(ParameterItem("Features charge state filter", self.quant_features_charge_state_filter), 0, 2)
 
         self.quant_ident_linkage = QComboBox()
-        self.quant_ident_linkage.addItems(["Theoretical MZ", "MSMS Event"])
+        self.quant_ident_linkage.addItems(["theoretical_mz", "msms_event"])
         self.quant_ident_linkage.currentIndexChanged.connect(self.update_parameters)
         grid_layout_quantt.addWidget(ParameterItem("Ident linkage", self.quant_ident_linkage), 1, 0)
 
@@ -611,7 +613,7 @@ class ParametersWidget(QTabWidget):
         grid_layout_quantt.addWidget(ParameterItem("Ignore ambiguous peptides", self.quant_proteins_ignore_ambiguous_peptides), 3, 0)
 
         self.quant_proteins_quant_type = QComboBox()
-        self.quant_proteins_quant_type.addItems(["razor", "not razor"])
+        self.quant_proteins_quant_type.addItems(["razor", "unique", "all"])
         self.quant_proteins_quant_type.currentIndexChanged.connect(self.update_parameters)
         grid_layout_quantt.addWidget(ParameterItem("Protein quantification type", self.quant_proteins_quant_type), 3, 1)
 
@@ -628,8 +630,8 @@ class ParametersWidget(QTabWidget):
         layout.addWidget(self.warp_box)
         layout.addWidget(self.meta_box)
         layout.addWidget(self.ident_box)
-        layout.addWidget(self.qual_box)
         layout.addWidget(self.quantt_box)
+        layout.addWidget(self.qual_box)
 
         content_widget.setLayout(layout)
         self.update_allowed = True
@@ -669,34 +671,34 @@ class ParametersWidget(QTabWidget):
         self.parameters['ident_max_rank_only'] = self.ident_max_rank_only.isChecked()
         self.parameters['ident_require_threshold'] = self.ident_require_threshold.isChecked()
         self.parameters['ident_ignore_decoy'] = self.ident_ignore_decoy.isChecked()
-        # self.parameters['similarity_num_peaks'] = 2000
-        # self.parameters['qc_plot_palette'] = 'husl'
-        # self.parameters['qc_plot_extension'] = 'png'
+        self.parameters['similarity_num_peaks'] = self.similarity_num_peaks.value()
+        self.parameters['qc_plot_palette'] = self.qc_plot_palette.currentText()
+        self.parameters['qc_plot_extension'] = self.qc_plot_extension.currentText()
         # self.parameters['qc_plot_fill_alpha'] = 'dynamic'
-        # self.parameters['qc_plot_line_alpha'] = 0.5
-        # self.parameters['qc_plot_scatter_alpha'] = 0.3
-        # self.parameters['qc_plot_scatter_size'] = 2
-        # self.parameters['qc_plot_min_dynamic_alpha'] = 0.1
-        # self.parameters['qc_plot_per_file'] = False
-        # self.parameters['qc_plot_line_style'] = 'fill'
-        # self.parameters['qc_plot_dpi'] = 300
-        # self.parameters['qc_plot_font_family'] = 'sans-serif'
-        # self.parameters['qc_plot_font_size'] = 7
-        # self.parameters['qc_plot_fig_size_x'] = 7.08661
-        # self.parameters['qc_plot_fig_size_y'] = 7.08661/1.618034
-        # self.parameters['qc_plot_fig_legend'] = False
-        # self.parameters['qc_plot_mz_vs_sigma_mz_max_peaks'] = 200000
-        # self.parameters['quant_isotopes'] = 'height'
-        # self.parameters['quant_features'] = 'max_height'
-        # self.parameters['quant_features_charge_state_filter'] = True
-        # self.parameters['quant_ident_linkage'] = 'msms_event'
-        # self.parameters['quant_consensus'] = True
-        # self.parameters['quant_consensus_min_ident'] = 2
-        # self.parameters['quant_save_all_annotations'] = True
-        # self.parameters['quant_proteins_min_peptides'] = 1
-        # self.parameters['quant_proteins_remove_subset_proteins'] = True
-        # self.parameters['quant_proteins_ignore_ambiguous_peptides'] = True
-        # self.parameters['quant_proteins_quant_type'] = 'razor'
+        self.parameters['qc_plot_line_alpha'] = self.qc_plot_line_alpha.value()
+        self.parameters['qc_plot_scatter_alpha'] = self.qc_plot_scatter_alpha.value()
+        self.parameters['qc_plot_scatter_size'] = self.qc_plot_scatter_size.value()
+        self.parameters['qc_plot_min_dynamic_alpha'] = self.qc_plot_min_dynamic_alpha.value()
+        self.parameters['qc_plot_per_file'] = self.qc_plot_per_file.isChecked()
+        self.parameters['qc_plot_line_style'] = self.qc_plot_line_style.currentText()
+        self.parameters['qc_plot_dpi'] = self.qc_plot_dpi.value()
+        self.parameters['qc_plot_font_family'] = self.qc_plot_font_family.currentText()
+        self.parameters['qc_plot_font_size'] = self.qc_plot_font_size.value()
+        self.parameters['qc_plot_fig_size_x'] = self.qc_plot_fig_size_x.value()
+        self.parameters['qc_plot_fig_size_y'] = self.qc_plot_fig_size_y.value()
+        self.parameters['qc_plot_fig_legend'] = self.qc_plot_fig_legend.isChecked()
+        self.parameters['qc_plot_mz_vs_sigma_mz_max_peaks'] = self.qc_plot_mz_vs_sigma_mz_max_peaks.value()
+        self.parameters['quant_isotopes'] = self.quant_isotopes.currentText()
+        self.parameters['quant_features'] = self.quant_features.currentText()
+        self.parameters['quant_features_charge_state_filter'] = self.quant_features_charge_state_filter.isChecked()
+        self.parameters['quant_ident_linkage'] = self.quant_ident_linkage.currentText()
+        self.parameters['quant_consensus'] = self.quant_consensus.isChecked()
+        self.parameters['quant_consensus_min_ident'] = self.quant_consensus_min_ident.value()
+        self.parameters['quant_save_all_annotations'] = self.quant_save_all_annotations.isChecked()
+        self.parameters['quant_proteins_min_peptides'] = self.quant_proteins_min_peptides.value()
+        self.parameters['quant_proteins_remove_subset_proteins'] = self.quant_proteins_remove_subset_proteins.isChecked()
+        self.parameters['quant_proteins_ignore_ambiguous_peptides'] = self.quant_proteins_ignore_ambiguous_peptides.isChecked()
+        self.parameters['quant_proteins_quant_type'] = self.quant_proteins_quant_type.currentText()
         print(self.parameters)
 
 class MainWindow(QMainWindow):
@@ -810,7 +812,54 @@ class MainWindow(QMainWindow):
         self.parameters_container.metamatch_fraction.setValue(params['metamatch_fraction'])
         self.parameters_container.metamatch_n_sig_mz.setValue(params['metamatch_n_sig_mz'])
         self.parameters_container.metamatch_n_sig_rt.setValue(params['metamatch_n_sig_rt'])
-        # TODO: Rest of parameters
+        self.parameters_container.similarity_num_peaks.setValue(params['similarity_num_peaks'])
+        self.parameters_container.qc_plot_palette.setCurrentText(params['qc_plot_palette'])
+        self.parameters_container.qc_plot_extension.setCurrentText(params['qc_plot_extension'])
+        self.parameters_container.qc_plot_line_alpha.setValue(params['qc_plot_line_alpha'])
+        self.parameters_container.qc_plot_scatter_alpha.setValue(params['qc_plot_scatter_alpha'])
+        self.parameters_container.qc_plot_scatter_size.setValue(params['qc_plot_scatter_size'])
+        self.parameters_container.qc_plot_min_dynamic_alpha.setValue(params['qc_plot_min_dynamic_alpha'])
+        if params['qc_plot_per_file']:
+            self.parameters_container.qc_plot_per_file.setCheckState(Qt.Checked)
+        else:
+            self.parameters_container.qc_plot_per_file.setCheckState(Qt.Unchecked)
+        self.parameters_container.qc_plot_line_style.setCurrentText(params['qc_plot_line_style'])
+        self.parameters_container.qc_plot_dpi.setValue(params['qc_plot_dpi'])
+        self.parameters_container.qc_plot_font_family.setCurrentText(params['qc_plot_font_family'])
+        self.parameters_container.qc_plot_font_size.setValue(params['qc_plot_font_size'])
+        self.parameters_container.qc_plot_fig_size_x.setValue(params['qc_plot_fig_size_x'])
+        self.parameters_container.qc_plot_fig_size_y.setValue(params['qc_plot_fig_size_y'])
+        if params['qc_plot_fig_legend']:
+            self.parameters_container.qc_plot_fig_legend.setCheckState(Qt.Checked)
+        else:
+            self.parameters_container.qc_plot_fig_legend.setCheckState(Qt.Unchecked)
+        self.parameters_container.qc_plot_mz_vs_sigma_mz_max_peaks.setValue(params['qc_plot_mz_vs_sigma_mz_max_peaks'])
+        self.parameters_container.quant_isotopes.setCurrentText(params['quant_isotopes'])
+        self.parameters_container.quant_features.setCurrentText(params['quant_features'])
+        if params['quant_features_charge_state_filter']:
+            self.parameters_container.quant_features_charge_state_filter.setCheckState(Qt.Checked)
+        else:
+            self.parameters_container.quant_features_charge_state_filter.setCheckState(Qt.Unchecked)
+        self.parameters_container.quant_ident_linkage.setCurrentText(params['quant_ident_linkage'])
+        if params['quant_consensus']:
+            self.parameters_container.quant_consensus.setCheckState(Qt.Checked)
+        else:
+            self.parameters_container.quant_consensus.setCheckState(Qt.Unchecked)
+        self.parameters_container.quant_consensus_min_ident.setValue(params['quant_consensus_min_ident'])
+        if params['quant_save_all_annotations']:
+            self.parameters_container.quant_save_all_annotations.setCheckState(Qt.Checked)
+        else:
+            self.parameters_container.quant_save_all_annotations.setCheckState(Qt.Unchecked)
+        self.parameters_container.quant_proteins_min_peptides.setValue(params['quant_proteins_min_peptides'])
+        if params['quant_proteins_remove_subset_proteins']:
+            self.parameters_container.quant_proteins_remove_subset_proteins.setCheckState(Qt.Checked)
+        else:
+            self.parameters_container.quant_proteins_remove_subset_proteins.setCheckState(Qt.Unchecked)
+        if params['quant_proteins_ignore_ambiguous_peptides']:
+            self.parameters_container.quant_proteins_ignore_ambiguous_peptides.setCheckState(Qt.Checked)
+        else:
+            self.parameters_container.quant_proteins_ignore_ambiguous_peptides.setCheckState(Qt.Unchecked)
+        self.parameters_container.quant_proteins_quant_type.setCurrentText(params['quant_proteins_quant_type'])
         if params['ident_max_rank_only']:
             self.parameters_container.ident_max_rank_only.setCheckState(Qt.Checked)
         else:
