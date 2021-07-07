@@ -774,7 +774,6 @@ class ParametersWidget(QTabWidget):
         self.parameters['quant_proteins_remove_subset_proteins'] = self.quant_proteins_remove_subset_proteins.isChecked()
         self.parameters['quant_proteins_ignore_ambiguous_peptides'] = self.quant_proteins_ignore_ambiguous_peptides.isChecked()
         self.parameters['quant_proteins_quant_type'] = self.quant_proteins_quant_type.currentText()
-        print(self.parameters) # TODO: Remove this
 
 class MainWindow(QMainWindow):
     project_path = ''
