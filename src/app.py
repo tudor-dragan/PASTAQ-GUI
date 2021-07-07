@@ -357,9 +357,46 @@ class ParametersWidget(QTabWidget):
         self.inst_settings_box.setLayout(grid_layout_inst)
 
         #
-        # Resampling
+        # Raw data
         #
-        self.resampling_box = QGroupBox("Resampling")
+        self.raw_data_box = QGroupBox("Raw Data")
+        grid_layout_raw_data = QGridLayout()
+
+        self.min_mz = QDoubleSpinBox()
+        self.min_mz.setRange(0, LARGE)
+        self.min_mz.setStepType(QAbstractSpinBox.AdaptiveDecimalStepType)
+        self.min_mz.valueChanged.connect(self.update_parameters)
+        grid_layout_raw_data.addWidget(ParameterItem("Min m/z", self.min_mz), 0, 0)
+
+        self.max_mz = QDoubleSpinBox()
+        self.max_mz.setRange(0, LARGE)
+        self.max_mz.setStepType(QAbstractSpinBox.AdaptiveDecimalStepType)
+        self.max_mz.valueChanged.connect(self.update_parameters)
+        grid_layout_raw_data.addWidget(ParameterItem("Max m/z", self.max_mz), 0, 1)
+
+        self.polarity = QComboBox()
+        self.polarity.addItems(["positive", "negative", "both"])
+        self.polarity.currentIndexChanged.connect(self.update_parameters)
+        grid_layout_raw_data.addWidget(ParameterItem("Polarity", self.polarity), 0, 2)
+
+        self.min_rt = QDoubleSpinBox()
+        self.min_rt.setRange(0, LARGE)
+        self.min_rt.setStepType(QAbstractSpinBox.AdaptiveDecimalStepType)
+        self.min_rt.valueChanged.connect(self.update_parameters)
+        grid_layout_raw_data.addWidget(ParameterItem("Min retention time", self.min_rt), 1, 0)
+
+        self.max_rt = QDoubleSpinBox()
+        self.max_rt.setRange(0, LARGE)
+        self.max_rt.setStepType(QAbstractSpinBox.AdaptiveDecimalStepType)
+        self.max_rt.valueChanged.connect(self.update_parameters)
+        grid_layout_raw_data.addWidget(ParameterItem("Max retention time", self.max_rt), 1, 1)
+
+        self.raw_data_box.setLayout(grid_layout_raw_data)
+
+        #
+        # Quantification
+        #
+        self.quantification_box = QGroupBox("Quantification")
         grid_layout_resamp = QGridLayout()
 
         self.num_samples_mz = QSpinBox()
@@ -384,7 +421,22 @@ class ParametersWidget(QTabWidget):
         self.smoothing_coefficient_rt.valueChanged.connect(self.update_parameters)
         grid_layout_resamp.addWidget(ParameterItem("Smoothing coefficient (rt)", self.smoothing_coefficient_rt), 1, 0)
 
-        self.resampling_box.setLayout(grid_layout_resamp)
+        self.max_peaks = QSpinBox()
+        self.max_peaks.setRange(-LARGE, LARGE)
+        self.max_peaks.valueChanged.connect(self.update_parameters)
+        grid_layout_resamp.addWidget(ParameterItem("Max number of peaks", self.max_peaks), 2, 0)
+
+        self.feature_detection_charge_state_min = QSpinBox()
+        self.feature_detection_charge_state_min.setRange(1, LARGE)
+        self.feature_detection_charge_state_min.valueChanged.connect(self.update_parameters)
+        grid_layout_resamp.addWidget(ParameterItem("Feature detection min charge", self.feature_detection_charge_state_min), 1, 1)
+
+        self.feature_detection_charge_state_max = QSpinBox()
+        self.feature_detection_charge_state_max.setRange(1, LARGE)
+        self.feature_detection_charge_state_max.valueChanged.connect(self.update_parameters)
+        grid_layout_resamp.addWidget(ParameterItem("Feature detection max charge", self.feature_detection_charge_state_max), 1, 2)
+
+        self.quantification_box.setLayout(grid_layout_resamp)
 
         #
         # Warp2D
@@ -416,7 +468,6 @@ class ParametersWidget(QTabWidget):
 
         self.warp2d_peaks_per_window = QSpinBox()
         self.warp2d_peaks_per_window.setRange(-LARGE, LARGE)
-        # self.warp2d_peaks_per_window.setValue(70000)
         self.warp2d_peaks_per_window.valueChanged.connect(self.update_parameters)
         grid_layout_warp.addWidget(ParameterItem("Peaks per window", self.warp2d_peaks_per_window), 1, 1)
 
@@ -465,6 +516,18 @@ class ParametersWidget(QTabWidget):
         self.ident_ignore_decoy = QCheckBox()
         self.ident_ignore_decoy.stateChanged.connect(self.update_parameters)
         grid_layout_ident.addWidget(ParameterItem("Ignore decoy", self.ident_ignore_decoy), 0, 2)
+
+        self.link_n_sig_mz = QDoubleSpinBox()
+        self.link_n_sig_mz.setRange(-LARGE, LARGE)
+        self.link_n_sig_mz.setStepType(QAbstractSpinBox.AdaptiveDecimalStepType)
+        self.link_n_sig_mz.valueChanged.connect(self.update_parameters)
+        grid_layout_ident.addWidget(ParameterItem("Max number of sigma for linking (m/z)", self.link_n_sig_mz), 1, 0)
+
+        self.link_n_sig_rt = QDoubleSpinBox()
+        self.link_n_sig_rt.setRange(-LARGE, LARGE)
+        self.link_n_sig_rt.setStepType(QAbstractSpinBox.AdaptiveDecimalStepType)
+        self.link_n_sig_rt.valueChanged.connect(self.update_parameters)
+        grid_layout_ident.addWidget(ParameterItem("Max number of sigma for linking (rt)", self.link_n_sig_rt), 1, 1)
 
         self.ident_box.setLayout(grid_layout_ident)
 
@@ -634,7 +697,8 @@ class ParametersWidget(QTabWidget):
 
         layout = QVBoxLayout()
         layout.addWidget(self.inst_settings_box)
-        layout.addWidget(self.resampling_box)
+        layout.addWidget(self.raw_data_box)
+        layout.addWidget(self.quantification_box)
         layout.addWidget(self.warp_box)
         layout.addWidget(self.meta_box)
         layout.addWidget(self.ident_box)
@@ -648,8 +712,6 @@ class ParametersWidget(QTabWidget):
         if not self.update_allowed:
             return
 
-        # TODO: Add remaining parameters
-        print("updating params:") # DEBUG: ...
         self.parameters['instrument_type'] = self.inst_type.currentText().lower()
         self.parameters['resolution_ms1'] = self.res_ms1.value()
         self.parameters['resolution_msn'] = self.res_ms2.value()
@@ -667,15 +729,17 @@ class ParametersWidget(QTabWidget):
         self.parameters['metamatch_fraction'] = self.metamatch_fraction.value()
         self.parameters['metamatch_n_sig_mz'] = self.metamatch_n_sig_mz.value()
         self.parameters['metamatch_n_sig_rt'] = self.metamatch_n_sig_rt.value()
-        # self.parameters['feature_detection_charge_states'] = [5, 4, 3, 2, 1]
-        # self.parameters['max_peaks'] = 1000000
-        # self.parameters['polarity'] = 'both'
-        # self.parameters['min_mz'] = 0
-        # self.parameters['max_mz'] = 100000
-        # self.parameters['min_rt'] = 0
-        # self.parameters['max_rt'] = 100000
-        # self.parameters['link_n_sig_mz'] = 3
-        # self.parameters['link_n_sig_rt'] = 3
+        self.parameters['min_mz'] = self.min_mz.value()
+        self.parameters['max_mz'] = self.max_mz.value()
+        self.parameters['min_rt'] = self.min_rt.value()
+        self.parameters['max_rt'] = self.max_rt.value()
+        self.parameters['polarity'] = self.polarity.currentText()
+        self.parameters['max_peaks'] = self.max_peaks.value()
+        self.parameters['link_n_sig_mz'] = self.link_n_sig_mz.value()
+        self.parameters['link_n_sig_rt'] = self.link_n_sig_rt.value()
+        charge_state_list = list(range(self.feature_detection_charge_state_min.value(), self.feature_detection_charge_state_max.value() + 1))
+        charge_state_list.reverse()
+        self.parameters['feature_detection_charge_states'] = charge_state_list
         self.parameters['ident_max_rank_only'] = self.ident_max_rank_only.isChecked()
         self.parameters['ident_require_threshold'] = self.ident_require_threshold.isChecked()
         self.parameters['ident_ignore_decoy'] = self.ident_ignore_decoy.isChecked()
@@ -710,7 +774,7 @@ class ParametersWidget(QTabWidget):
         self.parameters['quant_proteins_remove_subset_proteins'] = self.quant_proteins_remove_subset_proteins.isChecked()
         self.parameters['quant_proteins_ignore_ambiguous_peptides'] = self.quant_proteins_ignore_ambiguous_peptides.isChecked()
         self.parameters['quant_proteins_quant_type'] = self.quant_proteins_quant_type.currentText()
-        print(self.parameters)
+        print(self.parameters) # TODO: Remove this
 
 class MainWindow(QMainWindow):
     project_path = ''
@@ -823,6 +887,16 @@ class MainWindow(QMainWindow):
         self.parameters_container.metamatch_fraction.setValue(params['metamatch_fraction'])
         self.parameters_container.metamatch_n_sig_mz.setValue(params['metamatch_n_sig_mz'])
         self.parameters_container.metamatch_n_sig_rt.setValue(params['metamatch_n_sig_rt'])
+        self.parameters_container.min_mz.setValue(params['min_mz'])
+        self.parameters_container.max_mz.setValue(params['max_mz'])
+        self.parameters_container.min_rt.setValue(params['min_rt'])
+        self.parameters_container.max_rt.setValue(params['max_rt'])
+        self.parameters_container.polarity.setCurrentText(params['polarity'])
+        self.parameters_container.max_peaks.setValue(params['max_peaks'])
+        self.parameters_container.link_n_sig_mz.setValue(params['link_n_sig_mz'])
+        self.parameters_container.link_n_sig_rt.setValue(params['link_n_sig_rt'])
+        self.parameters_container.feature_detection_charge_state_min.setValue(min(params['feature_detection_charge_states']))
+        self.parameters_container.feature_detection_charge_state_max.setValue(max(params['feature_detection_charge_states']))
         self.parameters_container.similarity_num_peaks.setValue(params['similarity_num_peaks'])
         self.parameters_container.qc_plot_palette.setCurrentText(params['qc_plot_palette'])
         self.parameters_container.qc_plot_extension.setCurrentText(params['qc_plot_extension'])
