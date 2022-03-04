@@ -1,5 +1,5 @@
 # required for pastaq
-CMake
+cmake
 
 # required for PASTAQ-GUI
 pastaq
