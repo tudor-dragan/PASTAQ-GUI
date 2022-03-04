@@ -1,2 +1,6 @@
+# required for pastaq
+CMake
+
+# required for PASTAQ-GUI
 pastaq
 PyQT5
