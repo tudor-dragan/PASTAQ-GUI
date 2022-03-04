@@ -1,6 +1,6 @@
 # required for pastaq
-cmake
+cmake == 3.22.2
 
 # required for PASTAQ-GUI
-pastaq
+pastaq == 0.9.0
 PyQT5
