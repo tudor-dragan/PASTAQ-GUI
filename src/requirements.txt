@@ -2,5 +2,5 @@
 cmake
 
 # required for PASTAQ-GUI
-git+https://bitbucket.org/bys1/PASTAQ
+git+https://github.org/bys1/PASTAQ
 PyQT5
