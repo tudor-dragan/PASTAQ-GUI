@@ -60,7 +60,9 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        apt install zlib
+        wget http://zlib.net/zlib-1.2.11.tar.gz
+        tar -xvzf zlib-1.2.11.tar.gz
+        (cd zlib-1.2.11 && ./configure --prefix=/usr/local/zlib && make install)
         pip install -r src/requirements.txt
     - name: Build with pyinstaller for ${{matrix.TARGET}}
       run: ${{matrix.CMD_BUILD}}
