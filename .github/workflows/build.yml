@@ -41,7 +41,7 @@ jobs:
           - os: macos-latest
             TARGET: macos
             CMD_BUILD: >
-                pyinstaller -F -w -n PASTAQ-GUI -i src/app.py &&
+                pyinstaller -F -w -n PASTAQ-GUI src/app.py &&
                 cd dist/ &&
                 zip -r9 PASTAQ-GUI PASTAQ-GUI.app/
             OUT_FILE_NAME: PASTAQ-GUI.zip
