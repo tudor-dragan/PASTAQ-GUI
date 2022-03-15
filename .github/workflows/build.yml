@@ -54,7 +54,7 @@ jobs:
             CMD_BUILD: pyinstaller -F -w -n PASTAQ-GUI src/app.py
             CMD_DEP: >
                 python -m pip install --upgrade pip &&
-                apt install zlib1g-dev &&
+                apt-get install zlib1g-dev &&
                 pip install -r src/requirements.txt
             OUT_FILE_NAME: PASTAQ-GUI.exe
             ASSET_MIME: application/vnd.microsoft.portable-executable
