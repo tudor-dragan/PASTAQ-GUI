@@ -60,7 +60,7 @@ jobs:
                 cd zlib-1.2.11 &&
                 mkdir -p /usr/local/lib &&
                 make -f win32/Makefile.gcc BINARY_PATH=/bin INCLUDE_PATH=/usr/local/include LIBRARY_PATH=/usr/local/lib install &&
-                dir /usr/local/lib
+                dir /usr/local/lib &&
                 cd .. &&
                 pip install -r src/requirements.txt
             OUT_FILE_NAME: PASTAQ-GUI.exe
