@@ -58,7 +58,7 @@ jobs:
                 python -m wget http://www.zlib.net/zlib-1.2.11.tar.gz &&
                 tar -xvzf zlib-1.2.11.tar.gz &&
                 cd zlib-1.2.11 &&
-                ./configure -–prefix=/usr/local/zlib &&
+                ./configure -prefix=/usr/local/zlib &&
                 make &&
                 cd .. &&
                 pip install -r src/requirements.txt
