@@ -57,8 +57,10 @@ jobs:
                 pip install wget &&
                 python -m wget http://www.zlib.net/zlib-1.2.11.tar.gz &&
                 tar -xvzf zlib-1.2.11.tar.gz &&
-                (cd zlib-1.2.11 && ./configure -–prefix=/usr/local/zlib) &&
+                cd zlib-1.2.11 &&
+                ./configure -–prefix=/usr/local/zlib &&
                 make install &&
+                cd .. &&
                 pip install -r src/requirements.txt
             OUT_FILE_NAME: PASTAQ-GUI.exe
             ASSET_MIME: application/vnd.microsoft.portable-executable
