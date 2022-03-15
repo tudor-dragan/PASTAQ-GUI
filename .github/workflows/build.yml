@@ -58,8 +58,11 @@ jobs:
                 python -m wget http://www.zlib.net/zlib-1.2.11.tar.gz &&
                 tar -xvzf zlib-1.2.11.tar.gz &&
                 cd zlib-1.2.11 &&
-                mkdir -p /usr/local/lib &&
+                mkdir /bin &&
+                mkdir -p /usr/local/include &&
+                mkdir /usr/local/lib &&
                 make -f win32/Makefile.gcc BINARY_PATH=/bin INCLUDE_PATH=/usr/local/include LIBRARY_PATH=/usr/local/lib install &&
+                dir /usr/local &&
                 dir /usr/local/lib &&
                 cd .. &&
                 pip install -r src/requirements.txt
