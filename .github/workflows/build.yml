@@ -66,6 +66,7 @@ jobs:
                 cd zlib-1.2.11 &&
                 cmake . &&
                 cmake --build . --config Release --target install &&
+                rm "C:/Program Files (x86)/zlib/lib/zlib.lib" &&
                 cd .. &&
                 python setup.py install --user
                 #mkdir /bin &&
