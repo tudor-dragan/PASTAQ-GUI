@@ -46,7 +46,8 @@ jobs:
                 zip -r9 PASTAQ-GUI PASTAQ-GUI.app/
             CMD_DEP: >
                 python -m pip install --upgrade pip &&
-                pip install -r src/requirements.txt
+                pip install -r src/requirements.txt &&
+                pip install pastaq
             OUT_FILE_NAME: PASTAQ-GUI.zip
             ASSET_MIME: application/zip
           - os: windows-latest
@@ -55,17 +56,24 @@ jobs:
             CMD_DEP: >
                 python -m pip install --upgrade pip &&
                 pip install wget &&
+                pip install -r src/requirements.txt &&
+                git clone https://github.com/PASTAQ-MS/PASTAQ &&
+                cd PASTAQ &&
+                git submodule init &&
+                git submodule update &&
                 python -m wget http://www.zlib.net/zlib-1.2.11.tar.gz &&
                 tar -xvzf zlib-1.2.11.tar.gz &&
                 cd zlib-1.2.11 &&
-                mkdir /bin &&
-                mkdir -p /usr/local/include &&
-                mkdir /usr/local/lib &&
-                make -f win32/Makefile.gcc BINARY_PATH=/bin INCLUDE_PATH=/usr/local/include LIBRARY_PATH=/usr/local/lib install &&
-                dir /usr/local &&
-                dir /usr/local/lib &&
+                cmake --build . --config Release --target install &&
                 cd .. &&
-                pip install -r src/requirements.txt
+                python setup.py install --user
+                #mkdir /bin &&
+                #mkdir -p /usr/local/include &&
+                #mkdir /usr/local/lib &&
+                #make -f win32/Makefile.gcc BINARY_PATH=/bin INCLUDE_PATH=/usr/local/include LIBRARY_PATH=/usr/local/lib install &&
+                #dir /usr/local &&
+                #dir /usr/local/lib &&
+                cd .. &&
             OUT_FILE_NAME: PASTAQ-GUI.exe
             ASSET_MIME: application/vnd.microsoft.portable-executable
     steps:
