@@ -64,6 +64,7 @@ jobs:
                 python -m wget http://www.zlib.net/zlib-1.2.11.tar.gz &&
                 tar -xvzf zlib-1.2.11.tar.gz &&
                 cd zlib-1.2.11 &&
+                cmake . &&
                 cmake --build . --config Release --target install &&
                 cd .. &&
                 python setup.py install --user
