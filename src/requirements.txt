@@ -3,7 +3,7 @@ cmake
 
 # required for PASTAQ-GUI
 #git+https://github.com/bys1/PASTAQ
-PyQT5
+PyQt5
 
 # required for packaging
 pyinstaller
