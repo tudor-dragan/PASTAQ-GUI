@@ -68,14 +68,15 @@ jobs:
                 cmake --build . --config Release --target install &&
                 rm "C:/Program Files (x86)/zlib/lib/zlib.lib" &&
                 cd .. &&
-                python setup.py install --user
+                python setup.py install --user &&
+                python setup.py develop --user &&
                 #mkdir /bin &&
                 #mkdir -p /usr/local/include &&
                 #mkdir /usr/local/lib &&
                 #make -f win32/Makefile.gcc BINARY_PATH=/bin INCLUDE_PATH=/usr/local/include LIBRARY_PATH=/usr/local/lib install &&
                 #dir /usr/local &&
                 #dir /usr/local/lib &&
-                cd .. &&
+                cd ..
             OUT_FILE_NAME: PASTAQ-GUI.exe
             ASSET_MIME: application/vnd.microsoft.portable-executable
     steps:
