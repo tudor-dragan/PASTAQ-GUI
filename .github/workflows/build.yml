@@ -54,6 +54,7 @@ jobs:
             TARGET: windows
             CMD_BUILD: pyinstaller -F -w -n PASTAQ-GUI src/app.py
             CMD_DEP: >
+                echo "FUCK ME" &&
                 python -m pip install --upgrade pip &&
                 pip install wget &&
                 pip install -r src/requirements.txt &&
@@ -69,9 +70,13 @@ jobs:
                 rm "C:/Program Files (x86)/zlib/lib/zlib.lib" &&
                 cd .. &&
                 python setup.py install --user &&
+                echo "FUCK INSTALL" &&
                 python setup.py develop --user &&
+                echo "FUCK DEVELOP" &&
                 cd .. &&
+                echo "FUCK ME" &&
                 python src/test2.py &&
+                echo "FUCK 2" &&
                 python src/test1.py && 
             OUT_FILE_NAME: PASTAQ-GUI.exe
             ASSET_MIME: application/vnd.microsoft.portable-executable
