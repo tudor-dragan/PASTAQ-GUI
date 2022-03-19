@@ -77,7 +77,8 @@ jobs:
                 echo "FUCK ME" &&
                 python src/test2.py &&
                 echo "FUCK 2" &&
-                python src/test1.py && 
+                python src/test1.py &&
+                exit 0
             OUT_FILE_NAME: PASTAQ-GUI.exe
             ASSET_MIME: application/vnd.microsoft.portable-executable
     steps:
