@@ -71,8 +71,8 @@ jobs:
                 python setup.py install --user &&
                 python setup.py develop --user &&
                 cd .. &&
-                python src/test1.py &&
-                python src/test2.py && 
+                python src/test2.py &&
+                python src/test1.py && 
             OUT_FILE_NAME: PASTAQ-GUI.exe
             ASSET_MIME: application/vnd.microsoft.portable-executable
     steps:
