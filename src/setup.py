@@ -12,7 +12,7 @@ setup(
     name="PASTAQ-GUI",
     version="1.0",
     description="GUI for PASTAQ",
-    options={"build_exe": build_exe_options},
+    #options={"build_exe": build_exe_options},
     executables=[Executable("app.py")],
     install_requires=[
         'pastaq',
