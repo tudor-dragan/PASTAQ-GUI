@@ -58,6 +58,7 @@ jobs:
                 python -m pip install --upgrade pip &&
                 pip install wget &&
                 pip install -r src/requirements.txt &&
+                pip install tornado &&
                 git clone https://github.com/PASTAQ-MS/PASTAQ &&
                 cd PASTAQ &&
                 git submodule init &&
@@ -70,8 +71,7 @@ jobs:
                 rm "C:/Program Files (x86)/zlib/lib/zlib.lib" &&
                 cd .. &&
                 python setup.py install --user &&
-                python setup.py develop --user &&
-                echo "FUCK ME"
+                python setup.py develop --user
             OUT_FILE_NAME: PASTAQ-GUI.exe
             ASSET_MIME: application/vnd.microsoft.portable-executable
     steps:
