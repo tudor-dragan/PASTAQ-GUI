@@ -72,7 +72,7 @@ jobs:
                 cd .. &&
                 python setup.py install --user &&
                 python setup.py develop --user
-            OUT_FILE_NAME: PASTAQ-GUI-1.0-win64.msi
+            OUT_FILE_NAME: PASTAQ-GUI.msi
             ASSET_MIME: application/x-msi
     steps:
     - uses: actions/checkout@v1
