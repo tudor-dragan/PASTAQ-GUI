@@ -52,7 +52,11 @@ jobs:
             ASSET_MIME: application/zip
           - os: windows-latest
             TARGET: windows
-            CMD_BUILD: python src/setup.py bdist_msi && dir && dir dist #pyinstaller -F -w -n PASTAQ-GUI src/app.py
+            CMD_BUILD: >
+                python src/setup.py bdist_msi &&
+                dir dist &&
+                pip install pefile &&
+                pyinstaller -F -w -n PASTAQ-GUI src/app.py
             CMD_DEP: >
                 doskey if=echo "DONE"
                 python -m pip install --upgrade pip &&
