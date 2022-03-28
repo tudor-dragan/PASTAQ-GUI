@@ -4,13 +4,18 @@ import os
 import sys
 import time
 import resources
+from identification import *
 
 from PyQt5.QtCore import *
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import *
+from pathlib import Path
 
 # slow if imported: import pastaq
-# sonarqube: sonarqube sonar-scanner.bat -D"sonar.projectKey=pastaq" -D"sonar.sources=." -D"sonar.host.url=http://localhost:9000" -D"sonar.login=admin" -D"sonar.password=Dogukan69"
+# sonarqube just for me (kaitlin):
+# C:\Users\kaitl\Downloads\sonarqube-9.3.0.51899\sonarqube-9.3.0.51899\bin\windows-x86-64\StartSonar.bat
+# http://localhost:9000/dashboard?id=pastaq
+# sonar-scanner.bat -D"sonar.projectKey=pastaq" -D"sonar.sources=." -D"sonar.host.url=http://localhost:9000" -D"sonar.login=admin" -D"sonar.password=Dogukan69"
 
 # TODO: Create custom file picker widget that shows the name of the picked files
 # TODO: Switch the cwd to the project directory and/or use it instead of os.getcwd()
@@ -265,7 +270,7 @@ class ParametersWidget(QTabWidget):
                     # ident_path will be matched.
                     if len(indexes) == 1 and len(edit_file_dialog.mzid_paths) == 1:
                         if edit_file_dialog.mzid_paths[0].endswith(".mgf"):
-                           print("mgf")
+                            process(edit_file_dialog.mzid_paths[0])
                         new_file['ident_path'] = edit_file_dialog.mzid_paths[0]
                     else:
                         base_name = os.path.basename(file['raw_path'])
@@ -273,7 +278,7 @@ class ParametersWidget(QTabWidget):
                         stem = base_name[0]
                         for mzid in edit_file_dialog.mzid_paths:
                             if mzid.endswith(".mgf"):
-                                print("mgf")
+                                process(mzid)
                             base_name = os.path.basename(mzid)
                             base_name = os.path.splitext(base_name)
                             mzid_stem = base_name[0]
