@@ -1195,6 +1195,7 @@ class MainWindow(QMainWindow):
 
 # Initialize main window.
 app = QApplication(sys.argv)
+app.setWindowIcon(QIcon(":/icons/pastaq.png"))
 window = MainWindow()
 window.show()
 

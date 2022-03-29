@@ -2,5 +2,8 @@
 <RCC version="1.0">
     <qresource prefix="icons">
         <file>question.png</file>
+        <file alias="pastaq.ico">../resources/pastaq.ico</file>
+        <file alias="pastaq.icns">../resources/pastaq.icns</file>
+        <file alias="pastaq.png">../resources/pastaq.png</file>
     </qresource>
 </RCC>
