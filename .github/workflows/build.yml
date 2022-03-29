@@ -76,8 +76,8 @@ jobs:
                 cd .. &&
                 python setup.py install --user &&
                 python setup.py develop --user
-            OUT_FILE_NAME: PASTAQ-GUI.msi
-            ASSET_MIME: application/x-msi
+            OUT_FILE_NAME: PASTAQ-GUI.exe
+            ASSET_MIME: application/vnd.microsoft.portable-executable
     steps:
     - uses: actions/checkout@v1
     - name: Set up Python 3.8
