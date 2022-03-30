@@ -1,6 +1,8 @@
 import os
 import subprocess
 from pathlib import Path
+from PyQt5.QtWidgets import QMainWindow, QApplication
+import sys
 
 """ terminal:
     cd desktop/MSFragger-3.4
@@ -56,4 +58,3 @@ def hardprocess(mgf):
     mzid = make_mzid_path(mgf)
     print(mzid)
     return mzid
-

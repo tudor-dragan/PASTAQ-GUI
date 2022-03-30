@@ -5,8 +5,9 @@ import platform
 import sys
 import time
 import resources
-from identification import *
+import platform
 
+from identification import *
 from PyQt5.QtCore import *
 from PyQt5.QtGui import QIcon, QKeySequence
 from PyQt5.QtWidgets import *
@@ -37,10 +38,16 @@ class EditFileDialog(QDialog):
         form_layout = QFormLayout()
         self.group_box = QLineEdit()
         self.group_box.textChanged.connect(self.set_group)
-        mzid_picker = QPushButton("Find")
+        mzid_picker = QPushButton("Browse")
         mzid_picker.clicked.connect(self.set_mzid_paths)
+        # start of drag and drop
+        # drop = ImageLabel()
+        # self.setAcceptDrops(True)
+
         form_layout.addRow("Group", self.group_box)
         form_layout.addRow("mgf/mzID", mzid_picker)
+        # form_layout.addRow(drop)
+
         form_container.setLayout(form_layout)
 
         # Dialog buttons (Ok/Cancel).
@@ -53,6 +60,18 @@ class EditFileDialog(QDialog):
         layout.addWidget(form_container)
         layout.addWidget(buttons)
         self.setLayout(layout)
+
+    def dragEnterEvent(self, event):
+        if event.mimeData().hasUrls():
+            event.accept()
+        else:
+            event.ignore()
+
+    def dropEvent(self, event):
+        files = [u.toLocalFile() for u in event.mimeData().urls()]
+        #
+        for f in files:
+            print(f)
 
     def set_group(self):
         self.group = self.group_box.text()
@@ -68,6 +87,21 @@ class EditFileDialog(QDialog):
         if len(file_paths) > 0:
             self.mzid_paths = file_paths
 
+# class for drag and drop field
+class ImageLabel(QLabel):
+    def __init__(self):
+        super().__init__()
+
+        self.setAlignment(Qt.AlignCenter)
+        self.setText('\n\n Drop File(s) Here \n\n')
+        self.setStyleSheet('''
+            QLabel{
+                border: 4px dashed #aaa
+            }
+        ''')
+
+    def setPixmap(self, image):
+        super().setPixmap(image)
 
 class ParameterItem(QWidget):
     def __init__(self, label, tooltip, widget, parent=None):
@@ -275,7 +309,7 @@ class ParametersWidget(QTabWidget):
                         if edit_file_dialog.mzid_paths[0].endswith(".mgf"):
                             path = hardprocess(path)
                         new_file['ident_path'] = path
-                        os.chdir(os.path.dirname(path))  #sets directory to last identification file added
+                        os.chdir(os.path.dirname(path))  # sets directory to last identification file added
                     else:
                         base_name = os.path.basename(file['raw_path'])
                         base_name = os.path.splitext(base_name)
@@ -1124,6 +1158,7 @@ class MainWindow(QMainWindow):
             filter="Project file (*.json)",
         )
         if len(file_path) > 0:
+            os.chdir(os.path.dirname(file_path))
             tmp = json.loads(open(file_path).read())
             # TODO: Validate parameters
             valid = True
