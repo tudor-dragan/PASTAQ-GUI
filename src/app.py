@@ -1197,7 +1197,7 @@ class MainWindow(QMainWindow):
 # Initialize main window.
 app = QApplication(sys.argv)
 app.setWindowIcon(QIcon(":/icons/pastaq.png"))
-if (platform.system() == "Windows"):
+if platform.system() == "Windows":
     import ctypes
     ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID("pastaq-gui")
 
