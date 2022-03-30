@@ -914,9 +914,6 @@ class MainWindow(QMainWindow):
 
         self.setWindowTitle("PASTAQ: DDA Pipeline")
 
-        # NOTE: Setting up a fixed window size for now.
-        self.setFixedSize(QSize(1024, 800))
-
         # Main layout
         layout = QVBoxLayout()
 
