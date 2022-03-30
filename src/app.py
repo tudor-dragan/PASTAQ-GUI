@@ -8,7 +8,7 @@ import resources
 from identification import *
 
 from PyQt5.QtCore import *
-from PyQt5.QtGui import QIcon
+from PyQt5.QtGui import QIcon, QKeySequence
 from PyQt5.QtWidgets import *
 from pathlib import Path
 
@@ -275,7 +275,7 @@ class ParametersWidget(QTabWidget):
                         if edit_file_dialog.mzid_paths[0].endswith(".mgf"):
                             path = hardprocess(path)
                         new_file['ident_path'] = path
-                        os.chdir(os.path.dirname(path)) #sets directory to last identification file added
+                        os.chdir(os.path.dirname(path))  #sets directory to last identification file added
                     else:
                         base_name = os.path.basename(file['raw_path'])
                         base_name = os.path.splitext(base_name)
@@ -289,7 +289,7 @@ class ParametersWidget(QTabWidget):
                             if mzid_stem == stem:
                                 new_file['ident_path'] = mzid
                                 break
-                            os.chdir(os.path.dirname(mzid)) # sets directory to last identification file added
+                            os.chdir(os.path.dirname(mzid))  # sets directory to last identification file added
 
                     new_list += [new_file]
                 else:
@@ -924,15 +924,20 @@ class MainWindow(QMainWindow):
         self.newProj = QAction('New Project', self)
         self.newProj.triggered.connect(self.new_project)
         self.fileMenu.addAction(self.newProj)
+
         #Open Project 
         self.openProj = QAction('Open Project', self)
         self.openProj.triggered.connect(self.open_project)
+        self.openProj.setShortcut(QKeySequence("Ctrl+o"))
         self.fileMenu.addAction(self.openProj)
+
         #Save Project
         self.save_project_btn = QAction('Save', self)
         self.save_project_btn.triggered.connect(self.save_project)
+        self.save_project_btn.setShortcut(QKeySequence("Ctrl+s"))
         self.save_project_btn.setEnabled(False)
         self.fileMenu.addAction(self.save_project_btn)
+
         #Save Project As
         self.save_project_as_btn = QAction('Save as', self)
         self.save_project_as_btn.triggered.connect(self.save_project_as)
