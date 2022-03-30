@@ -917,28 +917,27 @@ class MainWindow(QMainWindow):
         # Main layout
         layout = QVBoxLayout()
 
-        #
-        # Control panel.
-        #
-        self.new_project_btn = QPushButton("New project")
-        self.new_project_btn.clicked.connect(self.new_project)
-        self.open_project_btn = QPushButton("Open project")
-        self.open_project_btn.clicked.connect(self.open_project)
-        self.save_project_btn = QPushButton("Save")
-        self.save_project_btn.clicked.connect(self.save_project)
+        #Menu Bar
+        self.menubar = self.menuBar()
+        self.fileMenu = self.menubar.addMenu('File')
+        #New Project 
+        self.newProj = QAction('New Project', self)
+        self.newProj.triggered.connect(self.new_project)
+        self.fileMenu.addAction(self.newProj)
+        #Open Project 
+        self.openProj = QAction('Open Project', self)
+        self.openProj.triggered.connect(self.open_project)
+        self.fileMenu.addAction(self.openProj)
+        #Save Project
+        self.save_project_btn = QAction('Save', self)
+        self.save_project_btn.triggered.connect(self.save_project)
         self.save_project_btn.setEnabled(False)
-        self.save_project_as_btn = QPushButton("Save as")
-        self.save_project_as_btn.clicked.connect(self.save_project_as)
+        self.fileMenu.addAction(self.save_project_btn)
+        #Save Project As
+        self.save_project_as_btn = QAction('Save as', self)
+        self.save_project_as_btn.triggered.connect(self.save_project_as)
         self.save_project_as_btn.setEnabled(False)
-
-        self.controls_container = QWidget()
-        controls_layout = QHBoxLayout()
-        controls_layout.addWidget(self.new_project_btn)
-        controls_layout.addWidget(self.open_project_btn)
-        controls_layout.addWidget(self.save_project_btn)
-        controls_layout.addWidget(self.save_project_as_btn)
-        self.controls_container.setLayout(controls_layout)
-        layout.addWidget(self.controls_container)
+        self.fileMenu.addAction(self.save_project_as_btn)
 
         #
         # Project variables.
