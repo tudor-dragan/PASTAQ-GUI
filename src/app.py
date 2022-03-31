@@ -23,6 +23,7 @@ import pastaq
 # TODO: Switch the cwd to the project directory and/or use it instead of os.getcwd()
 # TODO: The RUN button should only be access when there is at least 1 sample active.
 
+# Window when you edit row(s)
 class EditFileDialog(QDialog):
     group = ''
     mzid_paths = []
@@ -61,6 +62,7 @@ class EditFileDialog(QDialog):
         layout.addWidget(buttons)
         self.setLayout(layout)
 
+    # TODO
     def dragEnterEvent(self, event):
         if event.mimeData().hasUrls():
             event.accept()
@@ -103,7 +105,7 @@ class ImageLabel(QLabel):
     def setPixmap(self, image):
         super().setPixmap(image)
 
-
+# Parameter items added to parameter tab
 class ParameterItem(QWidget):
     def __init__(self, label, tooltip, widget, parent=None):
         QWidget.__init__(self, parent=parent)
@@ -152,7 +154,7 @@ class PipelineRunner(QThread):
 
         self.finished.emit()
 
-
+# After having pressed run
 class PipelineLogDialog(QDialog):
     group = ''
     mzid_paths = []
@@ -216,7 +218,7 @@ class PipelineLogDialog(QDialog):
         self.pipeline_thread.quit()
         self.reject()
 
-
+# PASTAQ window
 class ParametersWidget(QTabWidget):
     input_files = []
     parameters = {}
@@ -225,11 +227,14 @@ class ParametersWidget(QTabWidget):
         super(ParametersWidget, self).__init__(parent)
         self.input_files_tab = QWidget()
         self.parameters_tab = QScrollArea()
+        #self.input_paths_tab = QScrollArea()
 
         self.addTab(self.input_files_tab, 'Input files')
         self.addTab(self.parameters_tab, 'Parameters')
+        #self.addTab(self.input_paths_tab, 'Paths')
         self.input_files_tab_ui()
         self.parameters_tab_ui()
+        #self.input_paths_tab_ui()
 
     def input_files_tab_ui(self):
         self.input_files_table = QTableWidget()
@@ -271,6 +276,28 @@ class ParametersWidget(QTabWidget):
         layout.addWidget(self.input_file_buttons)
         layout.addWidget(self.input_files_table)
         self.input_files_tab.setLayout(layout)
+
+    '''def input_paths_tab_ui(self):
+        self.inst_settings_box = QGroupBox('MSFragger')
+        grid_layout_inst = QGridLayout()
+        mzid_picker = QPushButton('Browse')
+        mzid_picker.clicked.connect(self.set_dir_paths)
+        
+        self.inst_settings_box = QGroupBox('ProteoWizard')
+        grid_layout_inst = QGridLayout()
+        self.inst_settings_box = QGroupBox('Protein database')
+        grid_layout_inst = QGridLayout()'''
+
+    def set_dir_paths(self):
+        file_paths, _ = QFileDialog.getOpenFileNames(
+            parent=self,
+            caption='Select input files',
+            directory=os.getcwd(),
+            # two extension possibilities
+            filter=('Identification files (*.mzID *.mzIdentML *.mgf)')
+        )
+        if len(file_paths) > 0:
+            self.mzid_paths = file_paths
 
     def add_file(self):
         file_paths, _ = QFileDialog.getOpenFileNames(
@@ -939,6 +966,7 @@ class ParametersWidget(QTabWidget):
         self.parameters[
             'quant_proteins_ignore_ambiguous_peptides'] = self.quant_proteins_ignore_ambiguous_peptides.isChecked()
         self.parameters['quant_proteins_quant_type'] = self.quant_proteins_quant_type.currentText()
+
 
 pop = False
 class MainWindow(QMainWindow):
