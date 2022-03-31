@@ -17,7 +17,7 @@ import pastaq
 # sonarqube just for me (kaitlin):
 # C:\Users\kaitl\Downloads\sonarqube-9.3.0.51899\sonarqube-9.3.0.51899\bin\windows-x86-64\StartSonar.bat
 # http://localhost:9000/dashboard?id=pastaq
-# sonar-scanner.bat -D"sonar.projectKey=pastaq" -D"sonar.sources=." -D"sonar.host.url=http://localhost:9000" -D"sonar.login=admin" -D"sonar.password=Dogukan69"
+# sonar-scanner.bat -D'sonar.projectKey=pastaq' -D'sonar.sources=.' -D'sonar.host.url=http://localhost:9000' -D'sonar.login=admin' -D'sonar.password=Dogukan69'
 
 # TODO: Create custom file picker widget that shows the name of the picked files
 # TODO: Switch the cwd to the project directory and/or use it instead of os.getcwd()
@@ -31,21 +31,21 @@ class EditFileDialog(QDialog):
         super().__init__(parent)
 
         # TODO: Set fixed size for this.
-        self.setWindowTitle("PASTAQ: DDA Pipeline - Add files")
+        self.setWindowTitle('PASTAQ: DDA Pipeline - Add files')
 
         # Edit parameters.
         form_container = QWidget()
         form_layout = QFormLayout()
         self.group_box = QLineEdit()
         self.group_box.textChanged.connect(self.set_group)
-        mzid_picker = QPushButton("Browse")
+        mzid_picker = QPushButton('Browse')
         mzid_picker.clicked.connect(self.set_mzid_paths)
         # start of drag and drop
         # drop = ImageLabel()
         # self.setAcceptDrops(True)
 
-        form_layout.addRow("Group", self.group_box)
-        form_layout.addRow("mgf/mzID", mzid_picker)
+        form_layout.addRow('Group', self.group_box)
+        form_layout.addRow('mgf/mzID', mzid_picker)
         # form_layout.addRow(drop)
 
         form_container.setLayout(form_layout)
@@ -79,10 +79,10 @@ class EditFileDialog(QDialog):
     def set_mzid_paths(self):
         file_paths, _ = QFileDialog.getOpenFileNames(
             parent=self,
-            caption="Select input files",
+            caption='Select input files',
             directory=os.getcwd(),
             # two extension possibilities
-            filter=("Identification files (*.mzID *.mzIdentML *.mgf)")
+            filter=('Identification files (*.mzID *.mzIdentML *.mgf)')
         )
         if len(file_paths) > 0:
             self.mzid_paths = file_paths
@@ -103,6 +103,7 @@ class ImageLabel(QLabel):
     def setPixmap(self, image):
         super().setPixmap(image)
 
+
 class ParameterItem(QWidget):
     def __init__(self, label, tooltip, widget, parent=None):
         QWidget.__init__(self, parent=parent)
@@ -111,10 +112,10 @@ class ParameterItem(QWidget):
         button = QPushButton(label, self)
         button.setToolTip(tooltip)
 
-        icon = QIcon(":/icons/question.png")
+        icon = QIcon(':/icons/question.png')
         button.setLayoutDirection(Qt.RightToLeft)
         button.setIcon(icon)
-        button.setStyleSheet("border: none;")
+        button.setStyleSheet('border: none;')
 
         layout.addWidget(button)
         layout.addWidget(widget)
@@ -141,13 +142,13 @@ class PipelineRunner(QThread):
         self.wait()
 
     def run(self):
-        print("Starting DDA Pipeline")
+        print('Starting DDA Pipeline')
         time.sleep(1)
 
         try:
             pastaq.dda_pipeline(self.params, self.input_files, self.output_dir)
         except Exception as e:
-            print("ERROR:", e)
+            print('ERROR:', e)
 
         self.finished.emit()
 
@@ -160,7 +161,7 @@ class PipelineLogDialog(QDialog):
         super().__init__(parent)
 
         # TODO: Set fixed size for this.
-        self.setWindowTitle("PASTAQ: DDA Pipeline (Running)")
+        self.setWindowTitle('PASTAQ: DDA Pipeline (Running)')
 
         # Add custom output to text stream.
         sys.stdout = TextStream(text_written=self.append_text)
@@ -225,8 +226,8 @@ class ParametersWidget(QTabWidget):
         self.input_files_tab = QWidget()
         self.parameters_tab = QScrollArea()
 
-        self.addTab(self.input_files_tab, "Input files")
-        self.addTab(self.parameters_tab, "Parameters")
+        self.addTab(self.input_files_tab, 'Input files')
+        self.addTab(self.parameters_tab, 'Parameters')
         self.input_files_tab_ui()
         self.parameters_tab_ui()
 
@@ -238,10 +239,10 @@ class ParametersWidget(QTabWidget):
         self.input_files_table.setColumnCount(4)
         self.input_files_table.setFocusPolicy(False)
         column_names = [
-            "Raw File (mzXML/mzML)",
-            "Identification file (mzID)",
-            "Group",
-            "Reference"
+            'Raw File (mzXML/mzML)',
+            'Identification file (mzID)',
+            'Group',
+            'Reference'
         ]
         self.input_files_table.setHorizontalHeaderLabels(column_names)
         self.input_files_table.verticalHeader().hide()
@@ -252,11 +253,11 @@ class ParametersWidget(QTabWidget):
         header.setSectionResizeMode(3, QHeaderView.ResizeToContents)
 
         # Buttons.
-        self.add_file_btn = QPushButton("Add")
+        self.add_file_btn = QPushButton('Add')
         self.add_file_btn.clicked.connect(self.add_file)
-        self.edit_file_btn = QPushButton("Edit")
+        self.edit_file_btn = QPushButton('Edit')
         self.edit_file_btn.clicked.connect(self.edit_file)
-        self.remove_file_btn = QPushButton("Remove")
+        self.remove_file_btn = QPushButton('Remove')
         self.remove_file_btn.clicked.connect(self.remove_file)
 
         self.input_file_buttons = QWidget()
@@ -274,9 +275,9 @@ class ParametersWidget(QTabWidget):
     def add_file(self):
         file_paths, _ = QFileDialog.getOpenFileNames(
             parent=self,
-            caption="Select input files",
+            caption='Select input files',
             directory=os.getcwd(),
-            filter="MS files (*.mzXML *.mzML)",
+            filter='MS files (*.mzXML *.mzML)',
         )
         if len(file_paths) > 0:
             os.chdir(os.path.dirname(file_paths[0])) # create a project and select mzml files, then when you select mzid files it goes to the same directory as where you got the mzml files from (idk what he exactly said in the meeting)
@@ -306,7 +307,7 @@ class ParametersWidget(QTabWidget):
                     # ident_path will be matched.
                     if len(indexes) == 1 and len(edit_file_dialog.mzid_paths) == 1:
                         path = edit_file_dialog.mzid_paths[0]
-                        if edit_file_dialog.mzid_paths[0].endswith(".mgf"):
+                        if edit_file_dialog.mzid_paths[0].endswith('.mgf'):
                             path = hardprocess(path)
                         new_file['ident_path'] = path
                         os.chdir(os.path.dirname(path))  # sets directory to last identification file added
@@ -315,7 +316,7 @@ class ParametersWidget(QTabWidget):
                         base_name = os.path.splitext(base_name)
                         stem = base_name[0]
                         for mzid in edit_file_dialog.mzid_paths:
-                            if mzid.endswith(".mgf"):
+                            if mzid.endswith('.mgf'):
                                 mzid = hardprocess(mzid)
                             base_name = os.path.basename(mzid)
                             base_name = os.path.splitext(base_name)
@@ -392,252 +393,252 @@ class ParametersWidget(QTabWidget):
         #
         # Instruments
         #
-        self.inst_settings_box = QGroupBox("Instrument Settings")
+        self.inst_settings_box = QGroupBox('Instrument Settings')
         grid_layout_inst = QGridLayout()
 
         self.inst_type = QComboBox()
-        self.inst_type.addItems(["orbitrap", "tof", "ft-icr", "quadrupole"])
+        self.inst_type.addItems(['orbitrap', 'tof', 'ft-icr', 'quadrupole'])
         self.inst_type.currentIndexChanged.connect(self.update_parameters)
-        tooltip = "The type of mass analyser used to acquire the data."
-        grid_layout_inst.addWidget(ParameterItem("Instrument type", tooltip, self.inst_type), 0, 0)
+        tooltip = 'The type of mass analyser used to acquire the data.'
+        grid_layout_inst.addWidget(ParameterItem('Instrument type', tooltip, self.inst_type), 0, 0)
 
         self.res_ms1 = QSpinBox()
         self.res_ms1.setRange(-LARGE, LARGE)
         self.res_ms1.valueChanged.connect(self.update_parameters)
-        tooltip = "MS1 resolution set on the mass spectrometer at the time of data acquisition."
-        grid_layout_inst.addWidget(ParameterItem("Resolution MS1", tooltip, self.res_ms1), 0, 1)
+        tooltip = 'MS1 resolution set on the mass spectrometer at the time of data acquisition.'
+        grid_layout_inst.addWidget(ParameterItem('Resolution MS1', tooltip, self.res_ms1), 0, 1)
 
         self.res_ms2 = QSpinBox()
         self.res_ms2.setRange(-LARGE, LARGE)
         self.res_ms2.valueChanged.connect(self.update_parameters)
-        tooltip = "MS/MS resolution set on the mass spectrometer at the time of data acquisition."
-        grid_layout_inst.addWidget(ParameterItem("Resolution MS2", tooltip, self.res_ms2), 0, 2)
+        tooltip = 'MS/MS resolution set on the mass spectrometer at the time of data acquisition.'
+        grid_layout_inst.addWidget(ParameterItem('Resolution MS2', tooltip, self.res_ms2), 0, 2)
 
         self.reference_mz = QSpinBox()
         self.reference_mz.setRange(-LARGE, LARGE)
         self.reference_mz.valueChanged.connect(self.update_parameters)
-        tooltip = "Reference m/z at which the resolution is calculated."
-        grid_layout_inst.addWidget(ParameterItem("Reference m/z", tooltip, self.reference_mz), 1, 0)
+        tooltip = 'Reference m/z at which the resolution is calculated.'
+        grid_layout_inst.addWidget(ParameterItem('Reference m/z', tooltip, self.reference_mz), 1, 0)
 
         self.avg_fwhm_rt = QSpinBox()
         self.avg_fwhm_rt.setRange(-LARGE, LARGE)
         self.avg_fwhm_rt.valueChanged.connect(self.update_parameters)
-        tooltip = "Expected full-width half-maximum width of chromatographic peaks."
-        grid_layout_inst.addWidget(ParameterItem("Avg FWHM RT", tooltip, self.avg_fwhm_rt), 1, 1)
+        tooltip = 'Expected full-width half-maximum width of chromatographic peaks.'
+        grid_layout_inst.addWidget(ParameterItem('Avg FWHM RT', tooltip, self.avg_fwhm_rt), 1, 1)
 
         self.inst_settings_box.setLayout(grid_layout_inst)
 
         #
         # Raw data
         #
-        self.raw_data_box = QGroupBox("Raw Data")
+        self.raw_data_box = QGroupBox('Raw Data')
         grid_layout_raw_data = QGridLayout()
 
         self.min_mz = QDoubleSpinBox()
         self.min_mz.setRange(0, LARGE)
         self.min_mz.setStepType(QAbstractSpinBox.AdaptiveDecimalStepType)
         self.min_mz.valueChanged.connect(self.update_parameters)
-        tooltip = "Filter minimum m/z value for spectra during raw data reading."
-        grid_layout_raw_data.addWidget(ParameterItem("Min m/z", tooltip, self.min_mz), 0, 0)
+        tooltip = 'Filter minimum m/z value for spectra during raw data reading.'
+        grid_layout_raw_data.addWidget(ParameterItem('Min m/z', tooltip, self.min_mz), 0, 0)
 
         self.max_mz = QDoubleSpinBox()
         self.max_mz.setRange(0, LARGE)
         self.max_mz.setStepType(QAbstractSpinBox.AdaptiveDecimalStepType)
         self.max_mz.valueChanged.connect(self.update_parameters)
-        tooltip = "Filter maximum m/z value for spectra during raw data reading."
-        grid_layout_raw_data.addWidget(ParameterItem("Max m/z", tooltip, self.max_mz), 0, 1)
+        tooltip = 'Filter maximum m/z value for spectra during raw data reading.'
+        grid_layout_raw_data.addWidget(ParameterItem('Max m/z', tooltip, self.max_mz), 0, 1)
 
         self.polarity = QComboBox()
-        self.polarity.addItems(["positive", "negative", "both"])
+        self.polarity.addItems(['positive', 'negative', 'both'])
         self.polarity.currentIndexChanged.connect(self.update_parameters)
-        tooltip = inspect.cleandoc("""Filter polarity (Positive '+', negative '-', or any) for spectra during raw data reading.
-                  This should only be modified if the raw data file contains both positive and negative polarity spectra.""")
-        grid_layout_raw_data.addWidget(ParameterItem("Polarity", tooltip, self.polarity), 0, 2)
+        tooltip = inspect.cleandoc('''Filter polarity (Positive '+', negative '-', or any) for spectra during raw data reading.
+                  This should only be modified if the raw data file contains both positive and negative polarity spectra.''')
+        grid_layout_raw_data.addWidget(ParameterItem('Polarity', tooltip, self.polarity), 0, 2)
 
         self.min_rt = QDoubleSpinBox()
         self.min_rt.setRange(0, LARGE)
         self.min_rt.setStepType(QAbstractSpinBox.AdaptiveDecimalStepType)
         self.min_rt.valueChanged.connect(self.update_parameters)
-        tooltip = "Filter minimum retention time value for spectra during raw data reading."
-        grid_layout_raw_data.addWidget(ParameterItem("Min retention time", tooltip, self.min_rt), 1, 0)
+        tooltip = 'Filter minimum retention time value for spectra during raw data reading.'
+        grid_layout_raw_data.addWidget(ParameterItem('Min retention time', tooltip, self.min_rt), 1, 0)
 
         self.max_rt = QDoubleSpinBox()
         self.max_rt.setRange(0, LARGE)
         self.max_rt.setStepType(QAbstractSpinBox.AdaptiveDecimalStepType)
         self.max_rt.valueChanged.connect(self.update_parameters)
-        tooltip = "Filter maximum retention time value for spectra during raw data reading."
-        grid_layout_raw_data.addWidget(ParameterItem("Max retention time", tooltip, self.max_rt), 1, 1)
+        tooltip = 'Filter maximum retention time value for spectra during raw data reading.'
+        grid_layout_raw_data.addWidget(ParameterItem('Max retention time', tooltip, self.max_rt), 1, 1)
 
         self.raw_data_box.setLayout(grid_layout_raw_data)
 
         #
         # Quantification
         #
-        self.quantification_box = QGroupBox("Quantification")
+        self.quantification_box = QGroupBox('Quantification')
         grid_layout_resamp = QGridLayout()
 
         self.num_samples_mz = QSpinBox()
         self.num_samples_mz.setRange(-LARGE, LARGE)
         self.num_samples_mz.valueChanged.connect(self.update_parameters)
-        tooltip = inspect.cleandoc("""Number of sampling points per full-width half-maximum in m/z.
+        tooltip = inspect.cleandoc('''Number of sampling points per full-width half-maximum in m/z.
                   If the memory consumption is too high it can be reduced at
-                  the cost of potentially missing peaks or obtaining less accurate fitting.""")
-        grid_layout_resamp.addWidget(ParameterItem("Number of samples m/z", tooltip, self.num_samples_mz), 0, 0)
+                  the cost of potentially missing peaks or obtaining less accurate fitting.''')
+        grid_layout_resamp.addWidget(ParameterItem('Number of samples m/z', tooltip, self.num_samples_mz), 0, 0)
 
         self.num_samples_rt = QSpinBox()
         self.num_samples_rt.setRange(-LARGE, LARGE)
         self.num_samples_rt.valueChanged.connect(self.update_parameters)
-        tooltip = inspect.cleandoc("""Number of sampling points per full-width half-maximum in retention time.
+        tooltip = inspect.cleandoc('''Number of sampling points per full-width half-maximum in retention time.
                   If the memory consumption is too high it can be reduced at the
-                  cost of potentially missing peaks or obtaining less accurate fitting.""")
-        grid_layout_resamp.addWidget(ParameterItem("Number of samples rt", tooltip, self.num_samples_rt), 0, 1)
+                  cost of potentially missing peaks or obtaining less accurate fitting.''')
+        grid_layout_resamp.addWidget(ParameterItem('Number of samples rt', tooltip, self.num_samples_rt), 0, 1)
 
         self.smoothing_coefficient_mz = QDoubleSpinBox()
         self.smoothing_coefficient_mz.setRange(-LARGE, LARGE)
         self.smoothing_coefficient_mz.setStepType(QAbstractSpinBox.AdaptiveDecimalStepType)
         self.smoothing_coefficient_mz.valueChanged.connect(self.update_parameters)
-        tooltip = "Amount of smoothing applied for resampling in the m/z dimension."
+        tooltip = 'Amount of smoothing applied for resampling in the m/z dimension.'
         grid_layout_resamp.addWidget(
-            ParameterItem("Smoothing coefficient (m/z)", tooltip, self.smoothing_coefficient_mz), 0, 2)
+            ParameterItem('Smoothing coefficient (m/z)', tooltip, self.smoothing_coefficient_mz), 0, 2)
 
         self.smoothing_coefficient_rt = QDoubleSpinBox()
         self.smoothing_coefficient_rt.setRange(-LARGE, LARGE)
         self.smoothing_coefficient_mz.setStepType(QAbstractSpinBox.AdaptiveDecimalStepType)
         self.smoothing_coefficient_rt.valueChanged.connect(self.update_parameters)
-        tooltip = "Amount of smoothing applied for resampling in the retention time dimension."
+        tooltip = 'Amount of smoothing applied for resampling in the retention time dimension.'
         grid_layout_resamp.addWidget(
-            ParameterItem("Smoothing coefficient (rt)", tooltip, self.smoothing_coefficient_rt), 1, 0)
+            ParameterItem('Smoothing coefficient (rt)', tooltip, self.smoothing_coefficient_rt), 1, 0)
 
         self.max_peaks = QSpinBox()
         self.max_peaks.setRange(-LARGE, LARGE)
         self.max_peaks.valueChanged.connect(self.update_parameters)
-        tooltip = "Maximum number of peaks per file being detected at isotope level in decreasing intensity order."
-        grid_layout_resamp.addWidget(ParameterItem("Max number of peaks", tooltip, self.max_peaks), 2, 0)
+        tooltip = 'Maximum number of peaks per file being detected at isotope level in decreasing intensity order.'
+        grid_layout_resamp.addWidget(ParameterItem('Max number of peaks', tooltip, self.max_peaks), 2, 0)
 
         self.feature_detection_charge_state_min = QSpinBox()
         self.feature_detection_charge_state_min.setRange(1, LARGE)
         self.feature_detection_charge_state_min.valueChanged.connect(self.update_parameters)
-        tooltip = "Feature detection charge state min."
+        tooltip = 'Feature detection charge state min.'
         grid_layout_resamp.addWidget(
-            ParameterItem("Feature detection min charge", tooltip, self.feature_detection_charge_state_min), 1, 1)
+            ParameterItem('Feature detection min charge', tooltip, self.feature_detection_charge_state_min), 1, 1)
 
         self.feature_detection_charge_state_max = QSpinBox()
         self.feature_detection_charge_state_max.setRange(1, LARGE)
         self.feature_detection_charge_state_max.valueChanged.connect(self.update_parameters)
-        tooltip = "Feature detection charge state max."
+        tooltip = 'Feature detection charge state max.'
         grid_layout_resamp.addWidget(
-            ParameterItem("Feature detection max charge", tooltip, self.feature_detection_charge_state_max), 1, 2)
+            ParameterItem('Feature detection max charge', tooltip, self.feature_detection_charge_state_max), 1, 2)
 
         self.quantification_box.setLayout(grid_layout_resamp)
 
         #
         # Warp2D
         #
-        self.warp_box = QGroupBox("Warp2D")
+        self.warp_box = QGroupBox('Warp2D')
         grid_layout_warp = QGridLayout()
 
         self.warp2d_slack = QSpinBox()
         self.warp2d_slack.setRange(-LARGE, LARGE)
         self.warp2d_slack.valueChanged.connect(self.update_parameters)
-        tooltip = "Number of points allowed to move for each anchor node during retention time alignment."
-        grid_layout_warp.addWidget(ParameterItem("Slack", tooltip, self.warp2d_slack), 0, 0)
+        tooltip = 'Number of points allowed to move for each anchor node during retention time alignment.'
+        grid_layout_warp.addWidget(ParameterItem('Slack', tooltip, self.warp2d_slack), 0, 0)
 
         self.warp2d_window_size = QSpinBox()
         self.warp2d_window_size.setRange(-LARGE, LARGE)
         self.warp2d_window_size.valueChanged.connect(self.update_parameters)
-        tooltip = "Number of points between anchor points."
-        grid_layout_warp.addWidget(ParameterItem("Window Size", tooltip, self.warp2d_window_size), 0, 1)
+        tooltip = 'Number of points between anchor points.'
+        grid_layout_warp.addWidget(ParameterItem('Window Size', tooltip, self.warp2d_window_size), 0, 1)
 
         self.warp2d_num_points = QSpinBox()
         self.warp2d_num_points.setRange(-LARGE, LARGE)
         self.warp2d_num_points.valueChanged.connect(self.update_parameters)
-        tooltip = "Number of points in which the minimum and maximum retention time range will be discretized."
-        grid_layout_warp.addWidget(ParameterItem("Number of points", tooltip, self.warp2d_num_points), 0, 2)
+        tooltip = 'Number of points in which the minimum and maximum retention time range will be discretized.'
+        grid_layout_warp.addWidget(ParameterItem('Number of points', tooltip, self.warp2d_num_points), 0, 2)
 
         self.warp2d_rt_expand_factor = QDoubleSpinBox()
         self.warp2d_rt_expand_factor.setRange(-LARGE, LARGE)
         self.warp2d_rt_expand_factor.setStepType(QAbstractSpinBox.AdaptiveDecimalStepType)
         self.warp2d_rt_expand_factor.valueChanged.connect(self.update_parameters)
-        tooltip = "Expansion of the retention time range to avoid edge effects at the min/max nodes."
-        grid_layout_warp.addWidget(ParameterItem("Expand factor rt", tooltip, self.warp2d_rt_expand_factor), 1, 0)
+        tooltip = 'Expansion of the retention time range to avoid edge effects at the min/max nodes.'
+        grid_layout_warp.addWidget(ParameterItem('Expand factor rt', tooltip, self.warp2d_rt_expand_factor), 1, 0)
         self.warp_box.setLayout(grid_layout_warp)
 
         self.warp2d_peaks_per_window = QSpinBox()
         self.warp2d_peaks_per_window.setRange(-LARGE, LARGE)
         self.warp2d_peaks_per_window.valueChanged.connect(self.update_parameters)
-        tooltip = "Number of peaks used for similarity calculation in each alignment window."
-        grid_layout_warp.addWidget(ParameterItem("Peaks per window", tooltip, self.warp2d_peaks_per_window), 1, 1)
+        tooltip = 'Number of peaks used for similarity calculation in each alignment window.'
+        grid_layout_warp.addWidget(ParameterItem('Peaks per window', tooltip, self.warp2d_peaks_per_window), 1, 1)
 
         self.warp_box.setLayout(grid_layout_warp)
 
         #
         # MetaMatch
         #
-        self.meta_box = QGroupBox("MetaMatch")
+        self.meta_box = QGroupBox('MetaMatch')
         grid_layout_meta = QGridLayout()
 
         self.metamatch_fraction = QDoubleSpinBox()
         self.metamatch_fraction.setRange(-LARGE, LARGE)
         self.metamatch_fraction.setStepType(QAbstractSpinBox.AdaptiveDecimalStepType)
         self.metamatch_fraction.valueChanged.connect(self.update_parameters)
-        tooltip = inspect.cleandoc("""Minimum percentage of peak presence (value between 0 and 1) in at least
+        tooltip = inspect.cleandoc('''Minimum percentage of peak presence (value between 0 and 1) in at least
         one sample group to be included in Metamatch result.
         For example, if there are 10 samples in group A and 10 in group B,
         for a fraction value of 0.7, we consider a valid cluster if there are 
-        matched peaks present in at least 7 samples in at least one of the sample group.""")
-        grid_layout_meta.addWidget(ParameterItem("Fraction of samples", tooltip, self.metamatch_fraction), 0, 0)
+        matched peaks present in at least 7 samples in at least one of the sample group.''')
+        grid_layout_meta.addWidget(ParameterItem('Fraction of samples', tooltip, self.metamatch_fraction), 0, 0)
 
         self.metamatch_n_sig_mz = QDoubleSpinBox()
         self.metamatch_n_sig_mz.setRange(-LARGE, LARGE)
         self.metamatch_n_sig_mz.setStepType(QAbstractSpinBox.AdaptiveDecimalStepType)
         self.metamatch_n_sig_mz.valueChanged.connect(self.update_parameters)
-        tooltip = "Number of standard deviations to use as tolerance for m/z radius."
-        grid_layout_meta.addWidget(ParameterItem("Number of sigma (m/z)", tooltip, self.metamatch_n_sig_mz), 0, 1)
+        tooltip = 'Number of standard deviations to use as tolerance for m/z radius.'
+        grid_layout_meta.addWidget(ParameterItem('Number of sigma (m/z)', tooltip, self.metamatch_n_sig_mz), 0, 1)
 
         self.metamatch_n_sig_rt = QDoubleSpinBox()
         self.metamatch_n_sig_rt.setRange(-LARGE, LARGE)
         self.metamatch_n_sig_rt.setStepType(QAbstractSpinBox.AdaptiveDecimalStepType)
         self.metamatch_n_sig_rt.valueChanged.connect(self.update_parameters)
-        tooltip = "Number of standard deviations to use as tolerance for retention time radius."
-        grid_layout_meta.addWidget(ParameterItem("Number of sigma (rt)", tooltip, self.metamatch_n_sig_rt), 0, 2)
+        tooltip = 'Number of standard deviations to use as tolerance for retention time radius.'
+        grid_layout_meta.addWidget(ParameterItem('Number of sigma (rt)', tooltip, self.metamatch_n_sig_rt), 0, 2)
 
         self.meta_box.setLayout(grid_layout_meta)
 
         #
         # Identification
         #
-        self.ident_box = QGroupBox("Identification")
+        self.ident_box = QGroupBox('Identification')
         grid_layout_ident = QGridLayout()
 
         self.ident_max_rank_only = QCheckBox()
         self.ident_max_rank_only.stateChanged.connect(self.update_parameters)
-        tooltip = "Only select the most confident PSM from each MS/MS spectra."
-        grid_layout_ident.addWidget(ParameterItem("Max rank only", tooltip, self.ident_max_rank_only), 0, 0)
+        tooltip = 'Only select the most confident PSM from each MS/MS spectra.'
+        grid_layout_ident.addWidget(ParameterItem('Max rank only', tooltip, self.ident_max_rank_only), 0, 0)
 
         self.ident_require_threshold = QCheckBox()
         self.ident_require_threshold.stateChanged.connect(self.update_parameters)
-        tooltip = "Read only identifications that meet the target-decoy false discovery rate threshold."
-        grid_layout_ident.addWidget(ParameterItem("Require threshold", tooltip, self.ident_require_threshold), 0, 1)
+        tooltip = 'Read only identifications that meet the target-decoy false discovery rate threshold.'
+        grid_layout_ident.addWidget(ParameterItem('Require threshold', tooltip, self.ident_require_threshold), 0, 1)
 
         self.ident_ignore_decoy = QCheckBox()
         self.ident_ignore_decoy.stateChanged.connect(self.update_parameters)
-        tooltip = "Ignore PSM that have been detected as decoys by the identification engine."
-        grid_layout_ident.addWidget(ParameterItem("Ignore decoy", tooltip, self.ident_ignore_decoy), 0, 2)
+        tooltip = 'Ignore PSM that have been detected as decoys by the identification engine.'
+        grid_layout_ident.addWidget(ParameterItem('Ignore decoy', tooltip, self.ident_ignore_decoy), 0, 2)
 
         self.link_n_sig_mz = QDoubleSpinBox()
         self.link_n_sig_mz.setRange(-LARGE, LARGE)
         self.link_n_sig_mz.setStepType(QAbstractSpinBox.AdaptiveDecimalStepType)
         self.link_n_sig_mz.valueChanged.connect(self.update_parameters)
-        tooltip = "Tolerance for ms2 events and identification linking measured in number of standard deviations for (m/z)"
-        grid_layout_ident.addWidget(ParameterItem("Max number of sigma for linking (m/z)", tooltip, self.link_n_sig_mz),
+        tooltip = 'Tolerance for ms2 events and identification linking measured in number of standard deviations for (m/z)'
+        grid_layout_ident.addWidget(ParameterItem('Max number of sigma for linking (m/z)', tooltip, self.link_n_sig_mz),
                                     1, 0)
 
         self.link_n_sig_rt = QDoubleSpinBox()
         self.link_n_sig_rt.setRange(-LARGE, LARGE)
         self.link_n_sig_rt.setStepType(QAbstractSpinBox.AdaptiveDecimalStepType)
         self.link_n_sig_rt.valueChanged.connect(self.update_parameters)
-        tooltip = "Tolerance for ms2 events and identification linking measured in number of standard deviations for (rt)"
-        grid_layout_ident.addWidget(ParameterItem("Max number of sigma for linking (rt)", tooltip, self.link_n_sig_rt),
+        tooltip = 'Tolerance for ms2 events and identification linking measured in number of standard deviations for (rt)'
+        grid_layout_ident.addWidget(ParameterItem('Max number of sigma for linking (rt)', tooltip, self.link_n_sig_rt),
                                     1, 1)
 
         self.ident_box.setLayout(grid_layout_ident)
@@ -645,27 +646,27 @@ class ParametersWidget(QTabWidget):
         #
         # Quality Control
         #
-        self.qual_box = QGroupBox("Quality Control")
+        self.qual_box = QGroupBox('Quality Control')
         grid_layout_qual = QGridLayout()
 
         self.similarity_num_peaks = QSpinBox()
         self.similarity_num_peaks.setRange(-LARGE, LARGE)
         self.similarity_num_peaks.valueChanged.connect(self.update_parameters)
-        tooltip = "Number of peaks used for the similarity matrix calculation."
-        grid_layout_qual.addWidget(ParameterItem("Similarity number of peaks", tooltip, self.similarity_num_peaks), 0,
+        tooltip = 'Number of peaks used for the similarity matrix calculation.'
+        grid_layout_qual.addWidget(ParameterItem('Similarity number of peaks', tooltip, self.similarity_num_peaks), 0,
                                    0)
 
         self.qc_plot_palette = QComboBox()
-        self.qc_plot_palette.addItems(["husl", "crest", "Spectral", "flare", "mako"])
+        self.qc_plot_palette.addItems(['husl', 'crest', 'Spectral', 'flare', 'mako'])
         self.qc_plot_palette.currentIndexChanged.connect(self.update_parameters)
-        tooltip = "Plot color palette."
-        grid_layout_qual.addWidget(ParameterItem("Plot color palette", tooltip, self.qc_plot_palette), 0, 1)
+        tooltip = 'Plot color palette.'
+        grid_layout_qual.addWidget(ParameterItem('Plot color palette', tooltip, self.qc_plot_palette), 0, 1)
 
         self.qc_plot_extension = QComboBox()
-        self.qc_plot_extension.addItems(["png", "pdf", "eps"])
+        self.qc_plot_extension.addItems(['png', 'pdf', 'eps'])
         self.qc_plot_extension.currentIndexChanged.connect(self.update_parameters)
-        tooltip = "Plot image format"
-        grid_layout_qual.addWidget(ParameterItem("Plot image format", tooltip, self.qc_plot_extension), 0, 2)
+        tooltip = 'Plot image format'
+        grid_layout_qual.addWidget(ParameterItem('Plot image format', tooltip, self.qc_plot_extension), 0, 2)
 
         # This could be either text 'dynamic' or a double between 0.0-1.0. If
         # set to 0.0 it will be considered dynamic.
@@ -673,181 +674,181 @@ class ParametersWidget(QTabWidget):
         self.qc_plot_fill_alpha.setRange(0.0, 1.0)
         self.qc_plot_fill_alpha.setStepType(QAbstractSpinBox.AdaptiveDecimalStepType)
         self.qc_plot_fill_alpha.valueChanged.connect(self.update_parameters)
-        tooltip = "Transparency amount for fill plots."
-        grid_layout_qual.addWidget(ParameterItem("Fill alpha", tooltip, self.qc_plot_fill_alpha), 1, 0)
+        tooltip = 'Transparency amount for fill plots.'
+        grid_layout_qual.addWidget(ParameterItem('Fill alpha', tooltip, self.qc_plot_fill_alpha), 1, 0)
 
         self.qc_plot_line_style = QComboBox()
-        self.qc_plot_line_style.addItems(["fill", "line"])
+        self.qc_plot_line_style.addItems(['fill', 'line'])
         self.qc_plot_line_style.currentIndexChanged.connect(self.update_parameters)
-        tooltip = "For line plots select if pure lines or fill plots should be used."
-        grid_layout_qual.addWidget(ParameterItem("Line style", tooltip, self.qc_plot_line_style), 1, 1)
+        tooltip = 'For line plots select if pure lines or fill plots should be used.'
+        grid_layout_qual.addWidget(ParameterItem('Line style', tooltip, self.qc_plot_line_style), 1, 1)
 
         self.qc_plot_font_family = QComboBox()
-        self.qc_plot_font_family.addItems(["sans-serif", "serif"])
+        self.qc_plot_font_family.addItems(['sans-serif', 'serif'])
         self.qc_plot_font_family.currentIndexChanged.connect(self.update_parameters)
-        tooltip = "Font family."
-        grid_layout_qual.addWidget(ParameterItem("Font family", tooltip, self.qc_plot_font_family), 1, 2)
+        tooltip = 'Font family.'
+        grid_layout_qual.addWidget(ParameterItem('Font family', tooltip, self.qc_plot_font_family), 1, 2)
 
         self.qc_plot_dpi = QSpinBox()
         self.qc_plot_dpi.setRange(1, 1000)
         self.qc_plot_dpi.valueChanged.connect(self.update_parameters)
-        tooltip = "Plot dpi."
-        grid_layout_qual.addWidget(ParameterItem("Plot dpi", tooltip, self.qc_plot_dpi), 2, 0)
+        tooltip = 'Plot dpi.'
+        grid_layout_qual.addWidget(ParameterItem('Plot dpi', tooltip, self.qc_plot_dpi), 2, 0)
 
         self.qc_plot_mz_vs_sigma_mz_max_peaks = QSpinBox()
         self.qc_plot_mz_vs_sigma_mz_max_peaks.setRange(10, LARGE)
         self.qc_plot_mz_vs_sigma_mz_max_peaks.valueChanged.connect(self.update_parameters)
-        tooltip = "How many peaks should be plotted for the m/z vs m/z width QC plot."
+        tooltip = 'How many peaks should be plotted for the m/z vs m/z width QC plot.'
         grid_layout_qual.addWidget(
-            ParameterItem("Max peaks for m/z vs peak width m/z", tooltip, self.qc_plot_mz_vs_sigma_mz_max_peaks), 2, 1)
+            ParameterItem('Max peaks for m/z vs peak width m/z', tooltip, self.qc_plot_mz_vs_sigma_mz_max_peaks), 2, 1)
 
         self.qc_plot_line_alpha = QDoubleSpinBox()
         self.qc_plot_line_alpha.setRange(0.0, 1.0)
         self.qc_plot_line_alpha.setStepType(QAbstractSpinBox.AdaptiveDecimalStepType)
         self.qc_plot_line_alpha.valueChanged.connect(self.update_parameters)
-        tooltip = "Transparency amount for line plots."
-        grid_layout_qual.addWidget(ParameterItem("Line alpha", tooltip, self.qc_plot_line_alpha), 2, 2)
+        tooltip = 'Transparency amount for line plots.'
+        grid_layout_qual.addWidget(ParameterItem('Line alpha', tooltip, self.qc_plot_line_alpha), 2, 2)
 
         self.qc_plot_scatter_alpha = QDoubleSpinBox()
         self.qc_plot_scatter_alpha.setRange(0.0, 1.0)
         self.qc_plot_scatter_alpha.setStepType(QAbstractSpinBox.AdaptiveDecimalStepType)
         self.qc_plot_scatter_alpha.valueChanged.connect(self.update_parameters)
-        tooltip = "Transparency amount for scatter plots."
-        grid_layout_qual.addWidget(ParameterItem("Scatter alpha", tooltip, self.qc_plot_scatter_alpha), 3, 0)
+        tooltip = 'Transparency amount for scatter plots.'
+        grid_layout_qual.addWidget(ParameterItem('Scatter alpha', tooltip, self.qc_plot_scatter_alpha), 3, 0)
 
         self.qc_plot_scatter_size = QDoubleSpinBox()
         self.qc_plot_scatter_size.setRange(0.1, 10.0)
         self.qc_plot_scatter_size.setStepType(QAbstractSpinBox.AdaptiveDecimalStepType)
         self.qc_plot_scatter_size.valueChanged.connect(self.update_parameters)
-        tooltip = "Size of scatter points in QC plots."
-        grid_layout_qual.addWidget(ParameterItem("Scatter size", tooltip, self.qc_plot_scatter_size), 3, 1)
+        tooltip = 'Size of scatter points in QC plots.'
+        grid_layout_qual.addWidget(ParameterItem('Scatter size', tooltip, self.qc_plot_scatter_size), 3, 1)
 
         self.qc_plot_min_dynamic_alpha = QDoubleSpinBox()
         self.qc_plot_min_dynamic_alpha.setRange(0.1, 10.0)
         self.qc_plot_min_dynamic_alpha.setStepType(QAbstractSpinBox.AdaptiveDecimalStepType)
         self.qc_plot_min_dynamic_alpha.valueChanged.connect(self.update_parameters)
-        tooltip = "When using dynamic transparency, select a minimum alpha level to avoid too faint plots when many samples are present."
-        grid_layout_qual.addWidget(ParameterItem("Min dynamic alpha", tooltip, self.qc_plot_min_dynamic_alpha), 3, 2)
+        tooltip = 'When using dynamic transparency, select a minimum alpha level to avoid too faint plots when many samples are present.'
+        grid_layout_qual.addWidget(ParameterItem('Min dynamic alpha', tooltip, self.qc_plot_min_dynamic_alpha), 3, 2)
 
         self.qc_plot_font_size = QDoubleSpinBox()
         self.qc_plot_font_size.setRange(1.0, 15.0)
         self.qc_plot_font_size.setStepType(QAbstractSpinBox.AdaptiveDecimalStepType)
         self.qc_plot_font_size.valueChanged.connect(self.update_parameters)
-        tooltip = "Font size."
-        grid_layout_qual.addWidget(ParameterItem("Font size", tooltip, self.qc_plot_font_size), 4, 0)
+        tooltip = 'Font size.'
+        grid_layout_qual.addWidget(ParameterItem('Font size', tooltip, self.qc_plot_font_size), 4, 0)
 
         self.qc_plot_fig_size_x = QDoubleSpinBox()
         self.qc_plot_fig_size_x.setRange(1.0, 15.0)
         self.qc_plot_fig_size_x.setStepType(QAbstractSpinBox.AdaptiveDecimalStepType)
         self.qc_plot_fig_size_x.valueChanged.connect(self.update_parameters)
-        tooltip = "Figure size X."
-        grid_layout_qual.addWidget(ParameterItem("Figure size X", tooltip, self.qc_plot_fig_size_x), 4, 1)
+        tooltip = 'Figure size X.'
+        grid_layout_qual.addWidget(ParameterItem('Figure size X', tooltip, self.qc_plot_fig_size_x), 4, 1)
 
         self.qc_plot_fig_size_y = QDoubleSpinBox()
         self.qc_plot_fig_size_y.setRange(1.0, 15.0)
         self.qc_plot_fig_size_y.setStepType(QAbstractSpinBox.AdaptiveDecimalStepType)
         self.qc_plot_fig_size_y.valueChanged.connect(self.update_parameters)
-        tooltip = "Figure size Y."
-        grid_layout_qual.addWidget(ParameterItem("Figure size Y", tooltip, self.qc_plot_fig_size_y), 4, 2)
+        tooltip = 'Figure size Y.'
+        grid_layout_qual.addWidget(ParameterItem('Figure size Y', tooltip, self.qc_plot_fig_size_y), 4, 2)
 
         self.qc_plot_per_file = QCheckBox()
         self.qc_plot_per_file.stateChanged.connect(self.update_parameters)
-        tooltip = "Whether to plot QC plots for individual files or combine them into a common figure."
-        grid_layout_qual.addWidget(ParameterItem("Plot per file", tooltip, self.qc_plot_per_file), 5, 0)
+        tooltip = 'Whether to plot QC plots for individual files or combine them into a common figure.'
+        grid_layout_qual.addWidget(ParameterItem('Plot per file', tooltip, self.qc_plot_per_file), 5, 0)
 
         self.qc_plot_fig_legend = QCheckBox()
         self.qc_plot_fig_legend.stateChanged.connect(self.update_parameters)
-        tooltip = "Whether to show the legend in QC plots."
-        grid_layout_qual.addWidget(ParameterItem("Figure legend", tooltip, self.qc_plot_fig_legend), 5, 1)
+        tooltip = 'Whether to show the legend in QC plots.'
+        grid_layout_qual.addWidget(ParameterItem('Figure legend', tooltip, self.qc_plot_fig_legend), 5, 1)
 
         self.qual_box.setLayout(grid_layout_qual)
 
         #
         # Quantitive Table Generation
         #
-        self.quantt_box = QGroupBox("Quantitive Table Generation")
+        self.quantt_box = QGroupBox('Quantitive Table Generation')
         grid_layout_quantt = QGridLayout()
 
         self.quant_isotopes = QComboBox()
-        self.quant_isotopes.addItems(["height", "volume"])
+        self.quant_isotopes.addItems(['height', 'volume'])
         self.quant_isotopes.currentIndexChanged.connect(self.update_parameters)
-        tooltip = inspect.cleandoc(""" Isotope quantification method for the quantitative table generation.
-                  \"Height\": Fitted isotope peak height,
-                  \"Volume\": Volume of the 3D isotope peak.""")
-        grid_layout_quantt.addWidget(ParameterItem("Isotopes", tooltip, self.quant_isotopes), 0, 0)
+        tooltip = inspect.cleandoc(''' Isotope quantification method for the quantitative table generation.
+                  \'Height\': Fitted isotope peak height,
+                  \'Volume\': Volume of the 3D isotope peak.''')
+        grid_layout_quantt.addWidget(ParameterItem('Isotopes', tooltip, self.quant_isotopes), 0, 0)
 
         self.quant_features = QComboBox()
         self.quant_features.addItems(
-            ["monoisotopic_height", "monoisotopic_volume", "total_height", "total_volume", "max_height", "max_volume"])
+            ['monoisotopic_height', 'monoisotopic_volume', 'total_height', 'total_volume', 'max_height', 'max_volume'])
         self.quant_features.currentIndexChanged.connect(self.update_parameters)
-        tooltip = inspect.cleandoc("""Feature quantification method for the quantitative table generation.
-                  \"Max Height/Volume\": Height or volume of the highest intensity isotope,
-                  \"Monoisotopic Height/Volume\": Height or volume of the monoisotopic peak,
-                  \"Total Height/Volume\": Sum of heights or volumes of all isotopic peaks in the feature.""")
-        grid_layout_quantt.addWidget(ParameterItem("Features", tooltip, self.quant_features), 0, 1)
+        tooltip = inspect.cleandoc('''Feature quantification method for the quantitative table generation.
+                  \'Max Height/Volume\': Height or volume of the highest intensity isotope,
+                  \'Monoisotopic Height/Volume\': Height or volume of the monoisotopic peak,
+                  \'Total Height/Volume\': Sum of heights or volumes of all isotopic peaks in the feature.''')
+        grid_layout_quantt.addWidget(ParameterItem('Features', tooltip, self.quant_features), 0, 1)
 
         self.quant_features_charge_state_filter = QCheckBox()
         self.quant_features_charge_state_filter.stateChanged.connect(self.update_parameters)
-        tooltip = inspect.cleandoc(""""Whether to remove feature annotations from quantitative tables 
-        where charge state of the detected features don't mach the one given by the identification engine.""")
+        tooltip = inspect.cleandoc(''''Whether to remove feature annotations from quantitative tables 
+        where charge state of the detected features don't mach the one given by the identification engine.''')
         grid_layout_quantt.addWidget(
-            ParameterItem("Features charge state filter", tooltip, self.quant_features_charge_state_filter), 0, 2)
+            ParameterItem('Features charge state filter', tooltip, self.quant_features_charge_state_filter), 0, 2)
 
         self.quant_ident_linkage = QComboBox()
-        self.quant_ident_linkage.addItems(["theoretical_mz", "msms_event"])
+        self.quant_ident_linkage.addItems(['theoretical_mz', 'msms_event'])
         self.quant_ident_linkage.currentIndexChanged.connect(self.update_parameters)
-        tooltip = inspect.cleandoc("""Method linking PSM with quantified isotopes.
-                  \"Theoretical m/z\": Link identifiations based on the theoretical monoisotopic m/z calculated by the identification engine,
-                  \"MS/MS event\": Link identifications to the closest isotope in m/z and retention time from the occurance of the MS/MS event.""")
-        grid_layout_quantt.addWidget(ParameterItem("Ident linkage", tooltip, self.quant_ident_linkage), 1, 0)
+        tooltip = inspect.cleandoc('''Method linking PSM with quantified isotopes.
+                  \'Theoretical m/z\': Link identifiations based on the theoretical monoisotopic m/z calculated by the identification engine,
+                  \'MS/MS event\': Link identifications to the closest isotope in m/z and retention time from the occurance of the MS/MS event.''')
+        grid_layout_quantt.addWidget(ParameterItem('Ident linkage', tooltip, self.quant_ident_linkage), 1, 0)
 
         self.quant_consensus = QCheckBox()
         self.quant_consensus.stateChanged.connect(self.update_parameters)
-        tooltip = "When selected, a sequence consensus is generated for the quantitative table."
-        grid_layout_quantt.addWidget(ParameterItem("Consensus", tooltip, self.quant_consensus), 1, 1)
+        tooltip = 'When selected, a sequence consensus is generated for the quantitative table.'
+        grid_layout_quantt.addWidget(ParameterItem('Consensus', tooltip, self.quant_consensus), 1, 1)
 
         self.quant_consensus_min_ident = QSpinBox()
         self.quant_consensus_min_ident.setRange(-LARGE, LARGE)
         self.quant_consensus_min_ident.valueChanged.connect(self.update_parameters)
-        tooltip = "Minimum number of samples with the same identification required for consensus sequence generation."
-        grid_layout_quantt.addWidget(ParameterItem("Consensus min ident", tooltip, self.quant_consensus_min_ident), 1,
+        tooltip = 'Minimum number of samples with the same identification required for consensus sequence generation.'
+        grid_layout_quantt.addWidget(ParameterItem('Consensus min ident', tooltip, self.quant_consensus_min_ident), 1,
                                      2)
 
         self.quant_save_all_annotations = QCheckBox()
         self.quant_save_all_annotations.stateChanged.connect(self.update_parameters)
-        tooltip = inspect.cleandoc("""Whether all annotations should be saved in addition with the aggregated tables.
-                  Depending on the number of annotations, this might dramatically increase the disk space required.""")
-        grid_layout_quantt.addWidget(ParameterItem("Save all annotations", tooltip, self.quant_save_all_annotations), 2,
+        tooltip = inspect.cleandoc('''Whether all annotations should be saved in addition with the aggregated tables.
+                  Depending on the number of annotations, this might dramatically increase the disk space required.''')
+        grid_layout_quantt.addWidget(ParameterItem('Save all annotations', tooltip, self.quant_save_all_annotations), 2,
                                      0)
 
         self.quant_proteins_min_peptides = QSpinBox()
         self.quant_proteins_min_peptides.setRange(1, 50)
         self.quant_proteins_min_peptides.valueChanged.connect(self.update_parameters)
-        tooltip = "Minimum number of peptides needed for considering a protein for quantification."
-        grid_layout_quantt.addWidget(ParameterItem("Consensus min peptide", tooltip, self.quant_proteins_min_peptides),
+        tooltip = 'Minimum number of peptides needed for considering a protein for quantification.'
+        grid_layout_quantt.addWidget(ParameterItem('Consensus min peptide', tooltip, self.quant_proteins_min_peptides),
                                      2, 1)
 
         self.quant_proteins_remove_subset_proteins = QCheckBox()
         self.quant_proteins_remove_subset_proteins.stateChanged.connect(self.update_parameters)
-        tooltip = "Whether to remove proteins whose peptides are entirely contained within another group with longer number of evidence peptides when performing protein inference."
+        tooltip = 'Whether to remove proteins whose peptides are entirely contained within another group with longer number of evidence peptides when performing protein inference.'
         grid_layout_quantt.addWidget(
-            ParameterItem("Remove subset proteins", tooltip, self.quant_proteins_remove_subset_proteins), 2, 2)
+            ParameterItem('Remove subset proteins', tooltip, self.quant_proteins_remove_subset_proteins), 2, 2)
 
         self.quant_proteins_ignore_ambiguous_peptides = QCheckBox()
         self.quant_proteins_ignore_ambiguous_peptides.stateChanged.connect(self.update_parameters)
-        tooltip = "When performing protein inference, select if peptides with ambiguous protein identifications should be ignored."
+        tooltip = 'When performing protein inference, select if peptides with ambiguous protein identifications should be ignored.'
         grid_layout_quantt.addWidget(
-            ParameterItem("Ignore ambiguous peptides", tooltip, self.quant_proteins_ignore_ambiguous_peptides), 3, 0)
+            ParameterItem('Ignore ambiguous peptides', tooltip, self.quant_proteins_ignore_ambiguous_peptides), 3, 0)
 
         self.quant_proteins_quant_type = QComboBox()
-        self.quant_proteins_quant_type.addItems(["razor", "unique", "all"])
+        self.quant_proteins_quant_type.addItems(['razor', 'unique', 'all'])
         self.quant_proteins_quant_type.currentIndexChanged.connect(self.update_parameters)
-        tooltip = inspect.cleandoc(""" Type of quantification used for protein inference:
+        tooltip = inspect.cleandoc(''' Type of quantification used for protein inference:
             - unique: only unique peptides will be used for quantification.
             - razor: same as unique plus peptides assigned as most likely due to Occam's razor constrain.
-            - all: All peptides will be used for quantification. Shared peptides can be used more than once.""")
+            - all: All peptides will be used for quantification. Shared peptides can be used more than once.''')
         grid_layout_quantt.addWidget(
-            ParameterItem("Protein quantification type", tooltip, self.quant_proteins_quant_type), 3, 1)
+            ParameterItem('Protein quantification type', tooltip, self.quant_proteins_quant_type), 3, 1)
 
         self.quantt_box.setLayout(grid_layout_quantt)
 
@@ -939,14 +940,14 @@ class ParametersWidget(QTabWidget):
             'quant_proteins_ignore_ambiguous_peptides'] = self.quant_proteins_ignore_ambiguous_peptides.isChecked()
         self.parameters['quant_proteins_quant_type'] = self.quant_proteins_quant_type.currentText()
 
-
+pop = False
 class MainWindow(QMainWindow):
     project_path = ''
 
     def __init__(self):
         super().__init__()
 
-        self.setWindowTitle("PASTAQ: DDA Pipeline")
+        self.setWindowTitle('PASTAQ: DDA Pipeline')
 
         # Main layout
         layout = QVBoxLayout()
@@ -962,13 +963,13 @@ class MainWindow(QMainWindow):
         #Open Project 
         self.openProj = QAction('Open Project', self)
         self.openProj.triggered.connect(self.open_project)
-        self.openProj.setShortcut(QKeySequence("Ctrl+o"))
+        self.openProj.setShortcut(QKeySequence('Ctrl+o'))
         self.fileMenu.addAction(self.openProj)
 
         #Save Project
         self.save_project_btn = QAction('Save', self)
         self.save_project_btn.triggered.connect(self.save_project)
-        self.save_project_btn.setShortcut(QKeySequence("Ctrl+s"))
+        self.save_project_btn.setShortcut(QKeySequence('Ctrl+s'))
         self.save_project_btn.setEnabled(False)
         self.fileMenu.addAction(self.save_project_btn)
 
@@ -988,9 +989,9 @@ class MainWindow(QMainWindow):
         self.project_description_ui = QLineEdit()
         self.project_description_ui.textChanged.connect(self.set_project_description)
         self.project_directory_ui = QLineEdit()
-        project_variables_layout.addRow("Project name", self.project_name_ui)
-        project_variables_layout.addRow("Project description", self.project_description_ui)
-        project_variables_layout.addRow("Project directory", self.project_directory_ui)
+        project_variables_layout.addRow('Project name', self.project_name_ui)
+        project_variables_layout.addRow('Project description', self.project_description_ui)
+        project_variables_layout.addRow('Project directory', self.project_directory_ui)
         self.project_directory_ui.setReadOnly(True)
         self.project_variables_container.setLayout(project_variables_layout)
         layout.addWidget(self.project_variables_container)
@@ -1004,7 +1005,7 @@ class MainWindow(QMainWindow):
         #
         # Run button
         #
-        self.run_btn = QPushButton("Run")
+        self.run_btn = QPushButton('Run')
         self.run_btn.clicked.connect(self.run_pipeline)
         layout.addWidget(self.run_btn)
 
@@ -1027,9 +1028,9 @@ class MainWindow(QMainWindow):
     def update_ui(self):
         # Project metadata.
         self.project_directory_ui.setText(os.path.dirname(self.project_path))
-        if "project_name" in self.parameters_container.parameters:
+        if 'project_name' in self.parameters_container.parameters:
             self.project_name_ui.setText(self.parameters_container.parameters['project_name'])
-        if "project_description" in self.parameters_container.parameters:
+        if 'project_description' in self.parameters_container.parameters:
             self.project_description_ui.setText(self.parameters_container.parameters['project_description'])
         params = self.parameters_container.parameters
 
@@ -1134,13 +1135,13 @@ class MainWindow(QMainWindow):
     def new_project(self):
         dir_path = QFileDialog.getExistingDirectory(
             parent=self,
-            caption="Select project directory",
+            caption='Select project directory',
             directory=os.getcwd(),
         )
         if len(dir_path) > 0:
             # TODO: Check if the project file already exists and show a warning
             # dialog to let the user overwrite it.
-            self.project_path = os.path.join(dir_path, "parameters.json")
+            self.project_path = os.path.join(dir_path, 'parameters.json')
             self.parameters_container.parameters = pastaq.default_parameters('orbitrap', 10)
             self.save_project_btn.setEnabled(True)
             self.save_project_as_btn.setEnabled(True)
@@ -1149,13 +1150,15 @@ class MainWindow(QMainWindow):
             self.parameters_container.setEnabled(True)
             self.update_ui()
             self.save_project()
+            global pop
+            pop = True
 
     def open_project(self):
         file_path, _ = QFileDialog.getOpenFileName(
             parent=self,
-            caption="Select project file",
+            caption='Select project file',
             directory=os.getcwd(),
-            filter="Project file (*.json)",
+            filter='Project file (*.json)',
         )
         if len(file_path) > 0:
             os.chdir(os.path.dirname(file_path))
@@ -1170,9 +1173,11 @@ class MainWindow(QMainWindow):
                 self.run_btn.setEnabled(True)
                 self.project_variables_container.setEnabled(True)
                 self.parameters_container.setEnabled(True)
-                if "input_files" in self.parameters_container.parameters:
+                if 'input_files' in self.parameters_container.parameters:
                     self.parameters_container.update_input_files(self.parameters_container.parameters['input_files'])
                 self.update_ui()
+                global pop
+                pop = True
 
     def save_project(self):
         try:
@@ -1183,28 +1188,51 @@ class MainWindow(QMainWindow):
         except:
             error_dialog = QMessageBox()
             error_dialog.setIcon(QMessageBox.Critical)
-            error_dialog.setText("Error")
-            error_dialog.setInformativeText("Can't save project at the given directory")
-            error_dialog.setWindowTitle("Error")
+            error_dialog.setText('Error')
+            error_dialog.setInformativeText('Can\'t save project at the given directory')
+            error_dialog.setWindowTitle('Error')
             error_dialog.exec_()
+
+    def closeEvent(self, event):
+        if pop == True:
+            box = QMessageBox()
+            box.setWindowTitle('Window Close')
+            box.setText('Do you want to save your work?')
+            box.setStandardButtons(QMessageBox.Yes | QMessageBox.No | QMessageBox.Cancel)
+            button_s = box.button(QMessageBox.Yes)
+            button_s.setText('Save and Exit')
+            button_d = box.button(QMessageBox.No)
+            button_d.setText('Discard and Exit')
+            button_c = box.button(QMessageBox.Cancel)
+            button_c.setText('Cancel')
+            box.exec_()
+            if box.clickedButton() == button_s:
+                self.save_project()
+                event.accept()
+            elif box.clickedButton() == button_c:
+                event.ignore()
+            else:
+                event.accept()
 
     def save_project_as(self):
         path = QFileDialog.getExistingDirectory(
             parent=self,
-            caption="Select project file",
+            caption='Select project file',
             directory=os.getcwd(),
         )
         if len(path) > 0:
-            self.project_path = os.path.join(path, "parameters.json")
+            self.project_path = os.path.join(path, 'parameters.json')
             self.update_ui()
             self.save_project()
+            global pop
+            pop = True
 
     def run_pipeline(self):
         # Save changes before running.
         self.save_project()
 
         # Disable this window so that buttons can't be clicked.
-        self.run_btn.setText("Running...")
+        self.run_btn.setText('Running...')
         self.run_btn.setEnabled(False)
         self.controls_container.setEnabled(False)
         self.project_variables_container.setEnabled(False)
@@ -1218,12 +1246,12 @@ class MainWindow(QMainWindow):
             input_files=self.parameters_container.input_files,
             output_dir=os.path.dirname(self.project_path))
         if pipeline_log_dialog.exec():
-            print("EXIT SUCCESS")
+            print('EXIT SUCCESS')
         else:
-            print("EXIT CANCEL")
+            print('EXIT CANCEL')
 
         # Restore previous button statuses.
-        self.run_btn.setText("Run")
+        self.run_btn.setText('Run')
         self.run_btn.setEnabled(True)
         self.controls_container.setEnabled(True)
         self.project_variables_container.setEnabled(True)
@@ -1232,10 +1260,10 @@ class MainWindow(QMainWindow):
 
 # Initialize main window.
 app = QApplication(sys.argv)
-app.setWindowIcon(QIcon(":/icons/pastaq.png"))
-if platform.system() == "Windows":
+app.setWindowIcon(QIcon(':/icons/pastaq.png'))
+if platform.system() == 'Windows':
     import ctypes
-    ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID("pastaq-gui")
+    ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID('pastaq-gui')
 
 window = MainWindow()
 window.show()
