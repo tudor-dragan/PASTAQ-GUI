@@ -224,12 +224,15 @@ class ParametersWidget(QTabWidget):
         self.edit_file_btn.clicked.connect(self.edit_file)
         self.remove_file_btn = QPushButton("Remove")
         self.remove_file_btn.clicked.connect(self.remove_file)
+        self.remove_all_files_btn = QPushButton("Remove All")
+        self.remove_all_files_btn.clicked.connect(self.remove_all_files)
 
         self.input_file_buttons = QWidget()
         controls_layout = QHBoxLayout()
         controls_layout.addWidget(self.add_file_btn)
         controls_layout.addWidget(self.edit_file_btn)
         controls_layout.addWidget(self.remove_file_btn)
+        controls_layout.addWidget(self.remove_all_files_btn)
         self.input_file_buttons.setLayout(controls_layout)
 
         layout = QVBoxLayout()
@@ -296,8 +299,14 @@ class ParametersWidget(QTabWidget):
                     new_list += [file]
             self.update_input_files(new_list)
 
-    def remove_file(self):
+    def remove_all_files(self):
+        self.remove_file(True)
+
+    def remove_file(self, default=False):
         indexes = self.find_selected_files()
+        if default:
+            self.update_input_files([])
+            return
         if len(indexes) > 0:
             old_list = self.input_files
             new_list = []
@@ -305,6 +314,7 @@ class ParametersWidget(QTabWidget):
                 if i not in indexes:
                     new_list += [file]
             self.update_input_files(new_list)
+
 
     def find_selected_files(self):
         selected_ranges = self.input_files_table.selectedRanges()
