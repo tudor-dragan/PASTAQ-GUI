@@ -983,6 +983,7 @@ class MainWindow(QMainWindow):
         #Menu Bar
         self.menubar = self.menuBar()
         self.fileMenu = self.menubar.addMenu('File')
+        self.actionMenu = self.menubar.addMenu('Action')
         #New Project 
         self.newProj = QAction('New Project', self)
         self.newProj.triggered.connect(self.new_project)
@@ -1006,6 +1007,12 @@ class MainWindow(QMainWindow):
         self.save_project_as_btn.triggered.connect(self.save_project_as)
         self.save_project_as_btn.setEnabled(False)
         self.fileMenu.addAction(self.save_project_as_btn)
+
+        #Reset button
+        self.reset_param_btn = QAction('Reset Parameters', self)
+        self.reset_param_btn.triggered.connect(self.reset_param)
+        self.reset_param_btn.setEnabled(False)
+        self.actionMenu.addAction(self.reset_param_btn)
 
         #
         # Project variables.
@@ -1046,6 +1053,7 @@ class MainWindow(QMainWindow):
 
         # Set the central widget of the Window.
         self.setCentralWidget(container)
+        self.default_param = pastaq.default_parameters('orbitrap', 10)
 
     def set_project_name(self):
         self.parameters_container.parameters['project_name'] = self.project_name_ui.text()
@@ -1053,14 +1061,20 @@ class MainWindow(QMainWindow):
     def set_project_description(self):
         self.parameters_container.parameters['project_description'] = self.project_description_ui.text()
 
-    def update_ui(self):
+    def reset_param(self):
+        self.update_ui(True)
+
+    def update_ui(self, default=False):
         # Project metadata.
         self.project_directory_ui.setText(os.path.dirname(self.project_path))
         if 'project_name' in self.parameters_container.parameters:
             self.project_name_ui.setText(self.parameters_container.parameters['project_name'])
         if 'project_description' in self.parameters_container.parameters:
             self.project_description_ui.setText(self.parameters_container.parameters['project_description'])
-        params = self.parameters_container.parameters
+        if default:
+            params = self.default_param
+        else:
+            params = self.parameters_container.parameters
 
         # Parameters.
         self.parameters_container.update_allowed = False
@@ -1174,6 +1188,7 @@ class MainWindow(QMainWindow):
             self.save_project_btn.setEnabled(True)
             self.save_project_as_btn.setEnabled(True)
             self.run_btn.setEnabled(True)
+            self.reset_param_btn.setEnabled(True)
             self.project_variables_container.setEnabled(True)
             self.parameters_container.setEnabled(True)
             self.update_ui()
@@ -1199,6 +1214,7 @@ class MainWindow(QMainWindow):
                 self.save_project_btn.setEnabled(True)
                 self.save_project_as_btn.setEnabled(True)
                 self.run_btn.setEnabled(True)
+                self.reset_param_btn.setEnabled(True)
                 self.project_variables_container.setEnabled(True)
                 self.parameters_container.setEnabled(True)
                 if 'input_files' in self.parameters_container.parameters:
