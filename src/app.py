@@ -1317,7 +1317,7 @@ if platform.system() == 'Windows':
     ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID('pastaq-gui')
 
 window = MainWindow()
-#window.resize(QSize(600, 600))
+window.resize(QSize(600, 600))
 window.show()
 
 # Start the event loop.
