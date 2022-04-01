@@ -227,7 +227,7 @@ class ParametersWidget(QTabWidget):
         super(ParametersWidget, self).__init__(parent)
         self.input_files_tab = QWidget()
         self.parameters_tab = QScrollArea()
-        #self.input_paths_tab = QScrollArea()
+        self.input_paths_tab = QScrollArea()
 
         self.addTab(self.input_files_tab, 'Input files')
         self.addTab(self.parameters_tab, 'Parameters')
@@ -282,25 +282,22 @@ class ParametersWidget(QTabWidget):
 
     '''def input_paths_tab_ui(self):
         self.inst_settings_box = QGroupBox('MSFragger')
-        grid_layout_inst = QGridLayout()
-        mzid_picker = QPushButton('Browse')
-        mzid_picker.clicked.connect(self.set_dir_paths)
+        grid = QGridLayout()
+        dir = QPushButton('Browse')
+        dir.clicked.connect(self.set_ms_path)
+        grid.addWidget(self.ms_dir_path_input)
+        grid.addWidget(dir)
         
         self.inst_settings_box = QGroupBox('ProteoWizard')
-        grid_layout_inst = QGridLayout()
         self.inst_settings_box = QGroupBox('Protein database')
-        grid_layout_inst = QGridLayout()'''
+        self.input_paths_tab.setLayout(grid)'''
 
-    def set_dir_paths(self):
-        file_paths, _ = QFileDialog.getOpenFileNames(
-            parent=self,
-            caption='Select input files',
-            directory=os.getcwd(),
-            # two extension possibilities
-            filter=('Identification files (*.mzID *.mzIdentML *.mgf)')
-        )
-        if len(file_paths) > 0:
-            self.mzid_paths = file_paths
+    def set_ms_path(self):
+        dir = QFileDialog.getExistingDirectory(self, 'Select Directory')
+        if len(dir) > 0:
+            self.ms_dir = dir
+            self.ms_dir_path_input.setText(self.ms_dir)
+            print(self.ms_dir)
 
     def add_file(self):
         file_paths, _ = QFileDialog.getOpenFileNames(
@@ -1320,6 +1317,7 @@ if platform.system() == 'Windows':
     ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID('pastaq-gui')
 
 window = MainWindow()
+#window.resize(QSize(600, 600))
 window.show()
 
 # Start the event loop.
