@@ -321,9 +321,9 @@ class ParametersWidget(QTabWidget):
         browse_button_fasta.clicked.connect(lambda: self.set_fasta_path(input_fasta))
         check_fasta_button = QPushButton('Confirm')
         check_fasta_button.clicked.connect(lambda: self.check_fasta(input_fasta))
-        lay_id.addWidget(input_fasta)
-        lay_id.addWidget(browse_button_fasta)
-        lay_id.addWidget(check_fasta_button)
+        lay_db.addWidget(input_fasta)
+        lay_db.addWidget(browse_button_fasta)
+        lay_db.addWidget(check_fasta_button)
         db_box.setLayout(lay_db)
 
         widget = QWidget()
@@ -331,9 +331,9 @@ class ParametersWidget(QTabWidget):
         self.input_paths_tab.setWidgetResizable(True)
 
         layout = QVBoxLayout()
-        layout.addWidget(self.msfragger_box)
-        layout.addWidget(self.id_box)
-        layout.addWidget(self.db_box)
+        layout.addWidget(msfragger_box)
+        layout.addWidget(id_box)
+        layout.addWidget(db_box)
 
         widget.setLayout(layout)
 
