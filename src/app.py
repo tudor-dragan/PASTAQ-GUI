@@ -87,7 +87,7 @@ class EditFileDialog(QDialog):
             caption='Select input files',
             directory=os.getcwd(),
             # two extension possibilities
-            filter=('Identification files (*.mzID *.mzIdentML *.mgf)')
+            filter='Identification files (*.mzID *.mzIdentML *.mgf)'
         )
         if len(file_paths) > 0:
             self.mzid_paths = file_paths
@@ -108,7 +108,7 @@ class ImageLabel(QLabel):
     def setPixmap(self, image):
         super().setPixmap(image)
 
-# Parameter items added to parameter tab
+
 class ParameterItem(QWidget):
     def __init__(self, label, tooltip, widget, parent=None):
         QWidget.__init__(self, parent=parent)
@@ -157,7 +157,7 @@ class PipelineRunner(QThread):
 
         self.finished.emit()
 
-# After having pressed run
+
 class PipelineLogDialog(QDialog):
     group = ''
     mzid_paths = []
@@ -287,7 +287,7 @@ class ParametersWidget(QTabWidget):
         self.input_files_tab.setLayout(layout)
 
     def input_paths_tab_ui(self):
-        self.msfragger_box = QGroupBox('MSFragger')
+        msfragger_box = QGroupBox('MSFragger')
         lay_ms = QHBoxLayout()
         input_ms = QLineEdit()
         input_ms.setText(self.ms_jar)
@@ -298,24 +298,33 @@ class ParametersWidget(QTabWidget):
         lay_ms.addWidget(input_ms)
         lay_ms.addWidget(browse_button_ms)
         lay_ms.addWidget(check_ms)
-        self.msfragger_box.setLayout(lay_ms)
+        msfragger_box.setLayout(lay_ms)
 
-        self.id_box = QGroupBox('idconvert')
+        id_box = QGroupBox('idconvert')
         lay_id = QHBoxLayout()
         input_id = QLineEdit()
         input_id.setText(self.id_file)
         browse_button_id = QPushButton('Browse')
         browse_button_id.clicked.connect(lambda: self.set_id_path(input_id))
-        check_id_button= QPushButton('Confirm')
+        check_id_button = QPushButton('Confirm')
         check_id_button.clicked.connect(lambda: self.check_id(input_id))
         lay_id.addWidget(input_id)
         lay_id.addWidget(browse_button_id)
         lay_id.addWidget(check_id_button)
-        self.id_box.setLayout(lay_id)
+        id_box.setLayout(lay_id)
 
-        self.db_box = QGroupBox('Protein database')
+        db_box = QGroupBox('Protein database')
         lay_db = QHBoxLayout()
-        self.db_box.setLayout(lay_db)
+        input_fasta = QLineEdit()
+        input_fasta.setText(self.id_file)
+        browse_button_fasta = QPushButton('Browse')
+        browse_button_fasta.clicked.connect(lambda: self.set_fasta_path(input_fasta))
+        check_fasta_button = QPushButton('Confirm')
+        check_fasta_button.clicked.connect(lambda: self.check_fasta(input_fasta))
+        lay_id.addWidget(input_fasta)
+        lay_id.addWidget(browse_button_fasta)
+        lay_id.addWidget(check_fasta_button)
+        db_box.setLayout(lay_db)
 
         widget = QWidget()
         self.input_paths_tab.setWidget(widget)
@@ -328,19 +337,19 @@ class ParametersWidget(QTabWidget):
 
         widget.setLayout(layout)
 
-
+    # browse for msfragger .jar file
     def set_jar_path(self, input):
         jar, _ = QFileDialog.getOpenFileName(
             parent=self,
             caption='Select MSFragger .jar file',
             directory=os.getcwd(),
-            filter=('jar (*.jar)')
+            filter= 'jar (*.jar)'
         )
         if len(jar) > 0:
             self.ms_jar = jar
             input.setText(self.ms_jar)
-            print(self.ms_jar)
 
+    # confirm .jar file
     def check_ms(self, input):
         if os.path.exists(input.text()):
             self.ms_jar = input.text()
@@ -348,10 +357,10 @@ class ParametersWidget(QTabWidget):
             if not is_jar:
                 self.popup_window('Not a .jar file')
                 self.ms_jar = ""
-            print("is a jar")
         else:
             self.popup_window('Path does not exist')
 
+    # browse for idconvert.exe
     def set_id_path(self, input):
         file, _ = QFileDialog.getOpenFileName(
             parent=self,
@@ -362,8 +371,8 @@ class ParametersWidget(QTabWidget):
         if len(file) > 0:
             self.id_file = file
             input.setText(self.id_file)
-            print(self.id_file)
 
+    # confirm idconvert
     def check_id(self, input):
         if os.path.exists(input.text()):
             self.id_file = input.text()
@@ -371,7 +380,28 @@ class ParametersWidget(QTabWidget):
             if not self.id_file.endswith('.exe') or not idconvert:
                 self.popup_window('Not an .exe file or not executable')
                 self.id_file = ''
-            print("is idconvert")
+        else:
+            self.popup_window('Path does not exist')
+
+    # browse for FASTA database
+    def set_fasta_path(self, input):
+        file, _ = QFileDialog.getOpenFileName(
+            parent=self,
+            caption='Select FASTA format protein database',
+            directory=os.getcwd(),
+            filter= 'FASTA (*.fasta)'
+        )
+        if len(file) > 0:
+            self.fasta = file
+            input.setText(self.fasta)
+
+    # confirm fasta
+    def check_fasta(self, input):
+        if os.path.exists(input.text()):
+            self.fasta = input.text()
+            if not self.fasta.endswith('.fasta'):
+                self.popup_window('Not a FASTA file')
+                self.fasta = ''
         else:
             self.popup_window('Path does not exist')
 
@@ -389,7 +419,7 @@ class ParametersWidget(QTabWidget):
             filter='MS files (*.mzXML *.mzML)',
         )
         if len(file_paths) > 0:
-            os.chdir(os.path.dirname(file_paths[0])) # create a project and select mzml files, then when you select mzid files it goes to the same directory as where you got the mzml files from (idk what he exactly said in the meeting)
+            os.chdir(os.path.dirname(file_paths[0]))
             input_files = self.input_files
             current_files = [file['raw_path'] for file in self.input_files]
             for file_path in file_paths:
@@ -440,28 +470,18 @@ class ParametersWidget(QTabWidget):
                     new_list += [file]
             self.update_input_files(new_list)
 
-    """ terminal:
-        cd desktop/MSFragger-3.4
-        java -Xmx32g -jar MSFragger-3.4.jar "C:/Users/kaitl/Desktop/closed_fragger.params" "C:/Users/kaitl/Downloads/mgf/1_3.mgf"
-        cd C:/Users/kaitl/AppData/Local/Apps/ProteoWizard 3.0.22085.aa65186 64-bit
-        idconvert "C:/Users/kaitl/Downloads/mgf/1_3.pepXML"
-    """
     def process(self, mgf):
         # check if mzid is already in same directory
         if os.path.exists(self.make_mzid_path(mgf)):
-            print("mzid already there")
             return self.make_mzid_path(mgf)
 
         ms, ms_jar = self.get_ms()
-        print(ms)
-        print(ms_jar)
 
         msfragger = subprocess.run(
             ["java", "-Xmx32g", "-jar", ms_jar, "C:/Users/kaitl/Downloads/closed_fragger.params", mgf],
             cwd=ms,
             capture_output=True
         )
-        print(msfragger)
         pep = self.make_pep_path(mgf)
 
         id = self.get_id()
@@ -470,36 +490,27 @@ class ParametersWidget(QTabWidget):
         os.unlink(pep)
 
         mzid = self.make_mzid_path(mgf)
-        print(mzid)
         return mzid
 
     # split path into jar file and directory
     def get_ms(self):
-        #jar = "C:/Users/kaitl/Desktop/MSFragger-3.4"  # hardcoded location
         jar = self.ms_jar
-        jar_file = os.path.basename(jar) #jar
-        ms_path = os.path.dirname(jar)  #directory
-        print('this is the path: ' + ms_path)
-        print('this is the jar: ' + jar_file)
+        jar_file = os.path.basename(jar)  # jar
+        ms_path = os.path.dirname(jar)   # directory
         return ms_path, jar_file
 
     # idconvert
     def get_id(self):
-        #id = "C:/Users/kaitl/AppData/Local/Apps/ProteoWizard 3.0.22085.aa65186 64-bit"  # hardcoded location
         id = self.id_file
-        print('this is id: ' + id)
         return id
 
     # msfragger places pepxml in same directory with same name
     def make_pep_path(self, mgf):
-        print("mgf " + mgf)
-        print("replace " +  mgf.replace(".mgf", ".pepxml"))
-        return mgf.replace(".mgf", ".pepxml")
+        return mgf.replace('.mgf', '.pepxml')
 
     # idconvert places mzid in same directory with same name
     def make_mzid_path(self, mzid):
         return mzid.replace(".mgf", ".mzID")
-
 
     def remove_all_files(self):
         self.remove_file(True)
