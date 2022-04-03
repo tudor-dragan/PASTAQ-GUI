@@ -209,6 +209,7 @@ class PipelineLogDialog(QDialog):
         # Replace button to OK instead of Cancel.
         new_buttons = QDialogButtonBox(QDialogButtonBox.Ok)
         new_buttons.accepted.connect(self.accept)
+        self.buttons.clear()
         self.layout.replaceWidget(self.buttons, new_buttons)
         self.buttons = new_buttons
 
