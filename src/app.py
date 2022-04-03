@@ -1440,7 +1440,6 @@ class MainWindow(QMainWindow):
         # Disable this window so that buttons can't be clicked.
         self.run_btn.setText('Running...')
         self.run_btn.setEnabled(False)
-        self.controls_container.setEnabled(False)
         self.project_variables_container.setEnabled(False)
         self.parameters_container.setEnabled(False)
 
@@ -1459,7 +1458,6 @@ class MainWindow(QMainWindow):
         # Restore previous button statuses.
         self.run_btn.setText('Run')
         self.run_btn.setEnabled(True)
-        self.controls_container.setEnabled(True)
         self.project_variables_container.setEnabled(True)
         self.parameters_container.setEnabled(True)
 
