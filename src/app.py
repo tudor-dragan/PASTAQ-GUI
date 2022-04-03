@@ -6,12 +6,15 @@ import sys
 import time
 import resources
 import platform
+import pathlib
+import subprocess
+import sys
 
-from identification import *
+from pathlib import Path
+from PyQt5.QtWidgets import QMainWindow, QApplication
 from PyQt5.QtCore import *
 from PyQt5.QtGui import QIcon, QKeySequence
 from PyQt5.QtWidgets import *
-from pathlib import Path
 
 import pastaq
 # sonarqube just for me (kaitlin):
@@ -222,6 +225,9 @@ class PipelineLogDialog(QDialog):
 class ParametersWidget(QTabWidget):
     input_files = []
     parameters = {}
+    ms_jar = ""
+    id_file = ""
+    fasta = ""
 
     def __init__(self, parent=None):
         super(ParametersWidget, self).__init__(parent)
@@ -231,10 +237,10 @@ class ParametersWidget(QTabWidget):
 
         self.addTab(self.input_files_tab, 'Input files')
         self.addTab(self.parameters_tab, 'Parameters')
-        #self.addTab(self.input_paths_tab, 'Paths')
+        self.addTab(self.input_paths_tab, 'Paths')
         self.input_files_tab_ui()
         self.parameters_tab_ui()
-        #self.input_paths_tab_ui()
+        self.input_paths_tab_ui()
 
     def input_files_tab_ui(self):
         self.input_files_table = QTableWidget()
@@ -280,24 +286,100 @@ class ParametersWidget(QTabWidget):
         layout.addWidget(self.input_files_table)
         self.input_files_tab.setLayout(layout)
 
-    '''def input_paths_tab_ui(self):
-        self.inst_settings_box = QGroupBox('MSFragger')
-        grid = QGridLayout()
-        dir = QPushButton('Browse')
-        dir.clicked.connect(self.set_ms_path)
-        grid.addWidget(self.ms_dir_path_input)
-        grid.addWidget(dir)
-        
-        self.inst_settings_box = QGroupBox('ProteoWizard')
-        self.inst_settings_box = QGroupBox('Protein database')
-        self.input_paths_tab.setLayout(grid)'''
+    def input_paths_tab_ui(self):
+        self.msfragger_box = QGroupBox('MSFragger')
+        lay_ms = QHBoxLayout()
+        input_ms = QLineEdit()
+        input_ms.setText(self.ms_jar)
+        browse_button_ms = QPushButton('Browse')
+        browse_button_ms.clicked.connect(lambda: self.set_jar_path(input_ms))
+        check_ms = QPushButton('Confirm')
+        check_ms.clicked.connect(lambda: self.check_ms(input_ms))
+        lay_ms.addWidget(input_ms)
+        lay_ms.addWidget(browse_button_ms)
+        lay_ms.addWidget(check_ms)
+        self.msfragger_box.setLayout(lay_ms)
 
-    def set_ms_path(self):
-        dir = QFileDialog.getExistingDirectory(self, 'Select Directory')
-        if len(dir) > 0:
-            self.ms_dir = dir
-            self.ms_dir_path_input.setText(self.ms_dir)
-            print(self.ms_dir)
+        self.id_box = QGroupBox('idconvert')
+        lay_id = QHBoxLayout()
+        input_id = QLineEdit()
+        input_id.setText(self.id_file)
+        browse_button_id = QPushButton('Browse')
+        browse_button_id.clicked.connect(lambda: self.set_id_path(input_id))
+        check_id_button= QPushButton('Confirm')
+        check_id_button.clicked.connect(lambda: self.check_id(input_id))
+        lay_id.addWidget(input_id)
+        lay_id.addWidget(browse_button_id)
+        lay_id.addWidget(check_id_button)
+        self.id_box.setLayout(lay_id)
+
+        self.db_box = QGroupBox('Protein database')
+        lay_db = QHBoxLayout()
+        self.db_box.setLayout(lay_db)
+
+        widget = QWidget()
+        self.input_paths_tab.setWidget(widget)
+        self.input_paths_tab.setWidgetResizable(True)
+
+        layout = QVBoxLayout()
+        layout.addWidget(self.msfragger_box)
+        layout.addWidget(self.id_box)
+        layout.addWidget(self.db_box)
+
+        widget.setLayout(layout)
+
+
+    def set_jar_path(self, input):
+        jar, _ = QFileDialog.getOpenFileName(
+            parent=self,
+            caption='Select MSFragger .jar file',
+            directory=os.getcwd(),
+            filter=('jar (*.jar)')
+        )
+        if len(jar) > 0:
+            self.ms_jar = jar
+            input.setText(self.ms_jar)
+            print(self.ms_jar)
+
+    def check_ms(self, input):
+        if os.path.exists(input.text()):
+            self.ms_jar = input.text()
+            is_jar = self.ms_jar.endswith('.jar')
+            if not is_jar:
+                self.popup_window('Not a .jar file')
+                self.ms_jar = ""
+            print("is a jar")
+        else:
+            self.popup_window('Path does not exist')
+
+    def set_id_path(self, input):
+        file, _ = QFileDialog.getOpenFileName(
+            parent=self,
+            caption='Select idconvert executable',
+            directory=os.getcwd(),
+            filter=('exe (*.exe)')
+        )
+        if len(file) > 0:
+            self.id_file = file
+            input.setText(self.id_file)
+            print(self.id_file)
+
+    def check_id(self, input):
+        if os.path.exists(input.text()):
+            self.id_file = input.text()
+            idconvert = os.access(self.id_file, os.X_OK)
+            if not self.id_file.endswith('.exe') or not idconvert:
+                self.popup_window('Not an .exe file or not executable')
+                self.id_file = ''
+            print("is idconvert")
+        else:
+            self.popup_window('Path does not exist')
+
+    def popup_window(self, text):
+        wrong_path = QMessageBox()
+        wrong_path.setText(text)
+        wrong_path.setWindowTitle("Error")
+        wrong_path.exec_()
 
     def add_file(self):
         file_paths, _ = QFileDialog.getOpenFileNames(
@@ -335,7 +417,7 @@ class ParametersWidget(QTabWidget):
                     if len(indexes) == 1 and len(edit_file_dialog.mzid_paths) == 1:
                         path = edit_file_dialog.mzid_paths[0]
                         if edit_file_dialog.mzid_paths[0].endswith('.mgf'):
-                            path = hardprocess(path)
+                            path = self.process(path)
                         new_file['ident_path'] = path
                         os.chdir(os.path.dirname(path))  # sets directory to last identification file added
                     else:
@@ -344,7 +426,7 @@ class ParametersWidget(QTabWidget):
                         stem = base_name[0]
                         for mzid in edit_file_dialog.mzid_paths:
                             if mzid.endswith('.mgf'):
-                                mzid = hardprocess(mzid)
+                                mzid = self.process(mzid)
                             base_name = os.path.basename(mzid)
                             base_name = os.path.splitext(base_name)
                             mzid_stem = base_name[0]
@@ -357,6 +439,67 @@ class ParametersWidget(QTabWidget):
                 else:
                     new_list += [file]
             self.update_input_files(new_list)
+
+    """ terminal:
+        cd desktop/MSFragger-3.4
+        java -Xmx32g -jar MSFragger-3.4.jar "C:/Users/kaitl/Desktop/closed_fragger.params" "C:/Users/kaitl/Downloads/mgf/1_3.mgf"
+        cd C:/Users/kaitl/AppData/Local/Apps/ProteoWizard 3.0.22085.aa65186 64-bit
+        idconvert "C:/Users/kaitl/Downloads/mgf/1_3.pepXML"
+    """
+    def process(self, mgf):
+        # check if mzid is already in same directory
+        if os.path.exists(self.make_mzid_path(mgf)):
+            print("mzid already there")
+            return self.make_mzid_path(mgf)
+
+        ms, ms_jar = self.get_ms()
+        print(ms)
+        print(ms_jar)
+
+        msfragger = subprocess.run(
+            ["java", "-Xmx32g", "-jar", ms_jar, "C:/Users/kaitl/Downloads/closed_fragger.params", mgf],
+            cwd=ms,
+            capture_output=True
+        )
+        print(msfragger)
+        pep = self.make_pep_path(mgf)
+
+        id = self.get_id()
+        idconvert = subprocess.run([id, pep, "-o", os.path.dirname(mgf)], capture_output=True)
+
+        os.unlink(pep)
+
+        mzid = self.make_mzid_path(mgf)
+        print(mzid)
+        return mzid
+
+    # split path into jar file and directory
+    def get_ms(self):
+        #jar = "C:/Users/kaitl/Desktop/MSFragger-3.4"  # hardcoded location
+        jar = self.ms_jar
+        jar_file = os.path.basename(jar) #jar
+        ms_path = os.path.dirname(jar)  #directory
+        print('this is the path: ' + ms_path)
+        print('this is the jar: ' + jar_file)
+        return ms_path, jar_file
+
+    # idconvert
+    def get_id(self):
+        #id = "C:/Users/kaitl/AppData/Local/Apps/ProteoWizard 3.0.22085.aa65186 64-bit"  # hardcoded location
+        id = self.id_file
+        print('this is id: ' + id)
+        return id
+
+    # msfragger places pepxml in same directory with same name
+    def make_pep_path(self, mgf):
+        print("mgf " + mgf)
+        print("replace " +  mgf.replace(".mgf", ".pepxml"))
+        return mgf.replace(".mgf", ".pepxml")
+
+    # idconvert places mzid in same directory with same name
+    def make_mzid_path(self, mzid):
+        return mzid.replace(".mgf", ".mzID")
+
 
     def remove_all_files(self):
         self.remove_file(True)
