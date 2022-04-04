@@ -1,6 +1,0 @@
-projectKey=pastaq
-serverUrl=http://localhost:9000
-serverVersion=9.3.0.51899
-dashboardUrl=http://localhost:9000/dashboard?id=pastaq
-ceTaskId=AX-xgG1M7TEpltqcDYED
-ceTaskUrl=http://localhost:9000/api/ce/task?id=AX-xgG1M7TEpltqcDYED
