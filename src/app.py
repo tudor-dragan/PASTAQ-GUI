@@ -13,7 +13,7 @@ import sys
 from pathlib import Path
 from PyQt5.QtWidgets import QMainWindow, QApplication
 from PyQt5.QtCore import *
-from PyQt5.QtGui import QIcon, QKeySequence
+from PyQt5.QtGui import QIcon, QKeySequence, QPalette, QColor
 from PyQt5.QtWidgets import *
 
 import pastaq
@@ -1133,6 +1133,7 @@ class ParametersWidget(QTabWidget):
 pop = False
 class MainWindow(QMainWindow):
     project_path = ''
+    dark = False
 
     def __init__(self):
         super().__init__()
@@ -1146,6 +1147,7 @@ class MainWindow(QMainWindow):
         self.menubar = self.menuBar()
         self.fileMenu = self.menubar.addMenu('File')
         self.actionMenu = self.menubar.addMenu('Action')
+                
         #New Project 
         self.newProj = QAction('New Project', self)
         self.newProj.triggered.connect(self.new_project)
@@ -1175,6 +1177,11 @@ class MainWindow(QMainWindow):
         self.reset_param_btn.triggered.connect(self.reset_param)
         self.reset_param_btn.setEnabled(False)
         self.actionMenu.addAction(self.reset_param_btn)
+        
+        self.view_mode_btn = QAction('Dark Mode', self)
+        self.view_mode_btn.triggered.connect(self.view_mode)
+        self.reset_param_btn.setEnabled(True)
+        self.actionMenu.addAction(self.view_mode_btn)
 
         #
         # Project variables.
@@ -1225,7 +1232,41 @@ class MainWindow(QMainWindow):
 
     def reset_param(self):
         self.update_ui(True)
-
+    
+    def view_mode(self):
+        if (self.dark == False):
+            self.dark_mode()
+            self.dark = True
+            self.view_mode_btn.setText('Light Mode')
+        else:
+            self.light_mode()
+            self.dark = False
+            self.view_mode_btn.setText('Dark Mode')
+               
+    def dark_mode(self):
+        app.setStyle("Fusion")
+        # Now use a palette to switch to dark colors:
+        palette = QPalette()
+        palette.setColor(QPalette.Window, QColor(53, 53, 53))
+        palette.setColor(QPalette.WindowText, Qt.white)
+        palette.setColor(QPalette.Base, QColor(25, 25, 25))
+        palette.setColor(QPalette.AlternateBase, QColor(53, 53, 53))
+        palette.setColor(QPalette.ToolTipBase, Qt.black)
+        palette.setColor(QPalette.ToolTipText, Qt.white)
+        palette.setColor(QPalette.Text, Qt.white)
+        palette.setColor(QPalette.Button, QColor(53, 53, 53))
+        palette.setColor(QPalette.ButtonText, Qt.white)
+        palette.setColor(QPalette.BrightText, Qt.red)
+        palette.setColor(QPalette.Link, QColor(42, 130, 218))
+        palette.setColor(QPalette.Highlight, QColor(42, 130, 218))
+        palette.setColor(QPalette.HighlightedText, Qt.black)
+        app.setPalette(palette)
+        
+    def light_mode(self):
+        app.setStyle("Fusion")
+        palette = QPalette()
+        app.setPalette(palette)
+                
     def update_ui(self, default=False):
         # Project metadata.
         self.project_directory_ui.setText(os.path.dirname(self.project_path))
@@ -1468,6 +1509,7 @@ app.setWindowIcon(QIcon(':/icons/pastaq.png'))
 if platform.system() == 'Windows':
     import ctypes
     ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID('pastaq-gui')
+app.setStyle("Fusion")
 
 window = MainWindow()
 window.resize(QSize(600, 600))
