@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="2031313c-728e-4e64-889f-18672d2138a9" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/src/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/app.py" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+      </list>
+    </option>
+  </component>
+  <component name="FlaskConsoleOptions" custom-start-script="import sys&#10;sys.path.extend([WORKING_DIR_AND_PYTHON_PATHS])&#10;from flask.cli import ScriptInfo&#10;locals().update(ScriptInfo(create_app=None).load_app().make_shell_context())&#10;print(&quot;Python %s on %s\nApp: %s [%s]\nInstance: %s&quot; % (sys.version, sys.platform, app.import_name, app.env, app.instance_path))">
+    <envs>
+      <env key="FLASK_APP" value="app" />
+    </envs>
+    <option name="myCustomStartScript" value="import sys&#10;sys.path.extend([WORKING_DIR_AND_PYTHON_PATHS])&#10;from flask.cli import ScriptInfo&#10;locals().update(ScriptInfo(create_app=None).load_app().make_shell_context())&#10;print(&quot;Python %s on %s\nApp: %s [%s]\nInstance: %s&quot; % (sys.version, sys.platform, app.import_name, app.env, app.instance_path))" />
+    <option name="myEnvs">
+      <map>
+        <entry key="FLASK_APP" value="app" />
+      </map>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitSEFilterConfiguration">
+    <file-type-list>
+      <filtered-out-file-type name="LOCAL_BRANCH" />
+      <filtered-out-file-type name="REMOTE_BRANCH" />
+      <filtered-out-file-type name="TAG" />
+      <filtered-out-file-type name="COMMIT_BY_MESSAGE" />
+    </file-type-list>
+  </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
+  <component name="ProjectId" id="26Nhvcp4MxoMr0PGR0hh6aadAQL" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="ASKED_ADD_EXTERNAL_FILES" value="true" />
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="settings.editor.selected.configurable" value="vcs.Subversion.SSH" />
+  </component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\kaitl\PASTAQ-GUI\src" />
+      <recent name="C:\Users\kaitl\PASTAQ-GUI\src\resources" />
+      <recent name="C:\Users\kaitl\PASTAQ-GUI\src\resources\images" />
+    </key>
+  </component>
+  <component name="RunManager" selected="Python.identification">
+    <configuration name="identification (1)" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="PASTAQ-GUI" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/src" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/src/identification.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="identification" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="PASTAQ-GUI" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="C:\Users\kaitl\AppData\Local\Programs\Python\Python310\python.exe" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/src" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/src/identification.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <list>
+      <item itemvalue="Python.identification" />
+      <item itemvalue="Python.identification (1)" />
+    </list>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Python.identification" />
+        <item itemvalue="Python.identification (1)" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="SvnConfiguration">
+    <configuration>C:\Users\kaitl\AppData\Roaming\Subversion</configuration>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="2031313c-728e-4e64-889f-18672d2138a9" name="Changes" comment="" />
+      <created>1647270186172</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1647270186172</updated>
+      <workItem from="1647270189191" duration="566000" />
+      <workItem from="1647347114824" duration="13026000" />
+      <workItem from="1647438880220" duration="1819000" />
+      <workItem from="1647467996313" duration="1073000" />
+      <workItem from="1647469101647" duration="6072000" />
+      <workItem from="1647605252616" duration="348000" />
+      <workItem from="1647606433962" duration="6112000" />
+      <workItem from="1647690403323" duration="2916000" />
+      <workItem from="1647897682077" duration="965000" />
+      <workItem from="1647949448254" duration="1087000" />
+      <workItem from="1647967978385" duration="412000" />
+      <workItem from="1648119526725" duration="65000" />
+      <workItem from="1648141318662" duration="1177000" />
+      <workItem from="1648151623432" duration="670000" />
+      <workItem from="1648206374111" duration="1763000" />
+      <workItem from="1648224142020" duration="2075000" />
+      <workItem from="1648311078768" duration="2703000" />
+      <workItem from="1648314633657" duration="4453000" />
+      <workItem from="1648389356774" duration="42000" />
+      <workItem from="1648392723803" duration="595000" />
+      <workItem from="1648414778909" duration="5091000" />
+      <workItem from="1648420269205" duration="361000" />
+      <workItem from="1648456458302" duration="2479000" />
+      <workItem from="1648468933712" duration="1635000" />
+      <workItem from="1648474962121" duration="1429000" />
+      <workItem from="1648476478931" duration="3748000" />
+      <workItem from="1648645409634" duration="84000" />
+      <workItem from="1648662556885" duration="2167000" />
+      <workItem from="1648671013096" duration="651000" />
+      <workItem from="1648672514524" duration="2576000" />
+      <workItem from="1648717239359" duration="4787000" />
+      <workItem from="1648724837918" duration="2813000" />
+      <workItem from="1648727769355" duration="212000" />
+      <workItem from="1648728115872" duration="654000" />
+      <workItem from="1648818725272" duration="2859000" />
+      <workItem from="1648823531571" duration="12145000" />
+      <workItem from="1648977143291" duration="8098000" />
+      <workItem from="1649091162970" duration="626000" />
+      <workItem from="1649180517690" duration="161000" />
+      <workItem from="1649181733792" duration="3650000" />
+      <workItem from="1649756669303" duration="134000" />
+      <workItem from="1650552863241" duration="81000" />
+      <workItem from="1650553035577" duration="65000" />
+      <workItem from="1650553136801" duration="605000" />
+      <workItem from="1650623757662" duration="4657000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
+  </component>
+  <component name="com.intellij.coverage.CoverageDataManagerImpl">
+    <SUITE FILE_PATH="coverage/PASTAQ_GUI$identification__1_.coverage" NAME="identification (1) Coverage Results" MODIFIED="1648478237535" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src" />
+    <SUITE FILE_PATH="coverage/PASTAQ_GUI$identification.coverage" NAME="identification Coverage Results" MODIFIED="1648821296816" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src" />
+    <SUITE FILE_PATH="coverage/PASTAQ_GUI$ass.coverage" NAME="ass Coverage Results" MODIFIED="1648476580961" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src" />
+  </component>
+</project>

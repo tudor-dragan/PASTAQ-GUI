@@ -115,16 +115,21 @@ class ParameterItem(QWidget):
         QWidget.__init__(self, parent=parent)
         layout = QVBoxLayout(self)
 
-        button = QPushButton(label, self)
+        button = ParameterLabel(label)
         button.setToolTip(tooltip)
 
         icon = QIcon(':/icons/question.png')
         button.setLayoutDirection(Qt.RightToLeft)
         button.setIcon(icon)
-        button.setStyleSheet('border: none;')
+        button.setFlat(True)
+
 
         layout.addWidget(button)
         layout.addWidget(widget)
+
+class ParameterLabel(QPushButton):
+    def mousePressEvent(self, event):
+        return
 
 
 class TextStream(QObject):
@@ -1245,26 +1250,19 @@ class MainWindow(QMainWindow):
             self.view_mode_btn.setText('Dark Mode')
                
     def dark_mode(self):
-        app.setStyle("Fusion")
         # Now use a palette to switch to dark colors:
         palette = QPalette()
         palette.setColor(QPalette.Window, QColor(53, 53, 53))
         palette.setColor(QPalette.WindowText, Qt.white)
         palette.setColor(QPalette.Base, QColor(25, 25, 25))
         palette.setColor(QPalette.AlternateBase, QColor(53, 53, 53))
-        palette.setColor(QPalette.ToolTipBase, Qt.black)
-        palette.setColor(QPalette.ToolTipText, Qt.white)
         palette.setColor(QPalette.Text, Qt.white)
         palette.setColor(QPalette.Button, QColor(53, 53, 53))
         palette.setColor(QPalette.ButtonText, Qt.white)
-        palette.setColor(QPalette.BrightText, Qt.red)
-        palette.setColor(QPalette.Link, QColor(42, 130, 218))
-        palette.setColor(QPalette.Highlight, QColor(42, 130, 218))
         palette.setColor(QPalette.HighlightedText, Qt.black)
         app.setPalette(palette)
         
     def light_mode(self):
-        app.setStyle("Fusion")
         palette = QPalette()
         app.setPalette(palette)
                 
