@@ -34,8 +34,6 @@ class EditFileDialog(QDialog):
     def __init__(self, parent=None):
         super().__init__(parent)
 
-        # TODO: Set fixed size for this.
-        self.setStyleSheet("background-color: Grey;")
         self.setWindowTitle('PASTAQ: DDA Pipeline - Add files')
 
         # Edit parameters.
