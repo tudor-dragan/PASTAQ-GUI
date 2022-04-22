@@ -301,7 +301,7 @@ class ParametersWidget(QTabWidget):
         browse_button_ms = QPushButton('Browse')
         browse_button_ms.clicked.connect(lambda: self.set_jar_path(input_ms))
         check_ms = QPushButton('Confirm')
-        check_ms.clicked.connect(lambda: self.check_ms(input_ms))
+        check_ms.clicked.connect(lambda: self.check_ms(input_ms.text()))
         lay_ms.addWidget(input_ms)
         lay_ms.addWidget(browse_button_ms)
         lay_ms.addWidget(check_ms)
@@ -314,7 +314,7 @@ class ParametersWidget(QTabWidget):
         browse_button_id = QPushButton('Browse')
         browse_button_id.clicked.connect(lambda: self.set_id_path(input_id))
         check_id_button = QPushButton('Confirm')
-        check_id_button.clicked.connect(lambda: self.check_id(input_id))
+        check_id_button.clicked.connect(lambda: self.check_id(input_id.text()))
         lay_id.addWidget(input_id)
         lay_id.addWidget(browse_button_id)
         lay_id.addWidget(check_id_button)
@@ -327,7 +327,7 @@ class ParametersWidget(QTabWidget):
         browse_button_fasta = QPushButton('Browse')
         browse_button_fasta.clicked.connect(lambda: self.set_fasta_path(input_fasta))
         check_fasta_button = QPushButton('Confirm')
-        check_fasta_button.clicked.connect(lambda: self.check_fasta(input_fasta))
+        check_fasta_button.clicked.connect(lambda: self.check_fasta(input_fasta.text()))
         lay_db.addWidget(input_fasta)
         lay_db.addWidget(browse_button_fasta)
         lay_db.addWidget(check_fasta_button)
@@ -350,7 +350,7 @@ class ParametersWidget(QTabWidget):
             parent=self,
             caption='Select MSFragger .jar file',
             directory=os.getcwd(),
-            filter= 'jar (*.jar)'
+            filter='jar (*.jar)'
         )
         if len(jar) > 0:
             self.ms_jar = jar
@@ -358,14 +358,17 @@ class ParametersWidget(QTabWidget):
 
     # confirm .jar file
     def check_ms(self, input):
-        if os.path.exists(input.text()):
-            self.ms_jar = input.text()
+        if os.path.exists(input):
+            self.ms_jar = input
             is_jar = self.ms_jar.endswith('.jar')
             if not is_jar:
                 self.popup_window('Not a .jar file')
                 self.ms_jar = ""
+            else:
+                return True
         else:
-            self.popup_window('Path does not exist')
+            self.popup_window('MSFragger path does not exist')
+            return False
 
     # browse for idconvert.exe
     def set_id_path(self, input):
@@ -381,14 +384,17 @@ class ParametersWidget(QTabWidget):
 
     # confirm idconvert
     def check_id(self, input):
-        if os.path.exists(input.text()):
-            self.id_file = input.text()
+        if os.path.exists(input):
+            self.id_file = input
             idconvert = os.access(self.id_file, os.X_OK)
             if not self.id_file.endswith('.exe') or not idconvert:
                 self.popup_window('Not an .exe file or not executable')
                 self.id_file = ''
+            else:
+                return True
         else:
-            self.popup_window('Path does not exist')
+            self.popup_window('idconvert path does not exist')
+            return False
 
     # browse for FASTA database
     def set_fasta_path(self, input):
@@ -396,7 +402,7 @@ class ParametersWidget(QTabWidget):
             parent=self,
             caption='Select FASTA format protein database',
             directory=os.getcwd(),
-            filter= 'FASTA (*.fasta)'
+            filter='FASTA (*.fasta)'
         )
         if len(file) > 0:
             self.fasta = file
@@ -404,19 +410,23 @@ class ParametersWidget(QTabWidget):
 
     # confirm fasta
     def check_fasta(self, input):
-        if os.path.exists(input.text()):
-            self.fasta = input.text()
+        if os.path.exists(input):
+            self.fasta = input
             if not self.fasta.endswith('.fasta'):
                 self.popup_window('Not a FASTA file')
                 self.fasta = ''
+            else:
+                return True
         else:
-            self.popup_window('Path does not exist')
+            self.popup_window('FASTA path does not exist')
+            return True
 
     def popup_window(self, text):
         wrong_path = QMessageBox()
         wrong_path.setText(text)
         wrong_path.setWindowTitle("Error")
         wrong_path.exec_()
+        return
 
     def add_file(self):
         file_paths, _ = QFileDialog.getOpenFileNames(
@@ -434,7 +444,7 @@ class ParametersWidget(QTabWidget):
                     input_files.append({'raw_path': file_path, 'reference': False})
             self.update_input_files(input_files)
 
-    #TODO identification process
+    # TODO identification process
     def edit_file(self):
         indexes = self.find_selected_files()
         if len(indexes) == 0:
@@ -455,6 +465,8 @@ class ParametersWidget(QTabWidget):
                         path = edit_file_dialog.mzid_paths[0]
                         if edit_file_dialog.mzid_paths[0].endswith('.mgf'):
                             path = self.process(path)
+                            if not path:
+                                return
                         new_file['ident_path'] = path
                         os.chdir(os.path.dirname(path))  # sets directory to last identification file added
                     else:
@@ -482,21 +494,56 @@ class ParametersWidget(QTabWidget):
         if os.path.exists(self.make_mzid_path(mgf)):
             return self.make_mzid_path(mgf)
 
-        ms, ms_jar = self.get_ms()
+        # check .jar and assign if possible
+        if self.check_ms(self.ms_jar):
+            ms, ms_jar = self.get_ms()
+        else:
+            return False
 
+        params = "C:/Users/kaitl/Downloads/closed_fragger.params"
+        params = "C:/Users/kaitl/Desktop/closed_fragger.params"
         msfragger = subprocess.run(
-            ["java", "-Xmx32g", "-jar", ms_jar, "C:/Users/kaitl/Downloads/closed_fragger.params", mgf],
+            ["java", "-Xmx32g", "-jar", ms_jar, params, mgf],
             cwd=ms,
             capture_output=True
         )
-        pep = self.make_pep_path(mgf)
 
-        id = self.get_id()
+        # check if msfragger was successful
+        try:
+            msfragger.check_returncode()
+        except subprocess.CalledProcessError as e:
+            print(e.output)
+            self.popup_window("MSFragger failure")
+            return False
+
+        # .pepXML should exist at this point
+        pep = self.make_pep_path(mgf)
+        if not os.path.exists(pep):
+            self.popup_window(".pepXML does not exist")
+            return False
+
+        # idconvert exe
+        if (self.check_id(self.id_file)):
+            id = self.id_file
+
         idconvert = subprocess.run([id, pep, "-o", os.path.dirname(mgf)], capture_output=True)
 
+        # check if idconvert was successful
+        try:
+            idconvert.check_returncode()
+        except subprocess.CalledProcessError as e:
+            print(e.output)
+            self.popup_window("idconvert failure")
+            return False
+
+        # delete .pepXML
         os.unlink(pep)
 
         mzid = self.make_mzid_path(mgf)
+        if not os.path.exists(mzid):
+            self.popup_window(".mzid does not exist")
+            return False
+
         return mzid
 
     # split path into jar file and directory
@@ -505,6 +552,7 @@ class ParametersWidget(QTabWidget):
         jar_file = os.path.basename(jar)  # jar
         ms_path = os.path.dirname(jar)   # directory
         return ms_path, jar_file
+
 
     # idconvert
     def get_id(self):
@@ -1250,7 +1298,7 @@ class MainWindow(QMainWindow):
             self.view_mode_btn.setText('Dark Mode')
                
     def dark_mode(self):
-        # Now use a palette to switch to dark colors:
+        app.setStyle("Fusion")
         palette = QPalette()
         palette.setColor(QPalette.Window, QColor(53, 53, 53))
         palette.setColor(QPalette.WindowText, Qt.white)
@@ -1259,10 +1307,14 @@ class MainWindow(QMainWindow):
         palette.setColor(QPalette.Text, Qt.white)
         palette.setColor(QPalette.Button, QColor(53, 53, 53))
         palette.setColor(QPalette.ButtonText, Qt.white)
-        palette.setColor(QPalette.HighlightedText, Qt.black)
+        palette.setColor(QPalette.BrightText, Qt.red)
+        palette.setColor(QPalette.Link, QColor(42, 130, 218))
+        palette.setColor(QPalette.Highlight, QColor(42, 130, 218))
+
         app.setPalette(palette)
         
     def light_mode(self):
+        app.setStyle("Fusion")
         palette = QPalette()
         app.setPalette(palette)
                 
