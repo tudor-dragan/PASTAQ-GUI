@@ -43,13 +43,13 @@ class EditFileDialog(QDialog):
         self.group_box.textChanged.connect(self.set_group)
         mzid_picker = QPushButton('Browse')
         mzid_picker.clicked.connect(self.set_mzid_paths)
-        # start of drag and drop
-        # drop = ImageLabel()
-        # self.setAcceptDrops(True)
+        #start of drag and drop
+        drop = ImageLabel()
+        self.setAcceptDrops(True)
 
         form_layout.addRow('Group', self.group_box)
         form_layout.addRow('mgf/mzID', mzid_picker)
-        # form_layout.addRow(drop)
+        form_layout.addRow(drop)
 
         form_container.setLayout(form_layout)
 
@@ -64,13 +64,14 @@ class EditFileDialog(QDialog):
         layout.addWidget(buttons)
         self.setLayout(layout)
 
-    # TODO
     def dragEnterEvent(self, event):
         if event.mimeData().hasUrls():
             event.accept()
         else:
             event.ignore()
 
+    # TODO somehow do the same as edit_file() function (preferably no duplicate code so combine if possible)
+    # only allow specific file types
     def dropEvent(self, event):
         files = [u.toLocalFile() for u in event.mimeData().urls()]
         #
@@ -124,6 +125,7 @@ class ParameterItem(QWidget):
 
         layout.addWidget(button)
         layout.addWidget(widget)
+
 
 class ParameterLabel(QPushButton):
     def mousePressEvent(self, event):
@@ -442,7 +444,6 @@ class ParametersWidget(QTabWidget):
                     input_files.append({'raw_path': file_path, 'reference': False})
             self.update_input_files(input_files)
 
-    # TODO identification process
     def edit_file(self):
         indexes = self.find_selected_files()
         if len(indexes) == 0:
@@ -626,7 +627,6 @@ class ParametersWidget(QTabWidget):
         # probably is fine with hardcoding the ranges here.
         LARGE = 1000000000
 
-        # TODO: Add tooltips.
         # TODO: Make sure constrains are set properly.
 
         self.update_allowed = False
