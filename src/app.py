@@ -15,7 +15,7 @@ from PyQt5.QtGui import QIcon, QKeySequence, QPalette, QColor
 from PyQt5.QtWidgets import *
 from pathlib import Path
 
-# slow if imported: import pastaq
+import pastaq
 # sonarqube just for me (kaitlin):
 # C:\Users\kaitl\Downloads\sonarqube-9.3.0.51899\sonarqube-9.3.0.51899\bin\windows-x86-64\StartSonar.bat
 # http://localhost:9000/dashboard?id=pastaq
