@@ -54,7 +54,7 @@ jobs:
             TARGET: ubuntu
             CMD_BUILD: >
                 pyinstaller -F -w -n PASTAQ-GUI -i resources/pastaq.png src/app.py &&
-                ls dist
+                stat dist/PASTAQ-GUI
             CMD_DEP: >
                 python -m pip install --upgrade pip &&
                 pip install cmake &&
