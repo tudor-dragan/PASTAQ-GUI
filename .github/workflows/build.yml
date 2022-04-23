@@ -101,12 +101,13 @@ jobs:
       run: ${{matrix.CMD_ZLIB}}
     - name: Install PASTAQ
       run: |
-        git clone https://github.com/PASTAQ-MS/PASTAQ
-        cd PASTAQ
-        git submodule init
-        git submodule update
-        python setup.py install --user
-        python setup.py develop --user
+        pip install pastaq
+        #git clone https://github.com/PASTAQ-MS/PASTAQ
+        #cd PASTAQ
+        #git submodule init
+        #git submodule update
+        #python setup.py install --user
+        #python setup.py develop --user
     #- name: Install dependencies for ${{matrix.TARGET}}
     #  run: ${{matrix.CMD_DEP}}
     - name: Build with pyinstaller for ${{matrix.TARGET}}
