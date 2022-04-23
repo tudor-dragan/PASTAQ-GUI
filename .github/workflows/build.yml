@@ -40,8 +40,8 @@ jobs:
             TARGET: macos
             CMD_BUILD: >
                 pyinstaller -F -w -n PASTAQ-GUI -i resources/pastaq.icns src/app.py &&
-                cd dist/ &&
-                zip -r9 PASTAQ-GUI PASTAQ-GUI.app/
+                cd dist &&
+                zip -r9 PASTAQ-GUI PASTAQ-GUI.app
             CMD_DEP: >
                 python -m pip install --upgrade pip &&
                 pip install cmake &&
@@ -49,6 +49,19 @@ jobs:
                 pip install pyinstaller &&
                 pip install pastaq
             OUT_FILE_NAME: PASTAQ-GUI.zip
+            ASSET_MIME: application/zip
+          - os: ubuntu-latest
+            TARGET: ubuntu
+            CMD_BUILD: >
+                pyinstaller -F -w -n PASTAQ-GUI -i resources/pastaq.png src/app.py &&
+                ls dist
+            CMD_DEP: >
+                python -m pip install --upgrade pip &&
+                pip install cmake &&
+                pip install PyQt5 &&
+                pip install pyinstaller &&
+                pip install pastaq
+            OUT_FILE_NAME: PASTAQ-GUI-LINUX.zip
             ASSET_MIME: application/zip
           - os: windows-latest
             TARGET: windows
