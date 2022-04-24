@@ -1,14 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="2031313c-728e-4e64-889f-18672d2138a9" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.scannerwork/.sonar_lock" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.scannerwork/report-task.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/resources.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/app.py" afterDir="false" />
-    </list>
+    <list default="true" id="2031313c-728e-4e64-889f-18672d2138a9" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -215,7 +208,7 @@
       <workItem from="1650826000382" duration="220000" />
       <workItem from="1650826242626" duration="268000" />
       <workItem from="1650826537108" duration="63000" />
-      <workItem from="1650826622928" duration="180000" />
+      <workItem from="1650826622928" duration="546000" />
     </task>
     <servers />
   </component>
