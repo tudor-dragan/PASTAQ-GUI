@@ -52,8 +52,8 @@ jobs:
                 cd dist &&
                 zip -r9 PASTAQ-GUI-LINUX PASTAQ-GUI
             CMD_PASTAQ: >
-                apt update &&
-                apt install xcb &&
+                sudo apt update &&
+                sudo apt install xcb &&
                 pip install pastaq
             OUT_FILE_NAME: PASTAQ-GUI-LINUX.zip
             ASSET_MIME: application/zip
