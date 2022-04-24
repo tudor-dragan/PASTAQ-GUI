@@ -89,7 +89,9 @@ jobs:
       run: ${{matrix.CMD_PASTAQ}}
     - name: Compile resources
       run: |
+        cd src
         pyrcc5 -o resources.py resources.qrc
+        cd ..
     - name: Build with pyinstaller for ${{matrix.TARGET}}
       run: ${{matrix.CMD_BUILD}}
     - name: Load Release URL File from release job
