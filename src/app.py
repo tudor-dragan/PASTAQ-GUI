@@ -4,7 +4,7 @@ import os
 import platform
 import sys
 import time
-import resources
+# import resources #idk what this is needed for i couldnt run program so i commented it out
 import platform
 import pathlib
 import subprocess
@@ -1185,12 +1185,15 @@ pop = False
 class MainWindow(QMainWindow):
     project_path = ''
     dark = False
-
+   
     def __init__(self):
         super().__init__()
 
         self.setWindowTitle('PASTAQ: DDA Pipeline')
 
+        # Tabbed input files/parameters
+        self.parameters_container = ParametersWidget()
+        
         # Main layout
         layout = QVBoxLayout()
 
@@ -1223,12 +1226,20 @@ class MainWindow(QMainWindow):
         self.save_project_as_btn.setEnabled(False)
         self.fileMenu.addAction(self.save_project_as_btn)
 
-        #Reset button
+        #remove file menu button
+        self.remove_file_btn = QAction('Remove Selected Files', self)
+        self.remove_file_btn.triggered.connect(self.parameters_container.remove_file)
+        self.remove_file_btn.setShortcut(QKeySequence('Ctrl+d'))
+        self.remove_file_btn.setEnabled(False)
+        self.actionMenu.addAction(self.remove_file_btn)
+
+        #reset button
         self.reset_param_btn = QAction('Reset Parameters', self)
         self.reset_param_btn.triggered.connect(self.reset_param)
         self.reset_param_btn.setEnabled(False)
         self.actionMenu.addAction(self.reset_param_btn)
         
+        #dark/light mode button
         self.view_mode_btn = QAction('Dark Mode', self)
         self.view_mode_btn.triggered.connect(self.view_mode)
         self.reset_param_btn.setEnabled(True)
@@ -1251,10 +1262,7 @@ class MainWindow(QMainWindow):
         self.project_variables_container.setLayout(project_variables_layout)
         layout.addWidget(self.project_variables_container)
 
-        #
-        # Tabbed input files/parameters
-        #
-        self.parameters_container = ParametersWidget()
+        # Applying layout to Tabbed input files/parameters
         layout.addWidget(self.parameters_container)
 
         #
@@ -1438,6 +1446,7 @@ class MainWindow(QMainWindow):
             self.parameters_container.parameters = pastaq.default_parameters('orbitrap', 10)
             self.save_project_btn.setEnabled(True)
             self.save_project_as_btn.setEnabled(True)
+            self.remove_file_btn.setEnabled(True)
             self.run_btn.setEnabled(True)
             self.reset_param_btn.setEnabled(True)
             self.project_variables_container.setEnabled(True)
@@ -1464,6 +1473,7 @@ class MainWindow(QMainWindow):
                 self.project_path = file_path
                 self.save_project_btn.setEnabled(True)
                 self.save_project_as_btn.setEnabled(True)
+                self.remove_file_btn.setEnabled(True)
                 self.run_btn.setEnabled(True)
                 self.reset_param_btn.setEnabled(True)
                 self.project_variables_container.setEnabled(True)
