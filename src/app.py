@@ -4,7 +4,7 @@ import os
 import platform
 import sys
 import time
-# import resources #idk what this is needed for i couldnt run program so i commented it out
+import resources
 import platform
 import pathlib
 import subprocess
@@ -16,10 +16,7 @@ from PyQt5.QtWidgets import *
 from pathlib import Path
 
 import pastaq
-# sonarqube just for me (kaitlin):
-# C:\Users\kaitl\Downloads\sonarqube-9.3.0.51899\sonarqube-9.3.0.51899\bin\windows-x86-64\StartSonar.bat
-# http://localhost:9000/dashboard?id=pastaq
-# sonar-scanner.bat -D'sonar.projectKey=pastaq' -D'sonar.sources=.' -D'sonar.host.url=http://localhost:9000' -D'sonar.login=admin' -D'sonar.password=Dogukan69'
+
 
 # TODO: Create custom file picker widget that shows the name of the picked files
 # TODO: Switch the cwd to the project directory and/or use it instead of os.getcwd()

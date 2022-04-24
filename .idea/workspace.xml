@@ -2,6 +2,11 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="2031313c-728e-4e64-889f-18672d2138a9" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.scannerwork/.sonar_lock" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.scannerwork/report-task.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/resources.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/app.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -51,11 +56,12 @@
   </component>
   <component name="PropertiesComponent">
     <property name="ASKED_ADD_EXTERNAL_FILES" value="true" />
+    <property name="ASKED_MARK_IGNORED_FILES_AS_EXCLUDED" value="true" />
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
-    <property name="settings.editor.selected.configurable" value="vcs.Subversion.SSH" />
+    <property name="settings.editor.selected.configurable" value="preferences.pluginManager" />
   </component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
@@ -205,6 +211,11 @@
       <workItem from="1650630475929" duration="5829000" />
       <workItem from="1650650100943" duration="2155000" />
       <workItem from="1650664620830" duration="609000" />
+      <workItem from="1650825365051" duration="604000" />
+      <workItem from="1650826000382" duration="220000" />
+      <workItem from="1650826242626" duration="268000" />
+      <workItem from="1650826537108" duration="63000" />
+      <workItem from="1650826622928" duration="180000" />
     </task>
     <servers />
   </component>
