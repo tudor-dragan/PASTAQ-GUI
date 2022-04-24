@@ -1,9 +1,0 @@
-# required for pastaq
-cmake
-
-# required for PASTAQ-GUI
-#git+https://github.com/bys1/PASTAQ
-PyQt5
-
-# required for packaging
-pyinstaller

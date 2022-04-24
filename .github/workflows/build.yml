@@ -40,27 +40,29 @@ jobs:
             TARGET: macos
             CMD_BUILD: >
                 pyinstaller -F -w -n PASTAQ-GUI -i resources/pastaq.icns src/app.py &&
-                cd dist/ &&
-                zip -r9 PASTAQ-GUI PASTAQ-GUI.app/
-            CMD_DEP: >
-                python -m pip install --upgrade pip &&
-                pip install -r src/requirements.txt &&
-                pip install pastaq
+                cd dist &&
+                zip -r9 PASTAQ-GUI PASTAQ-GUI.app
+            CMD_PASTAQ: pip install pastaq
             OUT_FILE_NAME: PASTAQ-GUI.zip
+            ASSET_MIME: application/zip
+          - os: ubuntu-latest
+            TARGET: ubuntu
+            CMD_BUILD: >
+                pyinstaller -F -w -n PASTAQ-GUI -i resources/pastaq.png src/app.py &&
+                cd dist &&
+                zip -r9 PASTAQ-GUI-LINUX PASTAQ-GUI
+            CMD_PASTAQ: >
+                sudo apt update &&
+                sudo apt install xcb &&
+                pip install pastaq
+            OUT_FILE_NAME: PASTAQ-GUI-LINUX.zip
             ASSET_MIME: application/zip
           - os: windows-latest
             TARGET: windows
             CMD_BUILD: pyinstaller -F -w -n PASTAQ-GUI -i resources/pastaq.ico src/app.py
-            CMD_DEP: >
-                doskey if=echo "DONE"
-                python -m pip install --upgrade pip &&
+            CMD_PASTAQ: >
+                doskey if=echo "DONE" &&
                 pip install wget &&
-                pip install -r src/requirements.txt &&
-                pip install cx_Freeze &&
-                git clone https://github.com/PASTAQ-MS/PASTAQ &&
-                cd PASTAQ &&
-                git submodule init &&
-                git submodule update &&
                 python -m wget http://www.zlib.net/zlib-1.2.12.tar.gz &&
                 tar -xvzf zlib-1.2.12.tar.gz &&
                 cd zlib-1.2.12 &&
@@ -68,8 +70,7 @@ jobs:
                 cmake --build . --config Release --target install &&
                 rm "C:/Program Files (x86)/zlib/lib/zlib.lib" &&
                 cd .. &&
-                python setup.py install --user &&
-                python setup.py develop --user
+                pip install pastaq
             OUT_FILE_NAME: PASTAQ-GUI.exe
             ASSET_MIME: application/vnd.microsoft.portable-executable
     steps:
@@ -78,8 +79,14 @@ jobs:
       uses: actions/setup-python@v2
       with:
         python-version: 3.8
-    - name: Install dependencies for ${{matrix.TARGET}}
-      run: ${{matrix.CMD_DEP}}
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install cmake
+        pip install PyQt5
+        pip install pyinstaller
+    - name: Install PASTAQ for ${{matrix.TARGET}}
+      run: ${{matrix.CMD_PASTAQ}}
     - name: Build with pyinstaller for ${{matrix.TARGET}}
       run: ${{matrix.CMD_BUILD}}
     - name: Load Release URL File from release job

@@ -8,13 +8,12 @@ import resources
 import platform
 import pathlib
 import subprocess
-import sys
+from identification import *
 
-from pathlib import Path
-from PyQt5.QtWidgets import QMainWindow, QApplication
 from PyQt5.QtCore import *
 from PyQt5.QtGui import QIcon, QKeySequence, QPalette, QColor
 from PyQt5.QtWidgets import *
+from pathlib import Path
 
 import pastaq
 # sonarqube just for me (kaitlin):
