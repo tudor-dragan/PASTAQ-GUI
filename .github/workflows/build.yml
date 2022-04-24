@@ -51,7 +51,10 @@ jobs:
                 pyinstaller -F -w -n PASTAQ-GUI -i resources/pastaq.png src/app.py &&
                 cd dist &&
                 zip -r9 PASTAQ-GUI-LINUX PASTAQ-GUI
-            CMD_PASTAQ: pip install pastaq
+            CMD_PASTAQ: >
+                apt update &&
+                apt install xcb &&
+                pip install pastaq
             OUT_FILE_NAME: PASTAQ-GUI-LINUX.zip
             ASSET_MIME: application/zip
           - os: windows-latest
@@ -66,7 +69,7 @@ jobs:
                 cmake . &&
                 cmake --build . --config Release --target install &&
                 rm "C:/Program Files (x86)/zlib/lib/zlib.lib" &&
-                cd ..
+                cd .. &&
                 pip install pastaq
             OUT_FILE_NAME: PASTAQ-GUI.exe
             ASSET_MIME: application/vnd.microsoft.portable-executable
