@@ -65,7 +65,7 @@ class EditFileDialog(QDialog):
         else:
             event.ignore()
 
-    # TODO somehow do the same as edit_file() function (preferably no duplicate code so combine if possible)
+    # TODO somehow do the same as edit_file(self) function (preferably no duplicate code so combine if possible)
     # only allow specific file types
     def dropEvent(self, event):
         files = [u.toLocalFile() for u in event.mimeData().urls()]
