@@ -45,12 +45,12 @@ class EditFileDialog(QDialog):
         mzid_picker = QPushButton('Browse')
         mzid_picker.clicked.connect(self.set_mzid_paths)
         # start of drag and drop
-        # drop = ImageLabel()
-        # self.setAcceptDrops(True)
+        drop = ImageLabel()
+        self.setAcceptDrops(True)
 
         form_layout.addRow('Group', self.group_box)
         form_layout.addRow('mgf/mzID', mzid_picker)
-        # form_layout.addRow(drop)
+        form_layout.addRow(drop)
 
         form_container.setLayout(form_layout)
 
@@ -74,9 +74,7 @@ class EditFileDialog(QDialog):
 
     def dropEvent(self, event):
         files = [u.toLocalFile() for u in event.mimeData().urls()]
-        #
-        for f in files:
-            print(f)
+        self.mzid_paths = files
 
     def set_group(self):
         self.group = self.group_box.text()
