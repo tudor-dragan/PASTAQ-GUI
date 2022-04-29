@@ -69,9 +69,16 @@ class EditFileDialog(QDialog):
     # only allow specific file types
     def dropEvent(self, event):
         files = [u.toLocalFile() for u in event.mimeData().urls()]
+        drop = []
+        for file in files:
+            if file.endswith(".mzID'") or file.endswith(".mzIdentML'") or file.endswith(".mgf'"):
+                drop.append(file)
+        if len(drop) > 0:
+            self.mzid_paths = drop
+
         #
-        for f in files:
-            print(f)
+        #for f in files:
+            #print(f)
 
     def set_group(self):
         self.group = self.group_box.text()
