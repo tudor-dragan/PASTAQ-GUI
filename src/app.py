@@ -192,6 +192,7 @@ class PipelineLogDialog(QDialog):
         self.pipeline_thread.output_dir = output_dir
         self.pipeline_thread.finished.connect(self.exit_success)
         self.pipeline_thread.start()
+        
 
     def __del__(self):
         sys.stdout = sys.__stdout__
@@ -220,7 +221,10 @@ class PipelineLogDialog(QDialog):
 
         # Restore stdout pipe.
         sys.stdout = sys.__stdout__
+        # this does not quit the thread it keeps running in the background
         self.pipeline_thread.quit()
+        # self.pipeline_thread.terminate() can be used in place of quit and it will end the thread
+        # but not free the memory allocated in the C++ part of the code
         self.reject()
 
 # PASTAQ window
