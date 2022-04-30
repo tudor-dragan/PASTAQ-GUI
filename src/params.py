@@ -1,6 +1,7 @@
 import os
 import subprocess
 import inspect
+import files
 
 from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
@@ -226,7 +227,7 @@ class ParametersWidget(QTabWidget):
         if len(indexes) == 0:
             return
 
-        edit_file_dialog = EditFileDialog(self)
+        edit_file_dialog = files.EditFileDialog(self)
         if edit_file_dialog.exec():
             old_list = self.input_files
             new_list = []

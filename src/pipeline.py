@@ -6,6 +6,12 @@ from PyQt5.QtWidgets import *
 
 import pastaq
 
+class TextStream(QObject):
+    text_written = pyqtSignal(str)
+
+    def write(self, text):
+        self.text_written.emit(str(text))
+
 class PipelineRunner(QThread):
     finished = pyqtSignal()
 
