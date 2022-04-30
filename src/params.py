@@ -6,6 +6,27 @@ import files
 from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
 
+class ParameterItem(QWidget):
+    def __init__(self, label, tooltip, widget, parent=None):
+        QWidget.__init__(self, parent=parent)
+        layout = QVBoxLayout(self)
+
+        button = ParameterLabel(label)
+        button.setToolTip(tooltip)
+
+        icon = QIcon(':/icons/question.png')
+        button.setLayoutDirection(Qt.RightToLeft)
+        button.setIcon(icon)
+        button.setFlat(True)
+
+
+        layout.addWidget(button)
+        layout.addWidget(widget)
+
+class ParameterLabel(QPushButton):
+    def mousePressEvent(self, event):
+        return
+
 # PASTAQ window
 class ParametersWidget(QTabWidget):
     input_files = []

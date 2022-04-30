@@ -14,34 +14,9 @@ from PyQt5.QtWidgets import *
 
 import pastaq
 
-
 # TODO: Create custom file picker widget that shows the name of the picked files
 # TODO: Switch the cwd to the project directory and/or use it instead of os.getcwd()
 # TODO: The RUN button should only be access when there is at least 1 sample active.
-
-class ParameterItem(QWidget):
-    def __init__(self, label, tooltip, widget, parent=None):
-        QWidget.__init__(self, parent=parent)
-        layout = QVBoxLayout(self)
-
-        button = ParameterLabel(label)
-        button.setToolTip(tooltip)
-
-        icon = QIcon(':/icons/question.png')
-        button.setLayoutDirection(Qt.RightToLeft)
-        button.setIcon(icon)
-        button.setFlat(True)
-
-
-        layout.addWidget(button)
-        layout.addWidget(widget)
-
-
-class ParameterLabel(QPushButton):
-    def mousePressEvent(self, event):
-        return
-
-
 
 pop = False
 class MainWindow(QMainWindow):
