@@ -1,4 +1,5 @@
 import os
+import subprocess
 
 from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
@@ -91,3 +92,172 @@ class ImageLabel(QLabel):
 
     def setPixmap(self, image):
         super().setPixmap(image)
+
+# class for file processing
+class FileProcessor:
+    ms_jar = ""
+    id_file = ""
+    fasta = ""
+    
+    # browse for msfragger .jar file
+    def set_jar_path(self, input):
+        jar, _ = QFileDialog.getOpenFileName(
+            parent=self,
+            caption='Select MSFragger .jar file',
+            directory=os.getcwd(),
+            filter='jar (*.jar)'
+        )
+        if len(jar) > 0:
+            self.ms_jar = jar
+            input.setText(self.ms_jar)
+
+    # confirm .jar file
+    def check_ms(self, input):
+        if os.path.exists(input):
+            self.ms_jar = input
+            is_jar = self.ms_jar.endswith('.jar')
+            if not is_jar:
+                self.popup_window('Not a .jar file')
+                self.ms_jar = ""
+            else:
+                return True
+        else:
+            self.popup_window('MSFragger path does not exist')
+            return False
+
+    # browse for idconvert.exe
+    def set_id_path(self, input):
+        file, _ = QFileDialog.getOpenFileName(
+            parent=self,
+            caption='Select idconvert executable',
+            directory=os.getcwd(),
+            filter=('exe (*.exe)')
+        )
+        if len(file) > 0:
+            self.id_file = file
+            input.setText(self.id_file)
+
+    # confirm idconvert
+    def check_id(self, input):
+        if os.path.exists(input):
+            self.id_file = input
+            idconvert = os.access(self.id_file, os.X_OK)
+            if not self.id_file.endswith('.exe') or not idconvert:
+                self.popup_window('Not an .exe file or not executable')
+                self.id_file = ''
+            else:
+                return True
+        else:
+            self.popup_window('idconvert path does not exist')
+            return False
+
+    # browse for FASTA database
+    def set_fasta_path(self, input):
+        file, _ = QFileDialog.getOpenFileName(
+            parent=self,
+            caption='Select FASTA format protein database',
+            directory=os.getcwd(),
+            filter='FASTA (*.fasta)'
+        )
+        if len(file) > 0:
+            self.fasta = file
+            input.setText(self.fasta)
+
+    # confirm fasta
+    def check_fasta(self, input):
+        if os.path.exists(input):
+            self.fasta = input
+            if not self.fasta.endswith('.fasta'):
+                self.popup_window('Not a FASTA file')
+                self.fasta = ''
+            else:
+                return True
+        else:
+            self.popup_window('FASTA path does not exist')
+            return True
+    
+    # split path into jar file and directory
+    def get_ms(self):
+        jar = self.ms_jar
+        jar_file = os.path.basename(jar)  # jar
+        ms_path = os.path.dirname(jar)   # directory
+        return ms_path, jar_file
+
+
+    # idconvert
+    def get_id(self):
+        id = self.id_file
+        return id
+
+    # msfragger places pepxml in same directory with same name
+    def make_pep_path(self, mgf):
+        return mgf.replace('.mgf', '.pepxml')
+
+    # idconvert places mzid in same directory with same name
+    def make_mzid_path(self, mzid):
+        return mzid.replace(".mgf", ".mzID")
+
+    def popup_window(self, text):
+        wrong_path = QMessageBox()
+        wrong_path.setText(text)
+        wrong_path.setWindowTitle("Error")
+        wrong_path.exec_()
+        return
+    
+
+    def process(self, mgf):
+        # check if mzid is already in same directory
+        if os.path.exists(self.make_mzid_path(mgf)):
+            return self.make_mzid_path(mgf)
+
+        # check .jar and assign if possible
+        if self.check_ms(self.ms_jar):
+            ms, ms_jar = self.get_ms()
+        else:
+            return False
+
+        params = "C:/Users/kaitl/Downloads/closed_fragger.params"
+        params = "C:/Users/kaitl/Desktop/closed_fragger.params"
+        msfragger = subprocess.run(
+            ["java", "-Xmx32g", "-jar", ms_jar, params, mgf],
+            cwd=ms,
+            capture_output=True
+        )
+
+        # check if msfragger was successful
+        try:
+            msfragger.check_returncode()
+        except subprocess.CalledProcessError as e:
+            print(e.output)
+            self.popup_window("MSFragger failure")
+            return False
+
+        # .pepXML should exist at this point
+        pep = self.make_pep_path(mgf)
+        if not os.path.exists(pep):
+            self.popup_window(".pepXML does not exist")
+            return False
+
+        # idconvert exe
+        if (self.check_id(self.id_file)):
+            id = self.id_file
+
+        idconvert = subprocess.run([id, pep, "-o", os.path.dirname(mgf)], capture_output=True)
+
+        # check if idconvert was successful
+        try:
+            idconvert.check_returncode()
+        except subprocess.CalledProcessError as e:
+            print(e.output)
+            self.popup_window("idconvert failure")
+            return False
+
+        # delete .pepXML
+        os.unlink(pep)
+
+        mzid = self.make_mzid_path(mgf)
+        if not os.path.exists(mzid):
+            self.popup_window(".mzid does not exist")
+            return False
+
+        return mzid
