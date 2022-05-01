@@ -2,81 +2,80 @@ import json
 import os
 import platform
 import sys
-import resources
-import params
-import pipeline
-import platform
 
-
+import pastaq
 from PyQt5.QtCore import *
 from PyQt5.QtGui import QIcon, QKeySequence, QPalette, QColor
 from PyQt5.QtWidgets import *
 
-import pastaq
+import parameter
+import pipeline
 
 # TODO: Create custom file picker widget that shows the name of the picked files
 # TODO: Switch the cwd to the project directory and/or use it instead of os.getcwd()
 # TODO: The RUN button should only be access when there is at least 1 sample active.
 
 pop = False
+
+
 class MainWindow(QMainWindow):
     project_path = ''
     dark = False
-   
+
     def __init__(self):
         super().__init__()
 
         self.setWindowTitle('PASTAQ: DDA Pipeline')
 
         # Tabbed input files/parameters
-        self.parameters_container = params.ParametersWidget()
-        
+        self.parameters_container = parameter.ParametersWidget()
+
         # Main layout
         layout = QVBoxLayout()
 
-        #Menu Bar
+        # Menu Bar
         self.menubar = self.menuBar()
         self.fileMenu = self.menubar.addMenu('File')
         self.actionMenu = self.menubar.addMenu('Action')
-                
-        #New Project 
+
+        # New Project
         self.newProj = QAction('New Project', self)
         self.newProj.triggered.connect(self.new_project)
         self.fileMenu.addAction(self.newProj)
 
-        #Open Project 
+        # Open Project
         self.openProj = QAction('Open Project', self)
         self.openProj.triggered.connect(self.open_project)
         self.openProj.setShortcut(QKeySequence('Ctrl+o'))
         self.fileMenu.addAction(self.openProj)
 
-        #Save Project
+        # Save Project
         self.save_project_btn = QAction('Save', self)
         self.save_project_btn.triggered.connect(self.save_project)
         self.save_project_btn.setShortcut(QKeySequence('Ctrl+s'))
         self.save_project_btn.setEnabled(False)
         self.fileMenu.addAction(self.save_project_btn)
 
-        #Save Project As
+        # Save Project As
         self.save_project_as_btn = QAction('Save as', self)
         self.save_project_as_btn.triggered.connect(self.save_project_as)
         self.save_project_as_btn.setEnabled(False)
         self.fileMenu.addAction(self.save_project_as_btn)
 
-        #remove file menu button
+        # remove file menu button
         self.remove_file_btn = QAction('Remove Selected Files', self)
         self.remove_file_btn.triggered.connect(self.parameters_container.remove_file)
-        self.remove_file_btn.setShortcut(QKeySequence('Ctrl+d'))
+        self.remove_file_btn.setShortcut(QKeySequence('del'))
         self.remove_file_btn.setEnabled(False)
         self.actionMenu.addAction(self.remove_file_btn)
 
-        #reset button
+        # reset button
         self.reset_param_btn = QAction('Reset Parameters', self)
         self.reset_param_btn.triggered.connect(self.reset_param)
         self.reset_param_btn.setEnabled(False)
         self.actionMenu.addAction(self.reset_param_btn)
-        
-        #dark/light mode button
+
+        # dark/light mode button
         self.view_mode_btn = QAction('Dark Mode', self)
         self.view_mode_btn.triggered.connect(self.view_mode)
         self.reset_param_btn.setEnabled(True)
@@ -128,9 +127,9 @@ class MainWindow(QMainWindow):
 
     def reset_param(self):
         self.update_ui(True)
-    
+
     def view_mode(self):
-        if (self.dark == False):
+        if not self.dark:
             self.dark_mode()
             self.dark = True
             self.view_mode_btn.setText('Light Mode')
@@ -138,8 +137,9 @@ class MainWindow(QMainWindow):
             self.light_mode()
             self.dark = False
             self.view_mode_btn.setText('Dark Mode')
-               
-    def dark_mode(self):
+
+    @staticmethod
+    def dark_mode():
         app.setStyle("Fusion")
         palette = QPalette()
         palette.setColor(QPalette.Window, QColor(53, 53, 53))
@@ -154,12 +154,13 @@ class MainWindow(QMainWindow):
         palette.setColor(QPalette.Highlight, QColor(42, 130, 218))
 
         app.setPalette(palette)
-        
-    def light_mode(self):
+
+    @staticmethod
+    def light_mode():
         app.setStyle("Fusion")
         palette = QPalette()
         app.setPalette(palette)
-                
+
     def update_ui(self, default=False):
         # Project metadata.
         self.project_directory_ui.setText(os.path.dirname(self.project_path))
@@ -324,9 +325,9 @@ class MainWindow(QMainWindow):
     def save_project(self):
         try:
             with open(self.project_path, 'w') as json_file:
-                params = self.parameters_container.parameters
-                params['input_files'] = self.parameters_container.input_files
-                json.dump(params, json_file)
+                params_values = self.parameters_container.parameters
+                params_values['input_files'] = self.parameters_container.input_files
+                json.dump(params_values, json_file)
         except:
             error_dialog = QMessageBox()
             error_dialog.setIcon(QMessageBox.Critical)
@@ -336,7 +337,7 @@ class MainWindow(QMainWindow):
             error_dialog.exec_()
 
     def closeEvent(self, event):
-        if pop == True:
+        if pop:
             box = QMessageBox()
             box.setWindowTitle('Window Close')
             box.setText('Do you want to save your work?')
@@ -403,6 +404,7 @@ app = QApplication(sys.argv)
 app.setWindowIcon(QIcon(':/icons/pastaq.png'))
 if platform.system() == 'Windows':
     import ctypes
+
     ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID('pastaq-gui')
 app.setStyle("Fusion")
 

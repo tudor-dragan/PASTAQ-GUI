@@ -1,9 +1,13 @@
-import os
 import inspect
-import files
+import os
 
 from PyQt5.QtCore import *
+from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import *
+
+import files
+import resources
+
 
 class ParameterItem(QWidget):
     def __init__(self, label, tooltip, widget, parent=None):
@@ -18,13 +22,14 @@ class ParameterItem(QWidget):
         button.setIcon(icon)
         button.setFlat(True)
 
-
         layout.addWidget(button)
         layout.addWidget(widget)
+
 
 class ParameterLabel(QPushButton):
     def mousePressEvent(self, event):
         return
+
 
 # PASTAQ window
 class ParametersWidget(QTabWidget):
@@ -94,7 +99,7 @@ class ParametersWidget(QTabWidget):
         msfragger_box = QGroupBox('MSFragger')
         lay_ms = QHBoxLayout()
         input_ms = QLineEdit()
-        input_ms.setText(self.file_processor.ms_jar)
+        input_ms.setText(self.file_processor.ms_jar[1])
         browse_button_ms = QPushButton('Browse')
         browse_button_ms.clicked.connect(lambda: self.file_processor.set_jar_path(input_ms))
         check_ms = QPushButton('Confirm')
@@ -107,7 +112,7 @@ class ParametersWidget(QTabWidget):
         id_box = QGroupBox('idconvert')
         lay_id = QHBoxLayout()
         input_id = QLineEdit()
-        input_id.setText(self.file_processor.id_file)
+        input_id.setText(self.file_processor.id_file[1])
         browse_button_id = QPushButton('Browse')
         browse_button_id.clicked.connect(lambda: self.file_processor.set_id_path(input_id))
         check_id_button = QPushButton('Confirm')
@@ -119,15 +124,15 @@ class ParametersWidget(QTabWidget):
 
         db_box = QGroupBox('Protein database')
         lay_db = QHBoxLayout()
-        input_fasta = QLineEdit()
-        input_fasta.setText(self.file_processor.fasta)
-        browse_button_fasta = QPushButton('Browse')
-        browse_button_fasta.clicked.connect(lambda: self.file_processor.set_fasta_path(input_fasta))
-        check_fasta_button = QPushButton('Confirm')
-        check_fasta_button.clicked.connect(lambda: self.file_processor.check_fasta(input_fasta.text()))
-        lay_db.addWidget(input_fasta)
-        lay_db.addWidget(browse_button_fasta)
-        lay_db.addWidget(check_fasta_button)
+        input_params = QLineEdit()
+        input_params.setText(self.file_processor.params[1])
+        browse_button_params = QPushButton('Browse')
+        browse_button_params.clicked.connect(lambda: self.file_processor.set_params_path(input_params))
+        check_params_button = QPushButton('Confirm')
+        check_params_button.clicked.connect(lambda: self.file_processor.check_params(input_params.text()))
+        lay_db.addWidget(input_params)
+        lay_db.addWidget(browse_button_params)
+        lay_db.addWidget(check_params_button)
         db_box.setLayout(lay_db)
 
         widget = QWidget()
@@ -216,7 +221,6 @@ class ParametersWidget(QTabWidget):
                 if i not in indexes:
                     new_list += [file]
             self.update_input_files(new_list)
-
 
     def find_selected_files(self):
         selected_ranges = self.input_files_table.selectedRanges()
@@ -746,7 +750,7 @@ class ParametersWidget(QTabWidget):
         content_widget.setLayout(layout)
         self.update_allowed = True
 
-    def m(self):
+    def update_parameters(self):
         if not self.update_allowed:
             return
 

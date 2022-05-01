@@ -1,16 +1,17 @@
 import sys
 import time
 
+import pastaq
 from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
 
-import pastaq
 
 class TextStream(QObject):
     text_written = pyqtSignal(str)
 
     def write(self, text):
         self.text_written.emit(str(text))
+
 
 class PipelineRunner(QThread):
     finished = pyqtSignal()
@@ -70,7 +71,6 @@ class PipelineLogDialog(QDialog):
         self.pipeline_thread.output_dir = output_dir
         self.pipeline_thread.finished.connect(self.exit_success)
         self.pipeline_thread.start()
-        
 
     def __del__(self):
         sys.stdout = sys.__stdout__
