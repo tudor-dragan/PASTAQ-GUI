@@ -15,7 +15,6 @@ class TextStream(QObject):
 
 class PipelineRunner(QThread):
     finished = pyqtSignal()
-
     params = {}
     input_files = []
     output_dir = ''
@@ -29,7 +28,6 @@ class PipelineRunner(QThread):
     def run(self):
         print('Starting DDA Pipeline')
         time.sleep(1)
-
         try:
             pastaq.dda_pipeline(self.params, self.input_files, self.output_dir)
         except Exception as e:
@@ -45,35 +43,49 @@ class PipelineLogDialog(QDialog):
     def __init__(self, params, input_files, output_dir, parent=None):
         super().__init__(parent)
 
-        # TODO: Set fixed size for this.
         self.setWindowTitle('PASTAQ: DDA Pipeline (Running)')
 
         # Add custom output to text stream.
         sys.stdout = TextStream(text_written=self.append_text)
 
         # Log text box.
-        self.text_box = QTextEdit()
-        self.text_box.setReadOnly(True)
+        self.text_box = self.init_log()
 
         # Dialog buttons (Ok/Cancel).
-        self.buttons = QDialogButtonBox(QDialogButtonBox.Cancel)
-        self.buttons.rejected.connect(self.exit_failure)
+        self.buttons = self.init_buttons()
 
         # Prepare layout.
-        self.layout = QVBoxLayout()
-        self.layout.addWidget(self.text_box)
-        self.layout.addWidget(self.buttons)
-        self.setLayout(self.layout)
+        self.setLayout(self.init_layout())
 
-        self.pipeline_thread = PipelineRunner()
-        self.pipeline_thread.params = params
-        self.pipeline_thread.input_files = input_files
-        self.pipeline_thread.output_dir = output_dir
-        self.pipeline_thread.finished.connect(self.exit_success)
+        self.pipeline_thread = self.init_pipeline(params, input_files, output_dir)
         self.pipeline_thread.start()
 
     def __del__(self):
         sys.stdout = sys.__stdout__
+
+    def init_log(self):
+        text_box = QTextEdit()
+        text_box.setReadOnly(True)
+        return text_box
+
+    def init_buttons(self):
+        buttons = QDialogButtonBox(QDialogButtonBox.Cancel)
+        buttons.rejected.connect(self.exit_failure)
+        return buttons
+
+    def init_layout(self):
+        layout = QVBoxLayout()
+        layout.addWidget(self.text_box)
+        layout.addWidget(self.buttons)
+        return layout
+
+    def init_pipeline(self, params, input_files, output_dir):
+        pipeline_thread = PipelineRunner()
+        pipeline_thread.params = params
+        pipeline_thread.input_files = input_files
+        pipeline_thread.output_dir = output_dir
+        pipeline_thread.finished.connect(self.exit_success)
+        return pipeline_thread
 
     def append_text(self, text):
         cursor = self.text_box.textCursor()
