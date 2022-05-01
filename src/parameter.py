@@ -14,6 +14,12 @@ class ParameterItem(QWidget):
         QWidget.__init__(self, parent=parent)
         layout = QVBoxLayout(self)
 
+        button = self.init_button(label, tooltip)
+
+        layout.addWidget(button)
+        layout.addWidget(widget)
+
+    def init_button(self, label, tooltip):
         button = ParameterLabel(label)
         button.setToolTip(tooltip)
 
@@ -22,8 +28,7 @@ class ParameterItem(QWidget):
         button.setIcon(icon)
         button.setFlat(True)
 
-        layout.addWidget(button)
-        layout.addWidget(widget)
+        return button
 
 
 class ParameterLabel(QPushButton):
@@ -51,89 +56,114 @@ class ParametersWidget(QTabWidget):
         self.parameters_tab_ui()
         self.input_paths_tab_ui()
 
-    def input_files_tab_ui(self):
-        self.input_files_table = QTableWidget()
-        self.input_files_table.setEditTriggers(QTableWidget.NoEditTriggers)
-        self.input_files_table.setSelectionBehavior(QTableWidget.SelectRows)
-        self.input_files_table.setRowCount(0)
-        self.input_files_table.setColumnCount(4)
-        self.input_files_table.setFocusPolicy(False)
+    def init_files_table(self):
+        input_files_table = QTableWidget()
+        input_files_table.setEditTriggers(QTableWidget.NoEditTriggers)
+        input_files_table.setSelectionBehavior(QTableWidget.SelectRows)
+        input_files_table.setRowCount(0)
+        input_files_table.setColumnCount(4)
+        input_files_table.setFocusPolicy(False)
         column_names = [
             'Raw File (mzXML/mzML)',
             'Identification file (mzID)',
             'Group',
             'Reference'
         ]
-        self.input_files_table.setHorizontalHeaderLabels(column_names)
-        self.input_files_table.verticalHeader().hide()
+        input_files_table.setHorizontalHeaderLabels(column_names)
+        input_files_table.verticalHeader().hide()
+        return input_files_table
+
+    def init_header(self):
         header = self.input_files_table.horizontalHeader()
         header.setSectionResizeMode(0, QHeaderView.Stretch)
         header.setSectionResizeMode(1, QHeaderView.Stretch)
         header.setSectionResizeMode(2, QHeaderView.ResizeToContents)
         header.setSectionResizeMode(3, QHeaderView.ResizeToContents)
 
-        # Buttons.
-        self.add_file_btn = QPushButton('Add')
-        self.add_file_btn.clicked.connect(self.add_file)
-        self.edit_file_btn = QPushButton('Edit')
-        self.edit_file_btn.clicked.connect(self.edit_file)
-        self.remove_file_btn = QPushButton('Remove')
-        self.remove_file_btn.clicked.connect(self.remove_file)
-        self.remove_all_files_btn = QPushButton("Remove All")
-        self.remove_all_files_btn.clicked.connect(self.remove_all_files)
+    def init_button(self, text, action):
+        button = QPushButton(text)
+        button.clicked.connect(action)
+        return button
 
-        self.input_file_buttons = QWidget()
+    def init_control(self, add_button, edit_button, remove_button, remove_all_button):
+        buttons = QWidget()
         controls_layout = QHBoxLayout()
-        controls_layout.addWidget(self.add_file_btn)
-        controls_layout.addWidget(self.edit_file_btn)
-        controls_layout.addWidget(self.remove_file_btn)
-        controls_layout.addWidget(self.remove_all_files_btn)
-        self.input_file_buttons.setLayout(controls_layout)
+        controls_layout.addWidget(add_button)
+        controls_layout.addWidget(edit_button)
+        controls_layout.addWidget(remove_button)
+        controls_layout.addWidget(remove_all_button)
+        buttons.setLayout(controls_layout)
+        return buttons
+
+    def input_files_tab_ui(self):
+        self.input_files_table = self.init_files_table()
+
+        self.init_header()
+
+        # buttons
+        add_button = self.init_button('Add', self.add_file)
+        edit_button = self.init_button('Edit', self.edit_file)
+        remove_button = self.init_button('Remove', self.remove_file)
+        remove_all_button = self.init_button('Remove', self.remove_all_files)
+        # control panel
+        input_file_buttons = self.init_control(add_button, edit_button, remove_button, remove_all_button)
 
         layout = QVBoxLayout()
-        layout.addWidget(self.input_file_buttons)
+        layout.addWidget(input_file_buttons)
         layout.addWidget(self.input_files_table)
         self.input_files_tab.setLayout(layout)
 
-    def input_paths_tab_ui(self):
-        msfragger_box = QGroupBox('MSFragger')
+    def msfragger_container(self):
+        box = QGroupBox('MSFragger')
         lay_ms = QHBoxLayout()
         input_ms = QLineEdit()
         input_ms.setText(self.file_processor.ms_jar[1])
-        browse_button_ms = QPushButton('Browse')
-        browse_button_ms.clicked.connect(lambda: self.file_processor.set_jar_path(input_ms))
-        check_ms = QPushButton('Confirm')
-        check_ms.clicked.connect(lambda: self.file_processor.check_ms(input_ms.text()))
+        browse_button_ms = self.init_button('Browse', lambda: self.file_processor.set_jar_path(input_ms))
+        # browse_button_ms.clicked.connect(lambda: self.file_processor.set_jar_path(input_ms))
+        check_ms = self.init_button('Confirm', lambda: self.file_processor.check_ms(input_ms.text()))
+        # check_ms.clicked.connect(lambda: self.file_processor.check_ms(input_ms.text()))
         lay_ms.addWidget(input_ms)
         lay_ms.addWidget(browse_button_ms)
         lay_ms.addWidget(check_ms)
-        msfragger_box.setLayout(lay_ms)
+        box.setLayout(lay_ms)
+        return box
 
-        id_box = QGroupBox('idconvert')
+    def idconvert_container(self):
+        box = QGroupBox('idconvert')
         lay_id = QHBoxLayout()
         input_id = QLineEdit()
         input_id.setText(self.file_processor.id_file[1])
-        browse_button_id = QPushButton('Browse')
-        browse_button_id.clicked.connect(lambda: self.file_processor.set_id_path(input_id))
-        check_id_button = QPushButton('Confirm')
-        check_id_button.clicked.connect(lambda: self.file_processor.check_id(input_id.text()))
+        browse_button_id = self.init_button('Browse', lambda: self.file_processor.set_id_path(input_id))
+        # browse_button_id.clicked.connect(lambda: self.file_processor.set_id_path(input_id))
+        check_id_button = self.init_button('Confirm', lambda: self.file_processor.check_id(input_id.text()))
+        # check_id_button.clicked.connect(lambda: self.file_processor.check_id(input_id.text()))
         lay_id.addWidget(input_id)
         lay_id.addWidget(browse_button_id)
         lay_id.addWidget(check_id_button)
-        id_box.setLayout(lay_id)
+        box.setLayout(lay_id)
+        return box
 
-        db_box = QGroupBox('Protein database')
-        lay_db = QHBoxLayout()
+    def params_container(self):
+        box = QGroupBox('Protein database')
+        lay_params = QHBoxLayout()
         input_params = QLineEdit()
         input_params.setText(self.file_processor.params[1])
-        browse_button_params = QPushButton('Browse')
-        browse_button_params.clicked.connect(lambda: self.file_processor.set_params_path(input_params))
-        check_params_button = QPushButton('Confirm')
+        browse_button_params = self.init_button('Browse', lambda: self.file_processor.set_params_path(input_params))
+        # browse_button_params.clicked.connect(lambda: self.file_processor.set_params_path(input_params))
+        check_params_button = self.init_button('Confirm', lambda: self.file_processor.check_params(input_params.text()))
         check_params_button.clicked.connect(lambda: self.file_processor.check_params(input_params.text()))
-        lay_db.addWidget(input_params)
-        lay_db.addWidget(browse_button_params)
-        lay_db.addWidget(check_params_button)
-        db_box.setLayout(lay_db)
+        lay_params.addWidget(input_params)
+        lay_params.addWidget(browse_button_params)
+        lay_params.addWidget(check_params_button)
+        box.setLayout(lay_params)
+        return box
+
+    def input_paths_tab_ui(self):
+        msfragger_box = self.msfragger_container()
+
+        id_box = self.idconvert_container()
+
+        params_box = self.params_container()
 
         widget = QWidget()
         self.input_paths_tab.setWidget(widget)
@@ -142,7 +172,7 @@ class ParametersWidget(QTabWidget):
         layout = QVBoxLayout()
         layout.addWidget(msfragger_box)
         layout.addWidget(id_box)
-        layout.addWidget(db_box)
+        layout.addWidget(params_box)
 
         widget.setLayout(layout)
 

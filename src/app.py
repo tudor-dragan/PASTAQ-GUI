@@ -65,7 +65,7 @@ class MainWindow(QMainWindow):
         # remove file menu button
         self.remove_file_btn = QAction('Remove Selected Files', self)
         self.remove_file_btn.triggered.connect(self.parameters_container.remove_file)
-        self.remove_file_btn.setShortcut(QKeySequence('del'))
+        self.remove_file_btn.setShortcut(QKeySequence('Del'))
         self.remove_file_btn.setEnabled(False)
         self.actionMenu.addAction(self.remove_file_btn)
 
