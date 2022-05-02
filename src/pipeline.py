@@ -5,14 +5,15 @@ import pastaq
 from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
 
-
+# The log text appearing on the pipeline modal
 class TextStream(QObject):
+    # A qt signal carrying the text output by the pipeline
     text_written = pyqtSignal(str)
 
     def write(self, text):
         self.text_written.emit(str(text))
 
-
+# Thread that runs the pipeline parallel to the GUI
 class PipelineRunner(QThread):
     finished = pyqtSignal()
     params = {}
@@ -35,7 +36,8 @@ class PipelineRunner(QThread):
 
         self.finished.emit()
 
-
+# A modal that appears after the running of the pipeline
+# It outputs the log of the pipeline and allows for cancellation.
 class PipelineLogDialog(QDialog):
     group = ''
     mzid_paths = []
@@ -68,6 +70,7 @@ class PipelineLogDialog(QDialog):
         text_box.setReadOnly(True)
         return text_box
 
+    # Allows for cancelation of the pipeline or confirmation once it is done
     def init_buttons(self):
         buttons = QDialogButtonBox(QDialogButtonBox.Cancel)
         buttons.rejected.connect(self.exit_failure)
@@ -79,6 +82,7 @@ class PipelineLogDialog(QDialog):
         layout.addWidget(self.buttons)
         return layout
 
+    # Creates the pipeline thread with the input files and parameters
     def init_pipeline(self, params, input_files, output_dir):
         pipeline_thread = PipelineRunner()
         pipeline_thread.params = params
@@ -87,6 +91,7 @@ class PipelineLogDialog(QDialog):
         pipeline_thread.finished.connect(self.exit_success)
         return pipeline_thread
 
+    # Appends text in the log field from the pipeline
     def append_text(self, text):
         cursor = self.text_box.textCursor()
         cursor.movePosition(cursor.End)
@@ -98,7 +103,7 @@ class PipelineLogDialog(QDialog):
         # Restore stdout pipe.
         sys.stdout = sys.__stdout__
 
-        # Replace button to OK instead of Cancel.
+        # Replace button with OK instead of Cancel.
         new_buttons = QDialogButtonBox(QDialogButtonBox.Ok)
         new_buttons.accepted.connect(self.accept)
         self.buttons.clear()

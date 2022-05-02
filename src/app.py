@@ -98,12 +98,10 @@ class MainWindow(QMainWindow):
         self.project_variables_container.setLayout(project_variables_layout)
         layout.addWidget(self.project_variables_container)
 
-        # Applying layout to Tabbed input files/parameters
+        # Applying layout to tabbed input files/parameters
         layout.addWidget(self.parameters_container)
 
-        #
         # Run button
-        #
         self.run_btn = QPushButton('Run')
         self.run_btn.clicked.connect(self.run_pipeline)
         layout.addWidget(self.run_btn)
@@ -369,7 +367,8 @@ class MainWindow(QMainWindow):
             self.save_project()
             global pop
             pop = True
-
+    # Runs the PASTAQ pipeline with the input files and parameters.
+    # This creates a new thread for the pipeline that runs in parallel to the GUI thread.
     def run_pipeline(self):
         # Save changes before running.
         self.save_project()

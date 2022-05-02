@@ -8,7 +8,7 @@ from PyQt5.QtWidgets import *
 import files
 import resources
 
-
+# Each changeable parameter in the parameters tab with its tooltip.
 class ParameterItem(QWidget):
     def __init__(self, label, tooltip, widget, parent=None):
         QWidget.__init__(self, parent=parent)
@@ -30,13 +30,14 @@ class ParameterItem(QWidget):
 
         return button
 
-
+# The button to interact with a parameter
 class ParameterLabel(QPushButton):
     def mousePressEvent(self, event):
         return
 
 
-# PASTAQ window
+# The main component of the GUI it contains the three tabs corresponding to input files,
+# input parameters and paths for the conversion executables
 class ParametersWidget(QTabWidget):
     input_files = []
     parameters = {}
@@ -45,6 +46,7 @@ class ParametersWidget(QTabWidget):
         super(ParametersWidget, self).__init__(parent)
         self.file_processor = files.FileProcessor()
 
+        # The tabs that make up the widget
         self.input_files_tab = QWidget()
         self.parameters_tab = QScrollArea()
         self.input_paths_tab = QScrollArea()
@@ -56,6 +58,7 @@ class ParametersWidget(QTabWidget):
         self.parameters_tab_ui()
         self.input_paths_tab_ui()
 
+    # Table for file input
     def init_files_table(self):
         input_files_table = QTableWidget()
         input_files_table.setEditTriggers(QTableWidget.NoEditTriggers)
@@ -80,11 +83,13 @@ class ParametersWidget(QTabWidget):
         header.setSectionResizeMode(2, QHeaderView.ResizeToContents)
         header.setSectionResizeMode(3, QHeaderView.ResizeToContents)
 
+    # Creates buttons and connects an "action to them"
     def init_button(self, text, action):
         button = QPushButton(text)
         button.clicked.connect(action)
         return button
 
+    # Buttons to control the files table
     def init_control(self, add_button, edit_button, remove_button, remove_all_button):
         buttons = QWidget()
         controls_layout = QHBoxLayout()
