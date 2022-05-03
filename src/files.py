@@ -10,9 +10,10 @@ class EditFileDialog(QDialog):
     group = ''
     mzid_paths = []
 
-    def __init__(self, parent=None):
+    def __init__(self, sort, update, parent=None):
         super().__init__(parent)
-
+        self.sort = sort
+        self.update = update
         self.setWindowTitle('PASTAQ: DDA Pipeline - Add files')
 
         # Edit parameters.
@@ -66,12 +67,16 @@ class EditFileDialog(QDialog):
 
     def dropEvent(self, event):
         files = [u.toLocalFile() for u in event.mimeData().urls()]
-        drop = []
+        list = []
+        print(files)
         for file in files:
-            if file.endswith(".mzID'") or file.endswith(".mzIdentML'") or file.endswith(".mgf'"):
-                drop.append(file)
-        if len(drop) > 0:
-            self.mzid_paths = drop
+            if file.endswith('.mzID') or file.endswith('.mzIdentML') or file.endswith('.mgf'):
+                list.append(file)
+        print(list)
+        # TODO kinda complicated to connect classes
+        if len(list) > 0:
+            self.mzid_paths = self.sort(list)
+            self.update(self.mzid_paths)
 
     def set_group(self):
         self.group = self.group_box.text()
@@ -100,8 +105,8 @@ class ImageLabel(QLabel):
             }
         ''')
 
-    def setPixmap(self, image):
-        super().setPixmap(image)
+    def set_pixmap(self, image):
+        super().set_pixmap(image)
 
 
 # class for file processing
@@ -119,23 +124,8 @@ class FileProcessor:
             filter='jar (*.jar)'
         )
         if len(jar) > 0:
-            self.ms_jar[1] = jar
+            self.ms_jar = [True, jar]
             text.setText(self.ms_jar[1])
-
-    # confirm .jar file
-    def check_ms(self, text):
-        if os.path.exists(text):
-            self.ms_jar[1] = text
-            is_jar = self.ms_jar[1].endswith('.jar')
-            if not is_jar:
-                self.ms_jar[0] = False
-                self.popup_window('Error', 'Not a .jar file')
-            else:
-                self.ms_jar = [True, text]
-                self.popup_window('Success', '.jar confirmed')
-        else:
-            self.ms_jar[0] = False
-            self.popup_window('Error', 'MSFragger path does not exist')
 
     # browse for idconvert.exe
     def set_id_path(self, text):
@@ -146,23 +136,8 @@ class FileProcessor:
             filter='exe (*.exe)'
         )
         if len(file) > 0:
-            self.id_file[1] = file
+            self.id_file = [True, file]
             text.setText(self.id_file[1])
-
-    # confirm idconvert
-    def check_id(self, text):
-        if os.path.exists(text):
-            idconvert = os.access(text, os.X_OK)
-            if not text.endswith('.exe') or not idconvert:
-                self.id_file[0] = False
-                self.popup_window('Error', 'Not an .exe file or not executable')
-
-            else:
-                self.id_file = [True, text]
-                self.popup_window('Success', '.exe confirmed')
-        else:
-            self.id_file[0] = False
-            self.popup_window('Error', 'idconvert path does not exist')
 
     # browse for params
     def set_params_path(self, text):
@@ -173,21 +148,8 @@ class FileProcessor:
             filter='Parameters (*.params)'
         )
         if len(file) > 0:
-            self.params[1] = file
+            self.params = [True, file]
             text.setText(self.params[1])
-
-    # confirm params
-    def check_params(self, text):
-        if os.path.exists(text):
-            if not text.endswith('.params'):
-                self.params[0] = False
-                self.popup_window('Error', 'Not a .params file')
-            else:
-                self.params = [True, text]
-                self.popup_window('Success', '.params confirmed')
-        else:
-            self.params[0] = False
-            self.popup_window('Error', '.params path does not exist')
 
     # split path into jar file name and directory path
     def get_ms(self):
@@ -263,15 +225,18 @@ class FileProcessor:
     # check all the paths needed for identification
     def check(self):
         if not self.ms_jar[0]:
-            self.popup_window('Error', 'MSFragger path has not been confirmed or is not valid')
+            self.popup_window('Error', 'MSFragger path is not valid')
             return False
         if not self.id_file[0]:
-            self.popup_window('Error', 'idconvert path has not been confirmed or is not valid')
+            self.popup_window('Error', 'idconvert path is not valid')
             return False
         if not self.params[0]:
-            self.popup_window('Error', '.params path has not been confirmed or is not valid')
+            self.popup_window('Error', '.params path is not valid')
             return False
         return True
+
+    def delete_pep(self, pep):
+        os.unlink(pep)
 
     # automatic identification process
     def process(self, mgf):
@@ -299,7 +264,7 @@ class FileProcessor:
             return False
 
         # delete intermediary .pepXML
-        os.unlink(pep)
+        self.delete_pep(pep)
 
         mzid = self.make_mzid_path(mgf)
         # check if the .mzid file exists

@@ -8,8 +8,13 @@ from PyQt5.QtWidgets import *
 import files
 import resources
 
+global saved
+saved = True
+
+
 # Each changeable parameter in the parameters tab with its tooltip.
 class ParameterItem(QWidget):
+
     def __init__(self, label, tooltip, widget, parent=None):
         QWidget.__init__(self, parent=parent)
         layout = QVBoxLayout(self)
@@ -30,6 +35,7 @@ class ParameterItem(QWidget):
 
         return button
 
+
 # The button to interact with a parameter
 class ParameterLabel(QPushButton):
     def mousePressEvent(self, event):
@@ -41,10 +47,10 @@ class ParameterLabel(QPushButton):
 class ParametersWidget(QTabWidget):
     input_files = []
     parameters = {}
+    file_processor = files.FileProcessor()
 
     def __init__(self, parent=None):
         super(ParametersWidget, self).__init__(parent)
-        self.file_processor = files.FileProcessor()
 
         # The tabs that make up the widget
         self.input_files_tab = QWidget()
@@ -57,6 +63,9 @@ class ParametersWidget(QTabWidget):
         self.input_files_tab_ui()
         self.parameters_tab_ui()
         self.input_paths_tab_ui()
+
+    def get_file_processor(self):
+        return self.file_processor
 
     # Table for file input
     def init_files_table(self):
@@ -109,7 +118,7 @@ class ParametersWidget(QTabWidget):
         add_button = self.init_button('Add', self.add_file)
         edit_button = self.init_button('Edit', self.edit_file)
         remove_button = self.init_button('Remove', self.remove_file)
-        remove_all_button = self.init_button('Remove', self.remove_all_files)
+        remove_all_button = self.init_button('Remove All', self.remove_all_files)
         # control panel
         input_file_buttons = self.init_control(add_button, edit_button, remove_button, remove_all_button)
 
@@ -119,55 +128,44 @@ class ParametersWidget(QTabWidget):
         self.input_files_tab.setLayout(layout)
 
     def msfragger_container(self):
-        box = QGroupBox('MSFragger')
+        box = QGroupBox('MSFragger .jar file')
         lay_ms = QHBoxLayout()
         input_ms = QLineEdit()
         input_ms.setText(self.file_processor.ms_jar[1])
+        input_ms.isReadOnly()
         browse_button_ms = self.init_button('Browse', lambda: self.file_processor.set_jar_path(input_ms))
-        # browse_button_ms.clicked.connect(lambda: self.file_processor.set_jar_path(input_ms))
-        check_ms = self.init_button('Confirm', lambda: self.file_processor.check_ms(input_ms.text()))
-        # check_ms.clicked.connect(lambda: self.file_processor.check_ms(input_ms.text()))
         lay_ms.addWidget(input_ms)
         lay_ms.addWidget(browse_button_ms)
-        lay_ms.addWidget(check_ms)
         box.setLayout(lay_ms)
         return box
 
     def idconvert_container(self):
-        box = QGroupBox('idconvert')
+        box = QGroupBox('idconvert.exe')
         lay_id = QHBoxLayout()
         input_id = QLineEdit()
         input_id.setText(self.file_processor.id_file[1])
+        input_id.isReadOnly()
         browse_button_id = self.init_button('Browse', lambda: self.file_processor.set_id_path(input_id))
-        # browse_button_id.clicked.connect(lambda: self.file_processor.set_id_path(input_id))
-        check_id_button = self.init_button('Confirm', lambda: self.file_processor.check_id(input_id.text()))
-        # check_id_button.clicked.connect(lambda: self.file_processor.check_id(input_id.text()))
         lay_id.addWidget(input_id)
         lay_id.addWidget(browse_button_id)
-        lay_id.addWidget(check_id_button)
         box.setLayout(lay_id)
         return box
 
     def params_container(self):
-        box = QGroupBox('Protein database')
+        box = QGroupBox('.params file for MSFragger')
         lay_params = QHBoxLayout()
         input_params = QLineEdit()
         input_params.setText(self.file_processor.params[1])
+        input_params.isReadOnly()
         browse_button_params = self.init_button('Browse', lambda: self.file_processor.set_params_path(input_params))
-        # browse_button_params.clicked.connect(lambda: self.file_processor.set_params_path(input_params))
-        check_params_button = self.init_button('Confirm', lambda: self.file_processor.check_params(input_params.text()))
-        check_params_button.clicked.connect(lambda: self.file_processor.check_params(input_params.text()))
         lay_params.addWidget(input_params)
         lay_params.addWidget(browse_button_params)
-        lay_params.addWidget(check_params_button)
         box.setLayout(lay_params)
         return box
 
     def input_paths_tab_ui(self):
         msfragger_box = self.msfragger_container()
-
         id_box = self.idconvert_container()
-
         params_box = self.params_container()
 
         widget = QWidget()
@@ -197,48 +195,49 @@ class ParametersWidget(QTabWidget):
                     input_files.append({'raw_path': file_path, 'reference': False})
             self.update_input_files(input_files)
 
+    def single_id_file(self, path, new_file):
+        new_file['ident_path'] = path
+        os.chdir(os.path.dirname(path))  # sets directory to last identification file added
+
+    def multiple_id_files(self, file, new_file, edit_file_dialog):
+        base_name = os.path.basename(file['raw_path'])
+        base_name = os.path.splitext(base_name)
+        stem = base_name[0]
+        for mzid in edit_file_dialog.mzid_paths:
+            base_name = os.path.basename(mzid)
+            base_name = os.path.splitext(base_name)
+            mzid_stem = base_name[0]
+            if mzid_stem == stem:
+                new_file['ident_path'] = mzid
+                break
+            os.chdir(os.path.dirname(mzid))  # sets directory to last identification file added
+
+
+    def examine_edit_files(self, old_list, edit_file_dialog, indexes):
+        new_list = []
+        for i, file in enumerate(old_list):
+            if i in indexes:
+                new_file = file
+                new_file['group'] = edit_file_dialog.group
+                if len(indexes) == 1 and len(edit_file_dialog.mzid_paths) == 1:
+                    self.single_id_file(edit_file_dialog.mzid_paths[0], new_file)
+                else:
+                    self.multiple_id_files(file, new_file, edit_file_dialog)
+
+                new_list += [new_file]
+            else:
+                new_list += [file]
+        return new_list
+
     def edit_file(self):
         indexes = self.find_selected_files()
         if len(indexes) == 0:
             return
 
-        edit_file_dialog = files.EditFileDialog(self)
+        edit_file_dialog = files.EditFileDialog(sort=self.examine_edit_files, update=self.update_input_files)
         if edit_file_dialog.exec():
             old_list = self.input_files
-            new_list = []
-            for i, file in enumerate(old_list):
-                if i in indexes:
-                    new_file = file
-                    new_file['group'] = edit_file_dialog.group
-                    # When only 1 file is selected mzID can have any name, if
-                    # multiple files are selected, the stem of raw_path and
-                    # ident_path will be matched.
-                    if len(indexes) == 1 and len(edit_file_dialog.mzid_paths) == 1:
-                        path = edit_file_dialog.mzid_paths[0]
-                        if edit_file_dialog.mzid_paths[0].endswith('.mgf'):
-                            path = self.file_processor.process(path)
-                            if not path:
-                                return
-                        new_file['ident_path'] = path
-                        os.chdir(os.path.dirname(path))  # sets directory to last identification file added
-                    else:
-                        base_name = os.path.basename(file['raw_path'])
-                        base_name = os.path.splitext(base_name)
-                        stem = base_name[0]
-                        for mzid in edit_file_dialog.mzid_paths:
-                            if mzid.endswith('.mgf'):
-                                mzid = self.file_processor.process(mzid)
-                            base_name = os.path.basename(mzid)
-                            base_name = os.path.splitext(base_name)
-                            mzid_stem = base_name[0]
-                            if mzid_stem == stem:
-                                new_file['ident_path'] = mzid
-                                break
-                            os.chdir(os.path.dirname(mzid))  # sets directory to last identification file added
-
-                    new_list += [new_file]
-                else:
-                    new_list += [file]
+            new_list = self.examine_edit_files(old_list, edit_file_dialog, indexes)
             self.update_input_files(new_list)
 
     def remove_all_files(self):
@@ -785,10 +784,14 @@ class ParametersWidget(QTabWidget):
         content_widget.setLayout(layout)
         self.update_allowed = True
 
+    def get_changed_status(self):
+        return self.changed
+
     def update_parameters(self):
         if not self.update_allowed:
             return
-
+        global saved
+        saved = False
         self.parameters['instrument_type'] = self.inst_type.currentText().lower()
         self.parameters['resolution_ms1'] = self.res_ms1.value()
         self.parameters['resolution_msn'] = self.res_ms2.value()

@@ -8,14 +8,13 @@ from PyQt5.QtCore import *
 from PyQt5.QtGui import QIcon, QKeySequence, QPalette, QColor
 from PyQt5.QtWidgets import *
 
+
 import parameter
 import pipeline
 
 # TODO: Create custom file picker widget that shows the name of the picked files
 # TODO: Switch the cwd to the project directory and/or use it instead of os.getcwd()
 # TODO: The RUN button should only be access when there is at least 1 sample active.
-
-pop = False
 
 
 class MainWindow(QMainWindow):
@@ -300,8 +299,7 @@ class MainWindow(QMainWindow):
             self.parameters_container.setEnabled(True)
             self.update_ui()
             self.save_project()
-            global pop
-            pop = True
+            parameter.saved = True
 
     def open_project(self):
         file_path, _ = QFileDialog.getOpenFileName(
@@ -328,8 +326,7 @@ class MainWindow(QMainWindow):
                 if 'input_files' in self.parameters_container.parameters:
                     self.parameters_container.update_input_files(self.parameters_container.parameters['input_files'])
                 self.update_ui()
-                global pop
-                pop = True
+                parameter.saved = True
 
     def save_project(self):
         try:
@@ -337,6 +334,7 @@ class MainWindow(QMainWindow):
                 params_values = self.parameters_container.parameters
                 params_values['input_files'] = self.parameters_container.input_files
                 json.dump(params_values, json_file)
+            parameter.saved = True
         except:
             error_dialog = QMessageBox()
             error_dialog.setIcon(QMessageBox.Critical)
@@ -346,7 +344,7 @@ class MainWindow(QMainWindow):
             error_dialog.exec_()
 
     def closeEvent(self, event):
-        if pop:
+        if not parameter.saved:
             box = QMessageBox()
             box.setWindowTitle('Window Close')
             box.setText('Do you want to save your work?')
@@ -376,8 +374,8 @@ class MainWindow(QMainWindow):
             self.project_path = os.path.join(path, 'parameters.json')
             self.update_ui()
             self.save_project()
-            global pop
-            pop = True
+            parameter.saved = True
+
     # Runs the PASTAQ pipeline with the input files and parameters.
     # This creates a new thread for the pipeline that runs in parallel to the GUI thread.
     def run_pipeline(self):
@@ -396,7 +394,8 @@ class MainWindow(QMainWindow):
             parent=self,
             params=self.parameters_container.parameters,
             input_files=self.parameters_container.input_files,
-            output_dir=os.path.dirname(self.project_path))
+            output_dir=os.path.dirname(self.project_path),
+            file_processor=self.parameters_container.get_file_processor())
         if pipeline_log_dialog.exec():
             print('EXIT SUCCESS')
         else:

@@ -5,6 +5,9 @@ import pastaq
 from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
 
+import files
+
+
 # The log text appearing on the pipeline modal
 class TextStream(QObject):
     # A qt signal carrying the text output by the pipeline
@@ -13,6 +16,7 @@ class TextStream(QObject):
     def write(self, text):
         self.text_written.emit(str(text))
 
+
 # Thread that runs the pipeline parallel to the GUI
 class PipelineRunner(QThread):
     finished = pyqtSignal()
@@ -20,21 +24,36 @@ class PipelineRunner(QThread):
     input_files = []
     output_dir = ''
 
-    def __init__(self):
+    def __init__(self, file_processor):
         QThread.__init__(self)
+        self.file_processor = file_processor
 
     def __del__(self):
         self.wait()
 
     def run(self):
-        print('Starting DDA Pipeline')
-        time.sleep(1)
-        try:
-            pastaq.dda_pipeline(self.params, self.input_files, self.output_dir)
-        except Exception as e:
-            print('ERROR:', e)
+        skip = False
+        print('Starting automatic identification process')
+        for entry in self.input_files:
+            path = entry['ident_path']
+            mzid = self.file_processor.process(path)
+            if mzid:
+                print(entry['ident_path'] + ' successfully processed to ' + mzid)
+                entry['ident_path'] = mzid
+            else:
+                print('Automatic identification process not successful')
+                skip = True
+
+        if not skip:
+            print('Starting DDA Pipeline')
+            time.sleep(1)
+            try:
+                pastaq.dda_pipeline(self.params, self.input_files, self.output_dir)
+            except Exception as e:
+                print('ERROR:', e)
 
         self.finished.emit()
+
 
 # A modal that appears after the running of the pipeline
 # It outputs the log of the pipeline and allows for cancellation.
@@ -42,7 +61,7 @@ class PipelineLogDialog(QDialog):
     group = ''
     mzid_paths = []
 
-    def __init__(self, params, input_files, output_dir, parent=None):
+    def __init__(self, params, input_files, output_dir, file_processor, parent=None):
         super().__init__(parent)
 
         self.setWindowTitle('PASTAQ: DDA Pipeline (Running)')
@@ -57,9 +76,9 @@ class PipelineLogDialog(QDialog):
         self.buttons = self.init_buttons()
 
         # Prepare layout.
-        self.setLayout(self.init_layout())
+        self.setLayout(self.init_layout(self.buttons, self.text_box))
 
-        self.pipeline_thread = self.init_pipeline(params, input_files, output_dir)
+        self.pipeline_thread = self.init_pipeline(params, input_files, output_dir, file_processor)
         self.pipeline_thread.start()
 
     def __del__(self):
@@ -76,15 +95,15 @@ class PipelineLogDialog(QDialog):
         buttons.rejected.connect(self.exit_failure)
         return buttons
 
-    def init_layout(self):
+    def init_layout(self, buttons, textbox):
         layout = QVBoxLayout()
-        layout.addWidget(self.text_box)
-        layout.addWidget(self.buttons)
+        layout.addWidget(textbox)
+        layout.addWidget(buttons)
         return layout
 
     # Creates the pipeline thread with the input files and parameters
-    def init_pipeline(self, params, input_files, output_dir):
-        pipeline_thread = PipelineRunner()
+    def init_pipeline(self, params, input_files, output_dir, file_processor):
+        pipeline_thread = PipelineRunner(file_processor=file_processor)
         pipeline_thread.params = params
         pipeline_thread.input_files = input_files
         pipeline_thread.output_dir = output_dir
@@ -103,12 +122,11 @@ class PipelineLogDialog(QDialog):
         # Restore stdout pipe.
         sys.stdout = sys.__stdout__
 
-        # Replace button with OK instead of Cancel.
         new_buttons = QDialogButtonBox(QDialogButtonBox.Ok)
         new_buttons.accepted.connect(self.accept)
-        self.buttons.clear()
-        self.layout.replaceWidget(self.buttons, new_buttons)
-        self.buttons = new_buttons
+        QObjectCleanupHandler().add(self.layout())
+        layout = self.init_layout(new_buttons, self.text_box)
+        self.setLayout(layout)
 
     def exit_failure(self):
         # TODO: Confirm we want to exit, since this could lead to corrupt
