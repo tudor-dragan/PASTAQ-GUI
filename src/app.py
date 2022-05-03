@@ -124,7 +124,18 @@ class MainWindow(QMainWindow):
         self.parameters_container.parameters['project_description'] = self.project_description_ui.text()
 
     def reset_param(self):
-        self.update_ui(True)
+        box = QMessageBox()
+        box.setIcon(QMessageBox.Warning)
+        box.setWindowTitle('Reset Parameters')
+        box.setText('Are you sure you want to reset parameters?')
+        box.setStandardButtons(QMessageBox.Yes | QMessageBox.Cancel)
+        button_s = box.button(QMessageBox.Yes)
+        # button_s.setText('Yes')
+        button_c = box.button(QMessageBox.Cancel)
+        # button_c.setText('Cancel')
+        box.exec_()
+        if box.clickedButton() == button_s:
+            self.update_ui(True)
 
     def view_mode(self):
         if not self.dark:
