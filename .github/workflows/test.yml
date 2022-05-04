@@ -17,4 +17,4 @@ jobs:
         python-version: 3.8
     - name: Perform tests
       run: |
-        python test.py
+        python src/tests/test.py
