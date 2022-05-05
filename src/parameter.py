@@ -13,7 +13,7 @@ saved = True
 
 
 # Each changeable parameter in the parameters tab with its tooltip.
-def init_button(label, tooltip):
+def init_button_params(label, tooltip):
     button = ParameterLabel(label)
     button.setToolTip(tooltip)
 
@@ -31,7 +31,7 @@ class ParameterItem(QWidget):
         QWidget.__init__(self, parent=parent)
         layout = QVBoxLayout(self)
 
-        button = self.init_button(label, tooltip)
+        button = init_button_params(label, tooltip)
 
         layout.addWidget(button)
         layout.addWidget(widget)
@@ -76,6 +76,12 @@ def init_label(text):
     label = QLabel(text)
     label.setAlignment(Qt.AlignCenter)
     return label
+
+
+def init_button(text, action):
+    button = QPushButton(text)
+    button.clicked.connect(action)
+    return button
 
 
 class ParametersWidget(QTabWidget):
@@ -126,11 +132,6 @@ class ParametersWidget(QTabWidget):
         header.setSectionResizeMode(2, QHeaderView.ResizeToContents)
         header.setSectionResizeMode(3, QHeaderView.ResizeToContents)
 
-    def init_button(self, text, action):
-        button = QPushButton(text)
-        button.clicked.connect(action)
-        return button
-
     # Buttons to control the files table
     def init_control(self, add_button, edit_button, remove_button, remove_all_button):
         buttons = QWidget()
@@ -147,10 +148,10 @@ class ParametersWidget(QTabWidget):
         self.init_header()
 
         # buttons
-        add_button = self.init_button('Add', self.add_file)
-        edit_button = self.init_button('Edit', self.edit_file)
-        remove_button = self.init_button('Remove', self.remove_file)
-        remove_all_button = self.init_button('Remove All', self.remove_all_files)
+        add_button = init_button('Add', self.add_file)
+        edit_button = init_button('Edit', self.edit_file)
+        remove_button = init_button('Remove', self.remove_file)
+        remove_all_button = init_button('Remove All', self.remove_all_files)
         # control panel
         input_file_buttons = self.init_control(add_button, edit_button, remove_button, remove_all_button)
 
@@ -165,7 +166,7 @@ class ParametersWidget(QTabWidget):
         input_ms = QLineEdit()
         input_ms.setText(self.file_processor.ms_jar[1])
         input_ms.isReadOnly()
-        browse_button_ms = self.init_button('Browse', lambda: self.file_processor.set_jar_path(input_ms))
+        browse_button_ms = init_button('Browse', lambda: self.file_processor.set_jar_path(input_ms))
         lay_ms.addWidget(input_ms)
         lay_ms.addWidget(browse_button_ms)
         box.setLayout(lay_ms)
@@ -177,7 +178,7 @@ class ParametersWidget(QTabWidget):
         input_id = QLineEdit()
         input_id.setText(self.file_processor.id_file[1])
         input_id.isReadOnly()
-        browse_button_id = self.init_button('Browse', lambda: self.file_processor.set_id_path(input_id))
+        browse_button_id = init_button('Browse', lambda: self.file_processor.set_id_path(input_id))
         lay_id.addWidget(input_id)
         lay_id.addWidget(browse_button_id)
         box.setLayout(lay_id)
@@ -189,7 +190,7 @@ class ParametersWidget(QTabWidget):
         input_params = QLineEdit()
         input_params.setText(self.file_processor.params[1])
         input_params.isReadOnly()
-        browse_button_params = self.init_button('Browse', lambda: self.file_processor.set_params_path(input_params))
+        browse_button_params = init_button('Browse', lambda: self.file_processor.set_params_path(input_params))
         lay_params.addWidget(input_params)
         lay_params.addWidget(browse_button_params)
         box.setLayout(lay_params)
@@ -234,9 +235,9 @@ class ParametersWidget(QTabWidget):
                 new_file = file
                 new_file['group'] = edit_file_dialog.group
                 if len(indexes) == 1 and len(edit_file_dialog.mzid_paths) == 1:
-                    self.single_id_file(edit_file_dialog.mzid_paths[0], new_file)
+                    single_id_file(edit_file_dialog.mzid_paths[0], new_file)
                 else:
-                    self.multiple_id_files(file, new_file, edit_file_dialog)
+                    multiple_id_files(file, new_file, edit_file_dialog)
                 new_list += [new_file]
             else:
                 new_list += [file]
@@ -285,18 +286,18 @@ class ParametersWidget(QTabWidget):
             if 'ident_path' in input_file:
                 self.input_files_table.setCellWidget(i, 1, QLabel(input_file['ident_path']))
             if 'group' in input_file:
-                label = self.init_label(input_file['group'])
+                label = init_label(input_file['group'])
                 self.input_files_table.setCellWidget(i, 2, label)
             if 'reference' in input_file:
-                cell_widget = self.reference(input_file['reference'])
+                cell_widget = self.make_reference(input_file['reference'])
                 self.input_files_table.setCellWidget(i, 3, cell_widget)
 
-    def reference(self):
+    def make_reference(self, reference):
         cell_widget = QWidget()
         checkbox = QCheckBox()
         if reference:
             checkbox.setCheckState(Qt.Checked)
-        lay_out = self.init_check(cell_widget, checkbox)
+        lay_out = init_check(cell_widget, checkbox)
         cell_widget.setLayout(lay_out)
         checkbox.stateChanged.connect(self.toggle_reference)
         return cell_widget
@@ -473,6 +474,8 @@ class ParametersWidget(QTabWidget):
         tooltip = 'Number of peaks used for similarity calculation in each alignment window.'
         grid_layout_warp.addWidget(ParameterItem('Peaks per window', tooltip, self.warp2d_peaks_per_window), 1, 1)
 
+        return grid_layout_warp
+
     def init_meta(self):
         grid_layout_meta = QGridLayout()
 
@@ -500,6 +503,8 @@ class ParametersWidget(QTabWidget):
         self.metamatch_n_sig_rt.valueChanged.connect(self.update_parameters)
         tooltip = 'Number of standard deviations to use as tolerance for retention time radius.'
         grid_layout_meta.addWidget(ParameterItem('Number of sigma (rt)', tooltip, self.metamatch_n_sig_rt), 0, 2)
+
+        return grid_layout_meta
 
     def init_ident(self):
         grid_layout_ident = QGridLayout()
@@ -751,6 +756,7 @@ class ParametersWidget(QTabWidget):
         return layout
 
     def parameters_tab_ui(self):
+        global LARGE
         LARGE = 1000000000
 
         self.update_allowed = False
@@ -772,7 +778,7 @@ class ParametersWidget(QTabWidget):
 
         # Warp2D
         self.warp_box = QGroupBox('Warp2D')
-        grid_layout_warp = self.init_war()
+        grid_layout_warp = self.init_warp()
         self.warp_box.setLayout(grid_layout_warp)
 
         # MetaMatch
@@ -782,7 +788,7 @@ class ParametersWidget(QTabWidget):
 
         # Identification
         self.ident_box = QGroupBox('Identification')
-        grid_layout_ident = self.init_indent()
+        grid_layout_ident = self.init_ident()
         self.ident_box.setLayout(grid_layout_ident)
 
         # Quality Control
@@ -803,9 +809,6 @@ class ParametersWidget(QTabWidget):
 
         content_widget.setLayout(self.init_layout())
         self.update_allowed = True
-
-    def get_changed_status(self):
-        return self.changed
 
     def update_inst(self):
         self.parameters['instrument_type'] = self.inst_type.currentText().lower()
@@ -903,4 +906,3 @@ class ParametersWidget(QTabWidget):
         self.update_ident()
         self.update_qual()
         self.update_quantt()
-

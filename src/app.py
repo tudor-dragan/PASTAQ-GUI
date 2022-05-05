@@ -40,6 +40,29 @@ def light_mode():
     app.setPalette(palette)
 
 
+def init_error_dialog():
+    error_dialog = QMessageBox()
+    error_dialog.setIcon(QMessageBox.Critical)
+    error_dialog.setText('Error')
+    error_dialog.setInformativeText('Can\'t save project at the given directory')
+    error_dialog.setWindowTitle('Error')
+    return error_dialog
+
+
+def close_popup():
+    box = QMessageBox()
+    box.setWindowTitle('Window Close')
+    box.setText('Do you want to save your work?')
+    box.setStandardButtons(QMessageBox.Yes | QMessageBox.No | QMessageBox.Cancel)
+    button_s = box.button(QMessageBox.Yes)
+    button_s.setText('Save and Exit')
+    button_d = box.button(QMessageBox.No)
+    button_d.setText('Discard and Exit')
+    button_c = box.button(QMessageBox.Cancel)
+    button_c.setText('Cancel')
+    return box, button_s, button_d, button_c
+
+
 class MainWindow(QMainWindow):
     project_path = ''
     dark = False
@@ -200,36 +223,36 @@ class MainWindow(QMainWindow):
 
     def view_mode(self):
         if not self.dark:
-            self.dark_mode()
+            dark_mode()
             self.dark = True
             self.view_mode_btn.setText('Light Mode')
         else:
-            self.light_mode()
+            light_mode()
             self.dark = False
             self.view_mode_btn.setText('Dark Mode')
 
-    def update_meta(self):
+    def update_meta_project(self):
         self.project_directory_ui.setText(os.path.dirname(self.project_path))
         if 'project_name' in self.parameters_container.parameters:
             self.project_name_ui.setText(self.parameters_container.parameters['project_name'])
         if 'project_description' in self.parameters_container.parameters:
             self.project_description_ui.setText(self.parameters_container.parameters['project_description'])
 
-    def update_inst(self):
+    def update_inst(self, params):
         self.parameters_container.inst_type.setCurrentText(params['instrument_type'])
         self.parameters_container.res_ms1.setValue(params['resolution_ms1'])
         self.parameters_container.res_ms2.setValue(params['resolution_msn'])
         self.parameters_container.reference_mz.setValue(params['reference_mz'])
         self.parameters_container.avg_fwhm_rt.setValue(params['avg_fwhm_rt'])
 
-    def update_raw(self):
+    def update_raw(self, params):
         self.parameters_container.min_mz.setValue(params['min_mz'])
         self.parameters_container.max_mz.setValue(params['max_mz'])
         self.parameters_container.min_rt.setValue(params['min_rt'])
         self.parameters_container.max_rt.setValue(params['max_rt'])
         self.parameters_container.polarity.setCurrentText(params['polarity'])
 
-    def update_resamp(self):
+    def update_resamp(self, params):
         self.parameters_container.num_samples_mz.setValue(params['num_samples_mz'])
         self.parameters_container.num_samples_rt.setValue(params['num_samples_rt'])
         self.parameters_container.smoothing_coefficient_mz.setValue(params['smoothing_coefficient_mz'])
@@ -240,19 +263,19 @@ class MainWindow(QMainWindow):
         self.parameters_container.feature_detection_charge_state_max.setValue(
             max(params['feature_detection_charge_states']))
 
-    def update_warp(self):
+    def update_warp(self, params):
         self.parameters_container.warp2d_slack.setValue(params['warp2d_slack'])
         self.parameters_container.warp2d_window_size.setValue(params['warp2d_window_size'])
         self.parameters_container.warp2d_num_points.setValue(params['warp2d_num_points'])
         self.parameters_container.warp2d_rt_expand_factor.setValue(params['warp2d_rt_expand_factor'])
         self.parameters_container.warp2d_peaks_per_window.setValue(params['warp2d_peaks_per_window'])
 
-    def update_meta(self):
+    def update_meta(self, params):
         self.parameters_container.metamatch_fraction.setValue(params['metamatch_fraction'])
         self.parameters_container.metamatch_n_sig_mz.setValue(params['metamatch_n_sig_mz'])
         self.parameters_container.metamatch_n_sig_rt.setValue(params['metamatch_n_sig_rt'])
 
-    def update_ident(self):
+    def update_ident(self, params):
         if params['ident_max_rank_only']:
             self.parameters_container.ident_max_rank_only.setCheckState(Qt.Checked)
         else:
@@ -269,7 +292,7 @@ class MainWindow(QMainWindow):
         self.parameters_container.link_n_sig_rt.setValue(params['link_n_sig_rt'])
         self.parameters_container.similarity_num_peaks.setValue(params['similarity_num_peaks'])
 
-    def update_qual(self):
+    def update_qual(self, params):
         self.parameters_container.qc_plot_palette.setCurrentText(params['qc_plot_palette'])
         self.parameters_container.qc_plot_extension.setCurrentText(params['qc_plot_extension'])
         if params['qc_plot_fill_alpha'] == 'dynamic':
@@ -296,7 +319,7 @@ class MainWindow(QMainWindow):
             self.parameters_container.qc_plot_fig_legend.setCheckState(Qt.Unchecked)
         self.parameters_container.qc_plot_mz_vs_sigma_mz_max_peaks.setValue(params['qc_plot_mz_vs_sigma_mz_max_peaks'])
 
-    def update_quantt(self):
+    def update_quantt(self, params):
         self.parameters_container.quant_isotopes.setCurrentText(params['quant_isotopes'])
         self.parameters_container.quant_features.setCurrentText(params['quant_features'])
         if params['quant_features_charge_state_filter']:
@@ -326,21 +349,21 @@ class MainWindow(QMainWindow):
 
     def update_ui(self, default=False):
         # Project metadata.
-        self.update_meta()
+        self.update_meta_project()
         if default:
             params = self.default_param
         else:
             params = self.parameters_container.parameters
 
         self.parameters_container.update_allowed = False
-        self.update_inst()
-        self.update_raw_data()
-        self.update_resamp()
-        self.update_warp()
-        self.update_meta()
-        self.update_ident()
-        self.update_qual()
-        self.update_quantt()
+        self.update_inst(params)
+        self.update_raw(params)
+        self.update_resamp(params)
+        self.update_warp(params)
+        self.update_meta(params)
+        self.update_ident(params)
+        self.update_qual(params)
+        self.update_quantt(params)
         self.parameters_container.update_allowed = True
 
     def new_project(self):
@@ -379,11 +402,11 @@ class MainWindow(QMainWindow):
             # TODO: Validate parameters
             valid = True
             if valid:
-                self.prepare_open_project()
+                self.prepare_open_project(tmp, file_path)
                 self.update_ui()
                 parameter.saved = True
 
-    def prepare_open_project(self):
+    def prepare_open_project(self, tmp, file_path):
         self.parameters_container.parameters = tmp
         self.project_path = file_path
         self.save_project_btn.setEnabled(True)
@@ -404,29 +427,12 @@ class MainWindow(QMainWindow):
                 json.dump(params_values, json_file)
             parameter.saved = True
         except:
-            error_dialog = QMessageBox()
-            error_dialog.setIcon(QMessageBox.Critical)
-            error_dialog.setText('Error')
-            error_dialog.setInformativeText('Can\'t save project at the given directory')
-            error_dialog.setWindowTitle('Error')
-            error_dialog.exec_()
-
-    def close_popup(self):
-        box = QMessageBox()
-        box.setWindowTitle('Window Close')
-        box.setText('Do you want to save your work?')
-        box.setStandardButtons(QMessageBox.Yes | QMessageBox.No | QMessageBox.Cancel)
-        button_s = box.button(QMessageBox.Yes)
-        button_s.setText('Save and Exit')
-        button_d = box.button(QMessageBox.No)
-        button_d.setText('Discard and Exit')
-        button_c = box.button(QMessageBox.Cancel)
-        button_c.setText('Cancel')
-        return box
+            dialog = init_error_dialog()
+            dialog.exec_()
 
     def closeEvent(self, event):
         if not parameter.saved:
-            box = self.close_popup()
+            box, button_s, button_d, button_c = close_popup()
             box.exec_()
             if box.clickedButton() == button_s:
                 self.save_project()
@@ -459,13 +465,13 @@ class MainWindow(QMainWindow):
         self.parameters_container.setEnabled(False)
 
     def init_pipeline(self):
-        pipeline = pipeline.PipelineLogDialog(
+        pipe = pipeline.PipelineLogDialog(
             parent=self,
             params=self.parameters_container.parameters,
             input_files=self.parameters_container.input_files,
             output_dir=os.path.dirname(self.project_path),
             file_processor=self.parameters_container.get_file_processor())
-        return pipeline
+        return pipe
 
     def restore_run(self):
         # Restore previous button statuses.
