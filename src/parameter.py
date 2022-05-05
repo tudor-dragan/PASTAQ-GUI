@@ -13,6 +13,18 @@ saved = True
 
 
 # Each changeable parameter in the parameters tab with its tooltip.
+def init_button(label, tooltip):
+    button = ParameterLabel(label)
+    button.setToolTip(tooltip)
+
+    icon = QIcon(':/icons/question.png')
+    button.setLayoutDirection(Qt.RightToLeft)
+    button.setIcon(icon)
+    button.setFlat(True)
+
+    return button
+
+
 class ParameterItem(QWidget):
 
     def __init__(self, label, tooltip, widget, parent=None):
@@ -24,17 +36,6 @@ class ParameterItem(QWidget):
         layout.addWidget(button)
         layout.addWidget(widget)
 
-    def init_button(self, label, tooltip):
-        button = ParameterLabel(label)
-        button.setToolTip(tooltip)
-
-        icon = QIcon(':/icons/question.png')
-        button.setLayoutDirection(Qt.RightToLeft)
-        button.setIcon(icon)
-        button.setFlat(True)
-
-        return button
-
 
 # The button to interact with a parameter
 class ParameterLabel(QPushButton):
@@ -44,6 +45,39 @@ class ParameterLabel(QPushButton):
 
 # The main component of the GUI it contains the three tabs corresponding to input files,
 # input parameters and paths for the conversion executables
+def multiple_id_files(file, new_file, edit_file_dialog):
+    base_name = os.path.basename(file['raw_path'])
+    base_name = os.path.splitext(base_name)
+    stem = base_name[0]
+    for mzid in edit_file_dialog.mzid_paths:
+        base_name = os.path.basename(mzid)
+        base_name = os.path.splitext(base_name)
+        mzid_stem = base_name[0]
+        if mzid_stem == stem:
+            new_file['ident_path'] = mzid
+            break
+        os.chdir(os.path.dirname(mzid))  # sets directory to last identification file added
+
+
+def single_id_file(path, new_file):
+    new_file['ident_path'] = path
+    os.chdir(os.path.dirname(path))  # sets directory to last identification file added
+
+
+def init_check(cell_widget, checkbox):
+    lay_out = QHBoxLayout(cell_widget)
+    lay_out.addWidget(checkbox)
+    lay_out.setAlignment(Qt.AlignCenter)
+    lay_out.setContentsMargins(0, 0, 0, 0)
+    return lay_out
+
+
+def init_label(text):
+    label = QLabel(text)
+    label.setAlignment(Qt.AlignCenter)
+    return label
+
+
 class ParametersWidget(QTabWidget):
     input_files = []
     parameters = {}
@@ -92,7 +126,6 @@ class ParametersWidget(QTabWidget):
         header.setSectionResizeMode(2, QHeaderView.ResizeToContents)
         header.setSectionResizeMode(3, QHeaderView.ResizeToContents)
 
-    # Creates buttons and connects an "action to them"
     def init_button(self, text, action):
         button = QPushButton(text)
         button.clicked.connect(action)
@@ -111,7 +144,6 @@ class ParametersWidget(QTabWidget):
 
     def input_files_tab_ui(self):
         self.input_files_table = self.init_files_table()
-
         self.init_header()
 
         # buttons
@@ -195,24 +227,6 @@ class ParametersWidget(QTabWidget):
                     input_files.append({'raw_path': file_path, 'reference': False})
             self.update_input_files(input_files)
 
-    def single_id_file(self, path, new_file):
-        new_file['ident_path'] = path
-        os.chdir(os.path.dirname(path))  # sets directory to last identification file added
-
-    def multiple_id_files(self, file, new_file, edit_file_dialog):
-        base_name = os.path.basename(file['raw_path'])
-        base_name = os.path.splitext(base_name)
-        stem = base_name[0]
-        for mzid in edit_file_dialog.mzid_paths:
-            base_name = os.path.basename(mzid)
-            base_name = os.path.splitext(base_name)
-            mzid_stem = base_name[0]
-            if mzid_stem == stem:
-                new_file['ident_path'] = mzid
-                break
-            os.chdir(os.path.dirname(mzid))  # sets directory to last identification file added
-
-
     def examine_edit_files(self, old_list, edit_file_dialog, indexes):
         new_list = []
         for i, file in enumerate(old_list):
@@ -223,7 +237,6 @@ class ParametersWidget(QTabWidget):
                     self.single_id_file(edit_file_dialog.mzid_paths[0], new_file)
                 else:
                     self.multiple_id_files(file, new_file, edit_file_dialog)
-
                 new_list += [new_file]
             else:
                 new_list += [file]
@@ -233,7 +246,6 @@ class ParametersWidget(QTabWidget):
         indexes = self.find_selected_files()
         if len(indexes) == 0:
             return
-
         edit_file_dialog = files.EditFileDialog(sort=self.examine_edit_files, update=self.update_input_files)
         if edit_file_dialog.exec():
             old_list = self.input_files
@@ -273,41 +285,28 @@ class ParametersWidget(QTabWidget):
             if 'ident_path' in input_file:
                 self.input_files_table.setCellWidget(i, 1, QLabel(input_file['ident_path']))
             if 'group' in input_file:
-                label = QLabel(input_file['group'])
-                label.setAlignment(Qt.AlignCenter)
+                label = self.init_label(input_file['group'])
                 self.input_files_table.setCellWidget(i, 2, label)
             if 'reference' in input_file:
-                cell_widget = QWidget()
-                checkbox = QCheckBox()
-                if input_file['reference']:
-                    checkbox.setCheckState(Qt.Checked)
-                lay_out = QHBoxLayout(cell_widget)
-                lay_out.addWidget(checkbox)
-                lay_out.setAlignment(Qt.AlignCenter)
-                lay_out.setContentsMargins(0, 0, 0, 0)
-                cell_widget.setLayout(lay_out)
-                checkbox.stateChanged.connect(self.toggle_reference)
+                cell_widget = self.reference(input_file['reference'])
                 self.input_files_table.setCellWidget(i, 3, cell_widget)
+
+    def reference(self):
+        cell_widget = QWidget()
+        checkbox = QCheckBox()
+        if reference:
+            checkbox.setCheckState(Qt.Checked)
+        lay_out = self.init_check(cell_widget, checkbox)
+        cell_widget.setLayout(lay_out)
+        checkbox.stateChanged.connect(self.toggle_reference)
+        return cell_widget
 
     def toggle_reference(self):
         for row in range(self.input_files_table.rowCount()):
             checkbox = self.input_files_table.cellWidget(row, 3).children()[1]
             self.input_files[row]['reference'] = checkbox.isChecked()
 
-    def parameters_tab_ui(self):
-        # TODO: Maybe we should add the constrains and default values in
-        # a dictionary format. Parameters are not going to change often, so
-        # probably is fine with hardcoding the ranges here.
-        LARGE = 1000000000
-
-        # TODO: Make sure constrains are set properly.
-
-        self.update_allowed = False
-
-        #
-        # Instruments
-        #
-        self.inst_settings_box = QGroupBox('Instrument Settings')
+    def init_inst(self):
         grid_layout_inst = QGridLayout()
 
         self.inst_type = QComboBox()
@@ -340,12 +339,9 @@ class ParametersWidget(QTabWidget):
         tooltip = 'Expected full-width half-maximum width of chromatographic peaks.'
         grid_layout_inst.addWidget(ParameterItem('Avg FWHM RT', tooltip, self.avg_fwhm_rt), 1, 1)
 
-        self.inst_settings_box.setLayout(grid_layout_inst)
+        return grid_layout_inst
 
-        #
-        # Raw data
-        #
-        self.raw_data_box = QGroupBox('Raw Data')
+    def init_raw_data(self):
         grid_layout_raw_data = QGridLayout()
 
         self.min_mz = QDoubleSpinBox()
@@ -366,7 +362,7 @@ class ParametersWidget(QTabWidget):
         self.polarity.addItems(['positive', 'negative', 'both'])
         self.polarity.currentIndexChanged.connect(self.update_parameters)
         tooltip = inspect.cleandoc('''Filter polarity (Positive '+', negative '-', or any) for spectra during raw data reading.
-                  This should only be modified if the raw data file contains both positive and negative polarity spectra.''')
+                          This should only be modified if the raw data file contains both positive and negative polarity spectra.''')
         grid_layout_raw_data.addWidget(ParameterItem('Polarity', tooltip, self.polarity), 0, 2)
 
         self.min_rt = QDoubleSpinBox()
@@ -383,28 +379,25 @@ class ParametersWidget(QTabWidget):
         tooltip = 'Filter maximum retention time value for spectra during raw data reading.'
         grid_layout_raw_data.addWidget(ParameterItem('Max retention time', tooltip, self.max_rt), 1, 1)
 
-        self.raw_data_box.setLayout(grid_layout_raw_data)
+        return grid_layout_raw_data
 
-        #
-        # Quantification
-        #
-        self.quantification_box = QGroupBox('Quantification')
+    def init_resamp(self):
         grid_layout_resamp = QGridLayout()
 
         self.num_samples_mz = QSpinBox()
         self.num_samples_mz.setRange(-LARGE, LARGE)
         self.num_samples_mz.valueChanged.connect(self.update_parameters)
         tooltip = inspect.cleandoc('''Number of sampling points per full-width half-maximum in m/z.
-                  If the memory consumption is too high it can be reduced at
-                  the cost of potentially missing peaks or obtaining less accurate fitting.''')
+                          If the memory consumption is too high it can be reduced at
+                          the cost of potentially missing peaks or obtaining less accurate fitting.''')
         grid_layout_resamp.addWidget(ParameterItem('Number of samples m/z', tooltip, self.num_samples_mz), 0, 0)
 
         self.num_samples_rt = QSpinBox()
         self.num_samples_rt.setRange(-LARGE, LARGE)
         self.num_samples_rt.valueChanged.connect(self.update_parameters)
         tooltip = inspect.cleandoc('''Number of sampling points per full-width half-maximum in retention time.
-                  If the memory consumption is too high it can be reduced at the
-                  cost of potentially missing peaks or obtaining less accurate fitting.''')
+                          If the memory consumption is too high it can be reduced at the
+                          cost of potentially missing peaks or obtaining less accurate fitting.''')
         grid_layout_resamp.addWidget(ParameterItem('Number of samples rt', tooltip, self.num_samples_rt), 0, 1)
 
         self.smoothing_coefficient_mz = QDoubleSpinBox()
@@ -443,12 +436,9 @@ class ParametersWidget(QTabWidget):
         grid_layout_resamp.addWidget(
             ParameterItem('Feature detection max charge', tooltip, self.feature_detection_charge_state_max), 1, 2)
 
-        self.quantification_box.setLayout(grid_layout_resamp)
+        return grid_layout_resamp
 
-        #
-        # Warp2D
-        #
-        self.warp_box = QGroupBox('Warp2D')
+    def init_warp(self):
         grid_layout_warp = QGridLayout()
 
         self.warp2d_slack = QSpinBox()
@@ -483,12 +473,7 @@ class ParametersWidget(QTabWidget):
         tooltip = 'Number of peaks used for similarity calculation in each alignment window.'
         grid_layout_warp.addWidget(ParameterItem('Peaks per window', tooltip, self.warp2d_peaks_per_window), 1, 1)
 
-        self.warp_box.setLayout(grid_layout_warp)
-
-        #
-        # MetaMatch
-        #
-        self.meta_box = QGroupBox('MetaMatch')
+    def init_meta(self):
         grid_layout_meta = QGridLayout()
 
         self.metamatch_fraction = QDoubleSpinBox()
@@ -496,10 +481,10 @@ class ParametersWidget(QTabWidget):
         self.metamatch_fraction.setStepType(QAbstractSpinBox.AdaptiveDecimalStepType)
         self.metamatch_fraction.valueChanged.connect(self.update_parameters)
         tooltip = inspect.cleandoc('''Minimum percentage of peak presence (value between 0 and 1) in at least
-        one sample group to be included in Metamatch result.
-        For example, if there are 10 samples in group A and 10 in group B,
-        for a fraction value of 0.7, we consider a valid cluster if there are 
-        matched peaks present in at least 7 samples in at least one of the sample group.''')
+                one sample group to be included in Metamatch result.
+                For example, if there are 10 samples in group A and 10 in group B,
+                for a fraction value of 0.7, we consider a valid cluster if there are 
+                matched peaks present in at least 7 samples in at least one of the sample group.''')
         grid_layout_meta.addWidget(ParameterItem('Fraction of samples', tooltip, self.metamatch_fraction), 0, 0)
 
         self.metamatch_n_sig_mz = QDoubleSpinBox()
@@ -516,12 +501,7 @@ class ParametersWidget(QTabWidget):
         tooltip = 'Number of standard deviations to use as tolerance for retention time radius.'
         grid_layout_meta.addWidget(ParameterItem('Number of sigma (rt)', tooltip, self.metamatch_n_sig_rt), 0, 2)
 
-        self.meta_box.setLayout(grid_layout_meta)
-
-        #
-        # Identification
-        #
-        self.ident_box = QGroupBox('Identification')
+    def init_ident(self):
         grid_layout_ident = QGridLayout()
 
         self.ident_max_rank_only = QCheckBox()
@@ -546,7 +526,6 @@ class ParametersWidget(QTabWidget):
         tooltip = 'Tolerance for ms2 events and identification linking measured in number of standard deviations for (m/z)'
         grid_layout_ident.addWidget(ParameterItem('Max number of sigma for linking (m/z)', tooltip, self.link_n_sig_mz),
                                     1, 0)
-
         self.link_n_sig_rt = QDoubleSpinBox()
         self.link_n_sig_rt.setRange(-LARGE, LARGE)
         self.link_n_sig_rt.setStepType(QAbstractSpinBox.AdaptiveDecimalStepType)
@@ -554,13 +533,9 @@ class ParametersWidget(QTabWidget):
         tooltip = 'Tolerance for ms2 events and identification linking measured in number of standard deviations for (rt)'
         grid_layout_ident.addWidget(ParameterItem('Max number of sigma for linking (rt)', tooltip, self.link_n_sig_rt),
                                     1, 1)
+        return grid_layout_ident
 
-        self.ident_box.setLayout(grid_layout_ident)
-
-        #
-        # Quality Control
-        #
-        self.qual_box = QGroupBox('Quality Control')
+    def init_qual(self):
         grid_layout_qual = QGridLayout()
 
         self.similarity_num_peaks = QSpinBox()
@@ -675,20 +650,17 @@ class ParametersWidget(QTabWidget):
         tooltip = 'Whether to show the legend in QC plots.'
         grid_layout_qual.addWidget(ParameterItem('Figure legend', tooltip, self.qc_plot_fig_legend), 5, 1)
 
-        self.qual_box.setLayout(grid_layout_qual)
+        return grid_layout_qual
 
-        #
-        # Quantitive Table Generation
-        #
-        self.quantt_box = QGroupBox('Quantitive Table Generation')
+    def init_quantt(self):
         grid_layout_quantt = QGridLayout()
 
         self.quant_isotopes = QComboBox()
         self.quant_isotopes.addItems(['height', 'volume'])
         self.quant_isotopes.currentIndexChanged.connect(self.update_parameters)
         tooltip = inspect.cleandoc(''' Isotope quantification method for the quantitative table generation.
-                  \'Height\': Fitted isotope peak height,
-                  \'Volume\': Volume of the 3D isotope peak.''')
+                          \'Height\': Fitted isotope peak height,
+                          \'Volume\': Volume of the 3D isotope peak.''')
         grid_layout_quantt.addWidget(ParameterItem('Isotopes', tooltip, self.quant_isotopes), 0, 0)
 
         self.quant_features = QComboBox()
@@ -696,15 +668,15 @@ class ParametersWidget(QTabWidget):
             ['monoisotopic_height', 'monoisotopic_volume', 'total_height', 'total_volume', 'max_height', 'max_volume'])
         self.quant_features.currentIndexChanged.connect(self.update_parameters)
         tooltip = inspect.cleandoc('''Feature quantification method for the quantitative table generation.
-                  \'Max Height/Volume\': Height or volume of the highest intensity isotope,
-                  \'Monoisotopic Height/Volume\': Height or volume of the monoisotopic peak,
-                  \'Total Height/Volume\': Sum of heights or volumes of all isotopic peaks in the feature.''')
+                          \'Max Height/Volume\': Height or volume of the highest intensity isotope,
+                          \'Monoisotopic Height/Volume\': Height or volume of the monoisotopic peak,
+                          \'Total Height/Volume\': Sum of heights or volumes of all isotopic peaks in the feature.''')
         grid_layout_quantt.addWidget(ParameterItem('Features', tooltip, self.quant_features), 0, 1)
 
         self.quant_features_charge_state_filter = QCheckBox()
         self.quant_features_charge_state_filter.stateChanged.connect(self.update_parameters)
         tooltip = inspect.cleandoc(''''Whether to remove feature annotations from quantitative tables 
-        where charge state of the detected features don't mach the one given by the identification engine.''')
+                where charge state of the detected features don't mach the one given by the identification engine.''')
         grid_layout_quantt.addWidget(
             ParameterItem('Features charge state filter', tooltip, self.quant_features_charge_state_filter), 0, 2)
 
@@ -712,8 +684,8 @@ class ParametersWidget(QTabWidget):
         self.quant_ident_linkage.addItems(['theoretical_mz', 'msms_event'])
         self.quant_ident_linkage.currentIndexChanged.connect(self.update_parameters)
         tooltip = inspect.cleandoc('''Method linking PSM with quantified isotopes.
-                  \'Theoretical m/z\': Link identifiations based on the theoretical monoisotopic m/z calculated by the identification engine,
-                  \'MS/MS event\': Link identifications to the closest isotope in m/z and retention time from the occurance of the MS/MS event.''')
+                          \'Theoretical m/z\': Link identifiations based on the theoretical monoisotopic m/z calculated by the identification engine,
+                          \'MS/MS event\': Link identifications to the closest isotope in m/z and retention time from the occurance of the MS/MS event.''')
         grid_layout_quantt.addWidget(ParameterItem('Ident linkage', tooltip, self.quant_ident_linkage), 1, 0)
 
         self.quant_consensus = QCheckBox()
@@ -731,7 +703,7 @@ class ParametersWidget(QTabWidget):
         self.quant_save_all_annotations = QCheckBox()
         self.quant_save_all_annotations.stateChanged.connect(self.update_parameters)
         tooltip = inspect.cleandoc('''Whether all annotations should be saved in addition with the aggregated tables.
-                  Depending on the number of annotations, this might dramatically increase the disk space required.''')
+                          Depending on the number of annotations, this might dramatically increase the disk space required.''')
         grid_layout_quantt.addWidget(ParameterItem('Save all annotations', tooltip, self.quant_save_all_annotations), 2,
                                      0)
 
@@ -758,19 +730,15 @@ class ParametersWidget(QTabWidget):
         self.quant_proteins_quant_type.addItems(['razor', 'unique', 'all'])
         self.quant_proteins_quant_type.currentIndexChanged.connect(self.update_parameters)
         tooltip = inspect.cleandoc(''' Type of quantification used for protein inference:
-            - unique: only unique peptides will be used for quantification.
-            - razor: same as unique plus peptides assigned as most likely due to Occam's razor constrain.
-            - all: All peptides will be used for quantification. Shared peptides can be used more than once.''')
+                    - unique: only unique peptides will be used for quantification.
+                    - razor: same as unique plus peptides assigned as most likely due to Occam's razor constrain.
+                    - all: All peptides will be used for quantification. Shared peptides can be used more than once.''')
         grid_layout_quantt.addWidget(
             ParameterItem('Protein quantification type', tooltip, self.quant_proteins_quant_type), 3, 1)
 
-        self.quantt_box.setLayout(grid_layout_quantt)
+        return grid_layout_quantt
 
-        # Enable scrolling
-        content_widget = QWidget()
-        self.parameters_tab.setWidget(content_widget)
-        self.parameters_tab.setWidgetResizable(True)
-
+    def init_layout(self):
         layout = QVBoxLayout()
         layout.addWidget(self.inst_settings_box)
         layout.addWidget(self.raw_data_box)
@@ -780,51 +748,111 @@ class ParametersWidget(QTabWidget):
         layout.addWidget(self.ident_box)
         layout.addWidget(self.quantt_box)
         layout.addWidget(self.qual_box)
+        return layout
 
-        content_widget.setLayout(layout)
+    def parameters_tab_ui(self):
+        LARGE = 1000000000
+
+        self.update_allowed = False
+
+        # Instruments
+        self.inst_settings_box = QGroupBox('Instrument Settings')
+        grid_layout_inst = self.init_inst()
+        self.inst_settings_box.setLayout(grid_layout_inst)
+
+        # Raw data
+        self.raw_data_box = QGroupBox('Raw Data')
+        grid_layout_raw_data = self.init_raw_data()
+        self.raw_data_box.setLayout(grid_layout_raw_data)
+
+        # Quantification
+        self.quantification_box = QGroupBox('Quantification')
+        grid_layout_resamp = self.init_resamp()
+        self.quantification_box.setLayout(grid_layout_resamp)
+
+        # Warp2D
+        self.warp_box = QGroupBox('Warp2D')
+        grid_layout_warp = self.init_war()
+        self.warp_box.setLayout(grid_layout_warp)
+
+        # MetaMatch
+        self.meta_box = QGroupBox('MetaMatch')
+        grid_layout_meta = self.init_meta()
+        self.meta_box.setLayout(grid_layout_meta)
+
+        # Identification
+        self.ident_box = QGroupBox('Identification')
+        grid_layout_ident = self.init_indent()
+        self.ident_box.setLayout(grid_layout_ident)
+
+        # Quality Control
+        self.qual_box = QGroupBox('Quality Control')
+        grid_layout_qual = self.init_qual()
+
+        self.qual_box.setLayout(grid_layout_qual)
+
+        # Quantitive Table Generation
+        self.quantt_box = QGroupBox('Quantitive Table Generation')
+        grid_layout_quantt = self.init_quantt()
+        self.quantt_box.setLayout(grid_layout_quantt)
+
+        # Enable scrolling
+        content_widget = QWidget()
+        self.parameters_tab.setWidget(content_widget)
+        self.parameters_tab.setWidgetResizable(True)
+
+        content_widget.setLayout(self.init_layout())
         self.update_allowed = True
 
     def get_changed_status(self):
         return self.changed
 
-    def update_parameters(self):
-        if not self.update_allowed:
-            return
-        global saved
-        saved = False
+    def update_inst(self):
         self.parameters['instrument_type'] = self.inst_type.currentText().lower()
         self.parameters['resolution_ms1'] = self.res_ms1.value()
         self.parameters['resolution_msn'] = self.res_ms2.value()
         self.parameters['reference_mz'] = self.reference_mz.value()
         self.parameters['avg_fwhm_rt'] = self.avg_fwhm_rt.value()
-        self.parameters['num_samples_mz'] = self.num_samples_mz.value()
-        self.parameters['num_samples_rt'] = self.num_samples_rt.value()
-        self.parameters['smoothing_coefficient_mz'] = self.smoothing_coefficient_mz.value()
-        self.parameters['smoothing_coefficient_rt'] = self.smoothing_coefficient_rt.value()
-        self.parameters['warp2d_slack'] = self.warp2d_slack.value()
-        self.parameters['warp2d_window_size'] = self.warp2d_window_size.value()
-        self.parameters['warp2d_num_points'] = self.warp2d_num_points.value()
-        self.parameters['warp2d_rt_expand_factor'] = self.warp2d_rt_expand_factor.value()
-        self.parameters['warp2d_peaks_per_window'] = self.warp2d_peaks_per_window.value()
-        self.parameters['metamatch_fraction'] = self.metamatch_fraction.value()
-        self.parameters['metamatch_n_sig_mz'] = self.metamatch_n_sig_mz.value()
-        self.parameters['metamatch_n_sig_rt'] = self.metamatch_n_sig_rt.value()
+
+    def update_raw_data(self):
         self.parameters['min_mz'] = self.min_mz.value()
         self.parameters['max_mz'] = self.max_mz.value()
         self.parameters['min_rt'] = self.min_rt.value()
         self.parameters['max_rt'] = self.max_rt.value()
         self.parameters['polarity'] = self.polarity.currentText()
+
+    def update_resamp(self):
+        self.parameters['num_samples_mz'] = self.num_samples_mz.value()
+        self.parameters['num_samples_rt'] = self.num_samples_rt.value()
+        self.parameters['smoothing_coefficient_mz'] = self.smoothing_coefficient_mz.value()
+        self.parameters['smoothing_coefficient_rt'] = self.smoothing_coefficient_rt.value()
         self.parameters['max_peaks'] = self.max_peaks.value()
-        self.parameters['link_n_sig_mz'] = self.link_n_sig_mz.value()
-        self.parameters['link_n_sig_rt'] = self.link_n_sig_rt.value()
         charge_state_list = list(
             range(self.feature_detection_charge_state_min.value(), self.feature_detection_charge_state_max.value() + 1))
         charge_state_list.reverse()
         self.parameters['feature_detection_charge_states'] = charge_state_list
+
+    def update_warp(self):
+        self.parameters['warp2d_slack'] = self.warp2d_slack.value()
+        self.parameters['warp2d_window_size'] = self.warp2d_window_size.value()
+        self.parameters['warp2d_num_points'] = self.warp2d_num_points.value()
+        self.parameters['warp2d_rt_expand_factor'] = self.warp2d_rt_expand_factor.value()
+        self.parameters['warp2d_peaks_per_window'] = self.warp2d_peaks_per_window.value()
+
+    def update_meta(self):
+        self.parameters['metamatch_fraction'] = self.metamatch_fraction.value()
+        self.parameters['metamatch_n_sig_mz'] = self.metamatch_n_sig_mz.value()
+        self.parameters['metamatch_n_sig_rt'] = self.metamatch_n_sig_rt.value()
+
+    def update_ident(self):
         self.parameters['ident_max_rank_only'] = self.ident_max_rank_only.isChecked()
         self.parameters['ident_require_threshold'] = self.ident_require_threshold.isChecked()
         self.parameters['ident_ignore_decoy'] = self.ident_ignore_decoy.isChecked()
+        self.parameters['link_n_sig_mz'] = self.link_n_sig_mz.value()
+        self.parameters['link_n_sig_rt'] = self.link_n_sig_rt.value()
         self.parameters['similarity_num_peaks'] = self.similarity_num_peaks.value()
+
+    def update_qual(self):
         self.parameters['qc_plot_palette'] = self.qc_plot_palette.currentText()
         self.parameters['qc_plot_extension'] = self.qc_plot_extension.currentText()
         if self.qc_plot_fill_alpha.value() == 0.0:
@@ -844,6 +872,8 @@ class ParametersWidget(QTabWidget):
         self.parameters['qc_plot_fig_size_y'] = self.qc_plot_fig_size_y.value()
         self.parameters['qc_plot_fig_legend'] = self.qc_plot_fig_legend.isChecked()
         self.parameters['qc_plot_mz_vs_sigma_mz_max_peaks'] = self.qc_plot_mz_vs_sigma_mz_max_peaks.value()
+
+    def update_quantt(self):
         self.parameters['quant_isotopes'] = self.quant_isotopes.currentText()
         self.parameters['quant_features'] = self.quant_features.currentText()
         self.parameters['quant_features_charge_state_filter'] = self.quant_features_charge_state_filter.isChecked()
@@ -857,3 +887,20 @@ class ParametersWidget(QTabWidget):
         self.parameters[
             'quant_proteins_ignore_ambiguous_peptides'] = self.quant_proteins_ignore_ambiguous_peptides.isChecked()
         self.parameters['quant_proteins_quant_type'] = self.quant_proteins_quant_type.currentText()
+
+    def update_parameters(self):
+        if not self.update_allowed:
+            return
+
+        global saved
+        saved = False
+
+        self.update_inst()
+        self.update_raw_data()
+        self.update_resamp()
+        self.update_warp()
+        self.update_meta()
+        self.update_ident()
+        self.update_qual()
+        self.update_quantt()
+
