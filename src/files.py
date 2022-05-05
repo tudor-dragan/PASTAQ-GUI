@@ -73,7 +73,7 @@ class EditFileDialog(QDialog):
             if file.endswith('.mzID') or file.endswith('.mzIdentML') or file.endswith('.mgf'):
                 list.append(file)
         print(list)
-        # TODO kinda complicated to connect classes
+        # TODO sorting and updating after dropping
         if len(list) > 0:
             self.mzid_paths = self.sort(list)
             self.update(self.mzid_paths)
