@@ -5,8 +5,15 @@ from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
 
 
-# Window when you edit row(s)
+
 class EditFileDialog(QDialog):
+    """
+    This is the modal that shows up when editing an already added .mzML file.
+    It allows for adding .mzID files as well as setting a group for the measurement.
+    Attributes:
+    - the sorting function for the files
+    - the updating function
+    """
     group = ''
     mzid_paths = []
 
@@ -35,6 +42,7 @@ class EditFileDialog(QDialog):
         layout.addWidget(buttons)
         self.setLayout(layout)
 
+    # Layout of the modal
     def init_layout(self, mzid_picker, drop):
         form_layout = QFormLayout()
         form_layout.addRow('Group', self.group_box)
@@ -42,11 +50,13 @@ class EditFileDialog(QDialog):
         form_layout.addRow(drop)
         return form_layout
 
+    # Grouping for the measurements
     def init_group(self):
         group_box = QLineEdit()
         group_box.textChanged.connect(self.set_group)
         return group_box
 
+    # File browing for corresponding .mzIDs
     def init_mzid_picker(self):
         mzid_picker = QPushButton('Browse')
         mzid_picker.clicked.connect(self.set_mzid_paths)
@@ -59,12 +69,14 @@ class EditFileDialog(QDialog):
         buttons.rejected.connect(self.reject)
         return buttons
 
+    # Enables drag and drop event
     def dragEnterEvent(self, event):
         if event.mimeData().hasUrls():
             event.accept()
         else:
             event.ignore()
 
+    # When a file is dropped on the UI
     def dropEvent(self, event):
         files = [u.toLocalFile() for u in event.mimeData().urls()]
         list = []
@@ -81,6 +93,7 @@ class EditFileDialog(QDialog):
     def set_group(self):
         self.group = self.group_box.text()
 
+    # Set file paths for the project
     def set_mzid_paths(self):
         file_paths, _ = QFileDialog.getOpenFileNames(
             parent=self,
@@ -109,8 +122,12 @@ class ImageLabel(QLabel):
         super().set_pixmap(image)
 
 
-# class for file processing
+
 class FileProcessor:
+    """
+    This class is responsible for the automatic conversion of .mgf files to .mzID files.
+    It requires paths to idconvert and MSFragger executable and parameters file to do the conversion.
+    """
     ms_jar = [False, '']
     id_file = [False, '']
     params = [False, '']

@@ -8,17 +8,27 @@ from PyQt5.QtWidgets import *
 import files
 
 
-# The log text appearing on the pipeline modal
 class TextStream(QObject):
+    """
+    The log text appearing on the pipeline modal.
+    This will display the progress of the pipeline.
+    """
     # A qt signal carrying the text output by the pipeline
     text_written = pyqtSignal(str)
 
     def write(self, text):
         self.text_written.emit(str(text))
 
-
-# Thread that runs the pipeline parallel to the GUI
+ 
 class PipelineRunner(QThread):
+    """
+    Thread that runs the pipeline parallel to the GUI.
+    It also is responsible for automatically converting .mgf files
+    to .mzID files if necessary.
+
+    Arguments:
+    - a file processor for .mgf files
+    """
     finished = pyqtSignal()
     params = {}
     input_files = []
@@ -31,6 +41,7 @@ class PipelineRunner(QThread):
     def __del__(self):
         self.wait()
 
+    # this will be run when the thread is started
     def run(self):
         skip = False
         print('Starting automatic identification process')
@@ -55,9 +66,17 @@ class PipelineRunner(QThread):
         self.finished.emit()
 
 
-# A modal that appears after the running of the pipeline
-# It outputs the log of the pipeline and allows for cancellation.
 class PipelineLogDialog(QDialog):
+    """
+    A modal that appears after the running of the pipeline
+    It outputs the log of the pipeline and allows for cancellation.
+
+    Arguments:
+    - a file processor for .mgf files
+    - input files for the PASTAQ pipeline
+    - parameters for the pipeline
+    - output directory
+    """
     group = ''
     mzid_paths = []
 
@@ -117,7 +136,8 @@ class PipelineLogDialog(QDialog):
         cursor.insertText(text)
         self.text_box.setTextCursor(cursor)
         self.text_box.ensureCursorVisible()
-
+    
+    # In case the pipeline succeeds replace the cancel button with an ok button
     def exit_success(self):
         # Restore stdout pipe.
         sys.stdout = sys.__stdout__
@@ -128,13 +148,14 @@ class PipelineLogDialog(QDialog):
         layout = self.init_layout(new_buttons, self.text_box)
         self.setLayout(layout)
 
+    # In case of failure terminate the thread
     def exit_failure(self):
         # TODO: Confirm we want to exit, since this could lead to corrupt
         # temporary files.
 
         # Restore stdout pipe.
         sys.stdout = sys.__stdout__
-        # this does not quit the thread it keeps running in the background
+        # this does not quit, the thread it keeps running in the background
         self.pipeline_thread.quit()
         # self.pipeline_thread.terminate() can be used in place of quit and it will end the thread
         # but not free the memory allocated in the C++ part of the code

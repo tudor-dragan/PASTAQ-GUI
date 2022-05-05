@@ -16,7 +16,7 @@ import pipeline
 # TODO: Switch the cwd to the project directory and/or use it instead of os.getcwd()
 # TODO: The RUN button should only be access when there is at least 1 sample active.
 
-
+# Setting the color palette of the UI to dark colors.
 def dark_mode():
     app.setStyle("Fusion")
     palette = QPalette()
@@ -33,13 +33,13 @@ def dark_mode():
 
     app.setPalette(palette)
 
-
+# Setting the colors to ligher colors
 def light_mode():
     app.setStyle("Fusion")
     palette = QPalette()
     app.setPalette(palette)
 
-
+# Error dialog when unable to save the project.
 def init_error_dialog():
     error_dialog = QMessageBox()
     error_dialog.setIcon(QMessageBox.Critical)
@@ -48,7 +48,7 @@ def init_error_dialog():
     error_dialog.setWindowTitle('Error')
     return error_dialog
 
-
+# Popup that appears if the project is closed without saving.
 def close_popup():
     box = QMessageBox()
     box.setWindowTitle('Window Close')
@@ -64,6 +64,10 @@ def close_popup():
 
 
 class MainWindow(QMainWindow):
+    """
+    This is the main windows of the GUI and it contains the project settings
+    as well as the input tabs for files parameters and conversion executables.
+    """
     project_path = ''
     dark = False
 
@@ -121,6 +125,7 @@ class MainWindow(QMainWindow):
         self.setCentralWidget(container)
         self.default_param = pastaq.default_parameters('orbitrap', 10)
 
+    # Project menu allowing for creating opening and saving.
     def init_menu(self):
         self.menubar = self.menuBar()
         self.fileMenu = self.menubar.addMenu('File')
@@ -210,6 +215,7 @@ class MainWindow(QMainWindow):
     def set_project_description(self):
         self.parameters_container.parameters['project_description'] = self.project_description_ui.text()
 
+    # Menu action that resets all parameters to default value.
     def reset_param(self):
         box = QMessageBox()
         box.setIcon(QMessageBox.Warning)
@@ -231,6 +237,7 @@ class MainWindow(QMainWindow):
             self.dark = False
             self.view_mode_btn.setText('Dark Mode')
 
+    # Updating the project settings
     def update_meta_project(self):
         self.project_directory_ui.setText(os.path.dirname(self.project_path))
         if 'project_name' in self.parameters_container.parameters:
@@ -238,6 +245,7 @@ class MainWindow(QMainWindow):
         if 'project_description' in self.parameters_container.parameters:
             self.project_description_ui.setText(self.parameters_container.parameters['project_description'])
 
+    # Updating the parameters for the instrument section
     def update_inst(self, params):
         self.parameters_container.inst_type.setCurrentText(params['instrument_type'])
         self.parameters_container.res_ms1.setValue(params['resolution_ms1'])
@@ -366,6 +374,7 @@ class MainWindow(QMainWindow):
         self.update_quantt(params)
         self.parameters_container.update_allowed = True
 
+    # Creates a new project at the specified folder
     def new_project(self):
         dir_path = QFileDialog.getExistingDirectory(
             parent=self,
@@ -378,6 +387,7 @@ class MainWindow(QMainWindow):
             self.save_project()
             parameter.saved = True
 
+    # Enables the features of the UI once a project is created
     def prepare_new_project(self):
         self.project_path = os.path.join(dir_path, 'parameters.json')
         self.parameters_container.parameters = pastaq.default_parameters('orbitrap', 10)
@@ -389,6 +399,7 @@ class MainWindow(QMainWindow):
         self.project_variables_container.setEnabled(True)
         self.parameters_container.setEnabled(True)
 
+    # Opens an already existing project.
     def open_project(self):
         file_path, _ = QFileDialog.getOpenFileName(
             parent=self,
@@ -406,6 +417,7 @@ class MainWindow(QMainWindow):
                 self.update_ui()
                 parameter.saved = True
 
+    # Enables the features of the UI once a project is opened
     def prepare_open_project(self, tmp, file_path):
         self.parameters_container.parameters = tmp
         self.project_path = file_path
@@ -419,6 +431,8 @@ class MainWindow(QMainWindow):
         if 'input_files' in self.parameters_container.parameters:
             self.parameters_container.update_input_files(self.parameters_container.parameters['input_files'])
 
+    # Saves all the parts of a project as a json file.
+    # THis file can later be used to reopen the project or to start the PASTAQ pipeline.
     def save_project(self):
         try:
             with open(self.project_path, 'w') as json_file:
@@ -430,6 +444,7 @@ class MainWindow(QMainWindow):
             dialog = init_error_dialog()
             dialog.exec_()
 
+    # If the project is not saved open a popup otherwise close the UI
     def closeEvent(self, event):
         if not parameter.saved:
             box, button_s, button_d, button_c = close_popup()
@@ -442,6 +457,7 @@ class MainWindow(QMainWindow):
             else:
                 event.accept()
 
+    # Saves the project to a new directory
     def save_project_as(self):
         path = QFileDialog.getExistingDirectory(
             parent=self,
@@ -464,6 +480,7 @@ class MainWindow(QMainWindow):
         self.project_variables_container.setEnabled(False)
         self.parameters_container.setEnabled(False)
 
+    # Creates the pipeline runner thread and modal
     def init_pipeline(self):
         pipe = pipeline.PipelineLogDialog(
             parent=self,

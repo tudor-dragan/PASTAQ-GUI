@@ -26,7 +26,14 @@ def init_button_params(label, tooltip):
 
 
 class ParameterItem(QWidget):
+    """
+    A container for each parameter for the PASTAQ pipeline.
 
+    Arguments:
+    - name of parameter
+    - tooltip text
+    - type of Qt widget
+    """
     def __init__(self, label, tooltip, widget, parent=None):
         QWidget.__init__(self, parent=parent)
         layout = QVBoxLayout(self)
@@ -37,14 +44,12 @@ class ParameterItem(QWidget):
         layout.addWidget(widget)
 
 
-# The button to interact with a parameter
+# Do nothing when pressing a label.
 class ParameterLabel(QPushButton):
     def mousePressEvent(self, event):
         return
 
-
-# The main component of the GUI it contains the three tabs corresponding to input files,
-# input parameters and paths for the conversion executables
+# Function for dealing with adding multiple identification files at once
 def multiple_id_files(file, new_file, edit_file_dialog):
     base_name = os.path.basename(file['raw_path'])
     base_name = os.path.splitext(base_name)
@@ -58,7 +63,7 @@ def multiple_id_files(file, new_file, edit_file_dialog):
             break
         os.chdir(os.path.dirname(mzid))  # sets directory to last identification file added
 
-
+# For when a single .mzID file is added
 def single_id_file(path, new_file):
     new_file['ident_path'] = path
     os.chdir(os.path.dirname(path))  # sets directory to last identification file added
@@ -85,8 +90,13 @@ def init_button(text, action):
 
 
 class ParametersWidget(QTabWidget):
+    """
+    The main component of the GUI it contains the three tabs corresponding to input files,
+    input parameters and paths for the conversion executables
+    """
     input_files = []
     parameters = {}
+    #createsa file processor for processing .mgf files
     file_processor = files.FileProcessor()
 
     def __init__(self, parent=None):
@@ -160,6 +170,7 @@ class ParametersWidget(QTabWidget):
         layout.addWidget(self.input_files_table)
         self.input_files_tab.setLayout(layout)
 
+    # Creates the container for the path to MSFragger
     def msfragger_container(self):
         box = QGroupBox('MSFragger .jar file')
         lay_ms = QHBoxLayout()
@@ -172,6 +183,7 @@ class ParametersWidget(QTabWidget):
         box.setLayout(lay_ms)
         return box
 
+    # Creates the container for the path to idconvert
     def idconvert_container(self):
         box = QGroupBox('idconvert.exe')
         lay_id = QHBoxLayout()
@@ -184,6 +196,7 @@ class ParametersWidget(QTabWidget):
         box.setLayout(lay_id)
         return box
 
+    # Path to a parameters file for MSFragger
     def params_container(self):
         box = QGroupBox('.params file for MSFragger')
         lay_params = QHBoxLayout()
@@ -196,6 +209,7 @@ class ParametersWidget(QTabWidget):
         box.setLayout(lay_params)
         return box
 
+    # Adding the paths input to the UI
     def input_paths_tab_ui(self):
         msfragger_box = self.msfragger_container()
         id_box = self.idconvert_container()
@@ -212,6 +226,7 @@ class ParametersWidget(QTabWidget):
 
         widget.setLayout(layout)
 
+    # Adds a file to the GUI
     def add_file(self):
         file_paths, _ = QFileDialog.getOpenFileNames(
             parent=self,
@@ -243,6 +258,8 @@ class ParametersWidget(QTabWidget):
                 new_list += [file]
         return new_list
 
+    # When selecting .mzML files these can be editted to add a .mzID file to them
+    # This spawns the edit dialog and adds the files to the GUI
     def edit_file(self):
         indexes = self.find_selected_files()
         if len(indexes) == 0:
@@ -269,6 +286,7 @@ class ParametersWidget(QTabWidget):
                     new_list += [file]
             self.update_input_files(new_list)
 
+    # Finds the index of the selected files in the UI
     def find_selected_files(self):
         selected_ranges = self.input_files_table.selectedRanges()
         indexes = []
@@ -277,6 +295,7 @@ class ParametersWidget(QTabWidget):
                 indexes += [i]
         return indexes
 
+    # Updates the UI in case of a change in the input files
     def update_input_files(self, input_files):
         self.input_files = input_files
         self.input_files_table.setRowCount(len(self.input_files))
@@ -292,6 +311,7 @@ class ParametersWidget(QTabWidget):
                 cell_widget = self.make_reference(input_file['reference'])
                 self.input_files_table.setCellWidget(i, 3, cell_widget)
 
+    # Enables the reference checkmark box next to each file pair
     def make_reference(self, reference):
         cell_widget = QWidget()
         checkbox = QCheckBox()
@@ -307,6 +327,8 @@ class ParametersWidget(QTabWidget):
             checkbox = self.input_files_table.cellWidget(row, 3).children()[1]
             self.input_files[row]['reference'] = checkbox.isChecked()
 
+    # Section of parameters
+    # This initialises the UI for each parameter, as well as the values it can take
     def init_inst(self):
         grid_layout_inst = QGridLayout()
 
@@ -342,6 +364,7 @@ class ParametersWidget(QTabWidget):
 
         return grid_layout_inst
 
+    # Section of parameters
     def init_raw_data(self):
         grid_layout_raw_data = QGridLayout()
 
@@ -382,6 +405,7 @@ class ParametersWidget(QTabWidget):
 
         return grid_layout_raw_data
 
+    # Section of parameters
     def init_resamp(self):
         grid_layout_resamp = QGridLayout()
 
@@ -439,6 +463,7 @@ class ParametersWidget(QTabWidget):
 
         return grid_layout_resamp
 
+    # Section of parameters
     def init_warp(self):
         grid_layout_warp = QGridLayout()
 
@@ -476,6 +501,7 @@ class ParametersWidget(QTabWidget):
 
         return grid_layout_warp
 
+    # Section of parameters
     def init_meta(self):
         grid_layout_meta = QGridLayout()
 
@@ -506,6 +532,7 @@ class ParametersWidget(QTabWidget):
 
         return grid_layout_meta
 
+    # Section of parameters
     def init_ident(self):
         grid_layout_ident = QGridLayout()
 
@@ -540,6 +567,7 @@ class ParametersWidget(QTabWidget):
                                     1, 1)
         return grid_layout_ident
 
+    # Section of parameters
     def init_qual(self):
         grid_layout_qual = QGridLayout()
 
@@ -657,6 +685,7 @@ class ParametersWidget(QTabWidget):
 
         return grid_layout_qual
 
+    # Section of parameters
     def init_quantt(self):
         grid_layout_quantt = QGridLayout()
 
@@ -743,6 +772,7 @@ class ParametersWidget(QTabWidget):
 
         return grid_layout_quantt
 
+    # Adds all sections of parameters to the layout
     def init_layout(self):
         layout = QVBoxLayout()
         layout.addWidget(self.inst_settings_box)
@@ -755,6 +785,7 @@ class ParametersWidget(QTabWidget):
         layout.addWidget(self.qual_box)
         return layout
 
+    # Creates the UI for the parameters tab
     def parameters_tab_ui(self):
         global LARGE
         LARGE = 1000000000
@@ -810,6 +841,7 @@ class ParametersWidget(QTabWidget):
         content_widget.setLayout(self.init_layout())
         self.update_allowed = True
 
+    # Updates parameters to values set in the UI by the user for the instrument section
     def update_inst(self):
         self.parameters['instrument_type'] = self.inst_type.currentText().lower()
         self.parameters['resolution_ms1'] = self.res_ms1.value()
@@ -891,6 +923,7 @@ class ParametersWidget(QTabWidget):
             'quant_proteins_ignore_ambiguous_peptides'] = self.quant_proteins_ignore_ambiguous_peptides.isChecked()
         self.parameters['quant_proteins_quant_type'] = self.quant_proteins_quant_type.currentText()
 
+    # Updates all the parameters
     def update_parameters(self):
         if not self.update_allowed:
             return
