@@ -4,17 +4,15 @@ import platform
 import sys
 
 import pastaq
-from PyQt5.QtCore import *
+from PyQt5.QtCore import QSize, Qt
 from PyQt5.QtGui import QIcon, QKeySequence, QPalette, QColor
-from PyQt5.QtWidgets import *
-
+from PyQt5.QtWidgets import QMessageBox, QMainWindow, QVBoxLayout
+from PyQt5.QtWidgets import QWidget, QAction, QLineEdit, QFormLayout
+from PyQt5.QtWidgets import QPushButton, QFileDialog, QApplication
 
 import parameter
 import pipeline
 
-# TODO: Create custom file picker widget that shows the name of the picked files
-# TODO: Switch the cwd to the project directory and/or use it instead of os.getcwd()
-# TODO: The RUN button should only be access when there is at least 1 sample active.
 
 # Setting the color palette of the UI to dark colors.
 def dark_mode():
@@ -33,11 +31,13 @@ def dark_mode():
 
     app.setPalette(palette)
 
+
 # Setting the colors to ligher colors
 def light_mode():
     app.setStyle("Fusion")
     palette = QPalette()
     app.setPalette(palette)
+
 
 # Error dialog when unable to save the project.
 def init_error_dialog():
@@ -47,6 +47,7 @@ def init_error_dialog():
     error_dialog.setInformativeText('Can\'t save project at the given directory')
     error_dialog.setWindowTitle('Error')
     return error_dialog
+
 
 # Popup that appears if the project is closed without saving.
 def close_popup():
@@ -127,9 +128,9 @@ class MainWindow(QMainWindow):
 
     # Project menu allowing for creating opening and saving.
     def init_menu(self):
-        self.menubar = self.menuBar()
-        self.fileMenu = self.menubar.addMenu('File')
-        self.actionMenu = self.menubar.addMenu('Action')
+        self.menu = self.menuBar()
+        self.fileMenu = self.menu.addMenu('File')
+        self.actionMenu = self.menu.addMenu('Action')
 
     def add_menu_action(self, action):
         self.fileMenu.addAction(action)
@@ -211,9 +212,11 @@ class MainWindow(QMainWindow):
 
     def set_project_name(self):
         self.parameters_container.parameters['project_name'] = self.project_name_ui.text()
+        parameter.saved = False
 
     def set_project_description(self):
         self.parameters_container.parameters['project_description'] = self.project_description_ui.text()
+        parameter.saved = False
 
     # Menu action that resets all parameters to default value.
     def reset_param(self):
@@ -226,6 +229,7 @@ class MainWindow(QMainWindow):
         box.exec_()
         if box.clickedButton() == button_s:
             self.update_ui(True)
+        parameter.saved = False
 
     def view_mode(self):
         if not self.dark:

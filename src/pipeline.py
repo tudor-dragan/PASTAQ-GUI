@@ -2,8 +2,8 @@ import sys
 import time
 
 import pastaq
-from PyQt5.QtCore import *
-from PyQt5.QtWidgets import *
+from PyQt5.QtCore import QObject, pyqtSignal, QThread, QObjectCleanupHandler
+from PyQt5.QtWidgets import QDialog, QTextEdit, QDialogButtonBox, QVBoxLayout
 
 import files
 
@@ -54,6 +54,7 @@ class PipelineRunner(QThread):
             else:
                 print('Automatic identification process not successful')
                 skip = True
+                break
 
         if not skip:
             print('Starting DDA Pipeline')

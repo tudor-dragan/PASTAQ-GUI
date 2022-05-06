@@ -1,9 +1,13 @@
 import inspect
 import os
 
-from PyQt5.QtCore import *
+from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QIcon
-from PyQt5.QtWidgets import *
+from PyQt5.QtWidgets import QVBoxLayout, QTabWidget, QSpinBox, QAbstractSpinBox
+from PyQt5.QtWidgets import QWidget, QLineEdit, QDoubleSpinBox, QCheckBox
+from PyQt5.QtWidgets import QPushButton, QFileDialog, QScrollArea, QComboBox, QLabel
+from PyQt5.QtWidgets import QTableWidget, QHeaderView, QHBoxLayout, QGroupBox, QGridLayout
+
 
 import files
 import resources
@@ -49,6 +53,7 @@ class ParameterLabel(QPushButton):
     def mousePressEvent(self, event):
         return
 
+
 # Function for dealing with adding multiple identification files at once
 def multiple_id_files(file, new_file, edit_file_dialog):
     base_name = os.path.basename(file['raw_path'])
@@ -62,6 +67,7 @@ def multiple_id_files(file, new_file, edit_file_dialog):
             new_file['ident_path'] = mzid
             break
         os.chdir(os.path.dirname(mzid))  # sets directory to last identification file added
+
 
 # For when a single .mzID file is added
 def single_id_file(path, new_file):
@@ -96,7 +102,7 @@ class ParametersWidget(QTabWidget):
     """
     input_files = []
     parameters = {}
-    #createsa file processor for processing .mgf files
+    # creates a file processor for processing .mgf files
     file_processor = files.FileProcessor()
 
     def __init__(self, parent=None):
@@ -297,6 +303,8 @@ class ParametersWidget(QTabWidget):
 
     # Updates the UI in case of a change in the input files
     def update_input_files(self, input_files):
+        global saved
+        saved = False
         self.input_files = input_files
         self.input_files_table.setRowCount(len(self.input_files))
         for i, input_file in enumerate(self.input_files):

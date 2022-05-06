@@ -1,9 +1,10 @@
 import os
 import subprocess
 
-from PyQt5.QtCore import *
-from PyQt5.QtWidgets import *
-
+from PyQt5.QtCore import Qt
+from PyQt5.QtWidgets import QMessageBox, QVBoxLayout, QDialogButtonBox
+from PyQt5.QtWidgets import QWidget, QLineEdit, QFormLayout
+from PyQt5.QtWidgets import QPushButton, QFileDialog, QDialog, QLabel
 
 
 class EditFileDialog(QDialog):
@@ -79,15 +80,15 @@ class EditFileDialog(QDialog):
     # When a file is dropped on the UI
     def dropEvent(self, event):
         files = [u.toLocalFile() for u in event.mimeData().urls()]
-        list = []
+        listing = []
         print(files)
         for file in files:
             if file.endswith('.mzID') or file.endswith('.mzIdentML') or file.endswith('.mgf'):
-                list.append(file)
-        print(list)
+                listing.append(file)
+        print(listing)
         # TODO sorting and updating after dropping
-        if len(list) > 0:
-            self.mzid_paths = self.sort(list)
+        if len(listing) > 0:
+            self.mzid_paths = self.sort(listing)
             self.update(self.mzid_paths)
 
     def set_group(self):
@@ -120,7 +121,6 @@ class ImageLabel(QLabel):
 
     def set_pixmap(self, image):
         super().set_pixmap(image)
-
 
 
 class FileProcessor:
@@ -192,7 +192,7 @@ class FileProcessor:
         popup.setText(text)
         popup.setWindowTitle(status)
         popup.exec_()
-        return
+        return  # return is necessary regardless of sonarqube
 
     # msfragger process
     def execute_msfragger(self, mgf):
