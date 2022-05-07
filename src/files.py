@@ -18,10 +18,8 @@ class EditFileDialog(QDialog):
     group = ''
     mzid_paths = []
 
-    def __init__(self, sort, update, parent=None):
+    def __init__(self, parent=None):
         super().__init__(parent)
-        self.sort = sort
-        self.update = update
         self.setWindowTitle('PASTAQ: DDA Pipeline - Add files')
 
         # Edit parameters.
@@ -81,15 +79,11 @@ class EditFileDialog(QDialog):
     def dropEvent(self, event):
         files = [u.toLocalFile() for u in event.mimeData().urls()]
         listing = []
-        print(files)
         for file in files:
             if file.endswith('.mzID') or file.endswith('.mzIdentML') or file.endswith('.mgf'):
                 listing.append(file)
-        print(listing)
-        # TODO sorting and updating after dropping
         if len(listing) > 0:
-            self.mzid_paths = self.sort(listing)
-            self.update(self.mzid_paths)
+            self.mzid_paths = listing
 
     def set_group(self):
         self.group = self.group_box.text()

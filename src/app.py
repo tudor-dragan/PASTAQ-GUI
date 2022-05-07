@@ -415,11 +415,9 @@ class MainWindow(QMainWindow):
             os.chdir(os.path.dirname(file_path))
             tmp = json.loads(open(file_path).read())
             # TODO: Validate parameters
-            valid = True
-            if valid:
-                self.prepare_open_project(tmp, file_path)
-                self.update_ui()
-                parameter.saved = True
+            self.prepare_open_project(tmp, file_path)
+            self.update_ui()
+            parameter.saved = True
 
     # Enables the features of the UI once a project is opened
     def prepare_open_project(self, tmp, file_path):
@@ -444,7 +442,7 @@ class MainWindow(QMainWindow):
                 params_values['input_files'] = self.parameters_container.input_files
                 json.dump(params_values, json_file)
             parameter.saved = True
-        except:
+        except IOError:
             dialog = init_error_dialog()
             dialog.exec_()
 

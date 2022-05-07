@@ -10,7 +10,7 @@ from PyQt5.QtWidgets import QTableWidget, QHeaderView, QHBoxLayout, QGroupBox, Q
 
 
 import files
-#import resources
+import resources
 
 global saved
 saved = True
@@ -264,13 +264,13 @@ class ParametersWidget(QTabWidget):
                 new_list += [file]
         return new_list
 
-    # When selecting .mzML files these can be editted to add a .mzID file to them
+    # When selecting .mzML files these can be edited to add a .mzID file to them
     # This spawns the edit dialog and adds the files to the GUI
     def edit_file(self):
         indexes = self.find_selected_files()
         if len(indexes) == 0:
             return
-        edit_file_dialog = files.EditFileDialog(sort=self.examine_edit_files, update=self.update_input_files)
+        edit_file_dialog = files.EditFileDialog()
         if edit_file_dialog.exec():
             old_list = self.input_files
             new_list = self.examine_edit_files(old_list, edit_file_dialog, indexes)
