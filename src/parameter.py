@@ -10,7 +10,7 @@ from PyQt5.QtWidgets import QTableWidget, QHeaderView, QHBoxLayout, QGroupBox, Q
 
 
 import files
-import resources
+#import resources
 
 global saved
 saved = True
@@ -167,9 +167,9 @@ class ParametersWidget(QTabWidget):
         add_button = init_button('Add', self.add_file)
         edit_button = init_button('Edit', self.edit_file)
         remove_button = init_button('Remove', self.remove_file)
-        remove_all_button = init_button('Remove All', self.remove_all_files)
+        select_all_button = init_button('Select All', self.select_all_files)
         # control panel
-        input_file_buttons = self.init_control(add_button, edit_button, remove_button, remove_all_button)
+        input_file_buttons = self.init_control(add_button, edit_button, remove_button, select_all_button)
 
         layout = QVBoxLayout()
         layout.addWidget(input_file_buttons)
@@ -276,14 +276,11 @@ class ParametersWidget(QTabWidget):
             new_list = self.examine_edit_files(old_list, edit_file_dialog, indexes)
             self.update_input_files(new_list)
 
-    def remove_all_files(self):
-        self.remove_file(True)
+    def select_all_files(self):
+        self.input_files_table.selectAll()
 
-    def remove_file(self, default=False):
+    def remove_file(self):
         indexes = self.find_selected_files()
-        if default:
-            self.update_input_files([])
-            return
         if len(indexes) > 0:
             old_list = self.input_files
             new_list = []
