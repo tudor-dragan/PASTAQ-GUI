@@ -386,13 +386,13 @@ class MainWindow(QMainWindow):
             directory=os.getcwd(),
         )
         if len(dir_path) > 0:
-            self.prepare_new_project()
+            self.prepare_new_project(dir_path)
             self.update_ui()
             self.save_project()
             parameter.saved = True
 
     # Enables the features of the UI once a project is created
-    def prepare_new_project(self):
+    def prepare_new_project(self, dir_path):
         self.project_path = os.path.join(dir_path, 'parameters.json')
         self.parameters_container.parameters = pastaq.default_parameters('orbitrap', 10)
         self.save_project_btn.setEnabled(True)
