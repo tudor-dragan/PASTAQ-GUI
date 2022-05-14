@@ -165,9 +165,9 @@ class ParametersWidget(QTabWidget):
         self.init_header()
 
         # buttons
-        add_button = init_button('Add', self.add_file, 'Add identification files')
+        add_button = init_button('Add', self.add_file, 'Add quantification files')
         edit_button = init_button('Edit', self.edit_file,
-                                  'Add quantification files to the selected identification files')
+                                  'Add identification files to the selected quantification files')
         remove_button = init_button('Remove', self.remove_file, 'Remove entire row')
         select_all_button = init_button('Select All', self.select_all_files, 'Select all rows')
         # control panel

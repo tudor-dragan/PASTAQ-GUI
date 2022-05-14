@@ -1,12 +1,22 @@
 import os
 import subprocess
 
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, QEvent
+from PyQt5 import QtGui
 from PyQt5.QtWidgets import QMessageBox, QVBoxLayout, QDialogButtonBox
-from PyQt5.QtWidgets import QWidget, QLineEdit, QFormLayout
+from PyQt5.QtWidgets import QWidget, QLineEdit, QFormLayout, QAction
 from PyQt5.QtWidgets import QPushButton, QFileDialog, QDialog, QLabel
 
 import parameter
+
+
+#  creates a popup
+def popup_window(status, text):
+    popup = QMessageBox()
+    popup.setText(text)
+    popup.setWindowTitle(status)
+    popup.exec_()
+    return  # return is necessary regardless of sonarqube
 
 
 class EditFileDialog(QDialog):
@@ -22,8 +32,8 @@ class EditFileDialog(QDialog):
 
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.setWindowTitle('PASTAQ: DDA Pipeline - Add files')
 
+        self.setWindowTitle('PASTAQ: DDA Pipeline - Add files')
         # Edit parameters.
         form_container = QWidget()
         self.group_box = self.init_group()
@@ -42,6 +52,12 @@ class EditFileDialog(QDialog):
         layout.addWidget(form_container)
         layout.addWidget(buttons)
         self.setLayout(layout)
+
+    def event(self, event):
+        if event.type() == QEvent.EnterWhatsThisMode:
+            popup_window('Edit files',
+                         'Select/drop matching identification files to the selected quantification files.')
+        return QDialog.event(self, event)
 
     # Layout of the modal
     def init_layout(self, mzid_picker, drop):
@@ -194,15 +210,6 @@ class FileProcessor:
     @staticmethod
     def make_mzid_path(mzid):
         return mzid.replace(".mgf", ".mzID")
-
-    # creates popup
-    @staticmethod
-    def popup_window(status, text):
-        popup = QMessageBox()
-        popup.setText(text)
-        popup.setWindowTitle(status)
-        popup.exec_()
-        return  # return is necessary regardless of sonarqube
 
     # msfragger process
     def execute_msfragger(self, mgf):
