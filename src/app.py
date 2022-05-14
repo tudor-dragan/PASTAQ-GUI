@@ -2,8 +2,11 @@ import json
 import os
 import platform
 import sys
+import webbrowser
 
 import pastaq
+from pathlib import Path
+from configparser import ConfigParser
 from PyQt5.QtCore import QSize, Qt
 from PyQt5.QtGui import QIcon, QKeySequence, QPalette, QColor
 from PyQt5.QtWidgets import QMessageBox, QMainWindow, QVBoxLayout
@@ -32,7 +35,7 @@ def dark_mode():
     app.setPalette(palette)
 
 
-# Setting the colors to ligher colors
+# Setting the colors to lighter colors
 def light_mode():
     app.setStyle("Fusion")
     palette = QPalette()
@@ -40,11 +43,11 @@ def light_mode():
 
 
 # Error dialog when unable to save the project.
-def init_error_dialog():
+def init_error_dialog(text):
     error_dialog = QMessageBox()
     error_dialog.setIcon(QMessageBox.Critical)
     error_dialog.setText('Error')
-    error_dialog.setInformativeText('Can\'t save project at the given directory')
+    error_dialog.setInformativeText(text)
     error_dialog.setWindowTitle('Error')
     return error_dialog
 
@@ -66,7 +69,7 @@ def close_popup():
 
 class MainWindow(QMainWindow):
     """
-    This is the main windows of the GUI and it contains the project settings
+    This is the main windows of the GUI, and it contains the project settings
     as well as the input tabs for files parameters and conversion executables.
     """
     project_path = ''
@@ -76,9 +79,9 @@ class MainWindow(QMainWindow):
         super().__init__()
 
         self.setWindowTitle('PASTAQ: DDA Pipeline')
-
         # Tabbed input files/parameters
         self.parameters_container = parameter.ParametersWidget()
+        self.file_processor = self.parameters_container.file_processor
         self.parameters_container.setEnabled(False)  # determines whether parameter tab visible or not
         # Main layout
         layout = QVBoxLayout()
@@ -107,6 +110,8 @@ class MainWindow(QMainWindow):
         # dark/light mode button
         self.init_dark()
 
+        self.init_guide()
+
         # Project variables.
         self.project_variables_container = self.init_var()
         self.project_variables_container.setEnabled(False)
@@ -131,6 +136,15 @@ class MainWindow(QMainWindow):
         self.menu = self.menuBar()
         self.fileMenu = self.menu.addMenu('File')
         self.actionMenu = self.menu.addMenu('Action')
+        self.helpMenu = self.menu.addMenu('Help')
+
+    def guide_action(self):
+        webbrowser.open('https://pastaq.horvatovichlab.com/gui-tutorial/index.html')
+
+    def init_guide(self):
+        self.guide = QAction('Guide', self)
+        self.guide.triggered.connect(self.guide_action)
+        self.helpMenu.addAction(self.guide)
 
     def add_menu_action(self, action):
         self.fileMenu.addAction(action)
@@ -218,6 +232,10 @@ class MainWindow(QMainWindow):
         self.parameters_container.parameters['project_description'] = self.project_description_ui.text()
         parameter.saved = False
 
+    def set_params_path(self):
+        self.parameters_container.parameters['params_path'] = self.parameters_container.get_file_processor.params[1]
+        parameter.saved = False
+
     # Menu action that resets all parameters to default value.
     def reset_param(self):
         box = QMessageBox()
@@ -248,6 +266,11 @@ class MainWindow(QMainWindow):
             self.project_name_ui.setText(self.parameters_container.parameters['project_name'])
         if 'project_description' in self.parameters_container.parameters:
             self.project_description_ui.setText(self.parameters_container.parameters['project_description'])
+
+    # update params path
+    def update_params(self):
+        if 'params_path' in self.parameters_container.parameters:
+            self.parameters_container.set_params_path(self.parameters_container.parameters['params_path'])
 
     # Updating the parameters for the instrument section
     def update_inst(self, params):
@@ -387,6 +410,7 @@ class MainWindow(QMainWindow):
         )
         if len(dir_path) > 0:
             self.prepare_new_project(dir_path)
+            self.prepare_paths_tab()
             self.update_ui()
             self.save_project()
             parameter.saved = True
@@ -416,6 +440,7 @@ class MainWindow(QMainWindow):
             tmp = json.loads(open(file_path).read())
             # TODO: Validate parameters
             self.prepare_open_project(tmp, file_path)
+            self.prepare_paths_tab()
             self.update_ui()
             parameter.saved = True
 
@@ -432,19 +457,80 @@ class MainWindow(QMainWindow):
         self.parameters_container.setEnabled(True)
         if 'input_files' in self.parameters_container.parameters:
             self.parameters_container.update_input_files(self.parameters_container.parameters['input_files'])
+        if 'params_path' in self.parameters_container.parameters:
+            self.parameters_container.load_params(self.parameters_container.parameters['params_path'])
+        self.prepare_paths_tab()
+
+    # creates config path
+    def get_config_path(self):
+        config_dir_path = os.path.dirname(os.path.dirname(__file__))
+        config = os.path.join(config_dir_path, 'config.ini')
+        return Path(config)
+
+    # Reads config
+    def read_config(self):
+        config = self.get_config_path()
+        if config.is_file():
+            config_object = ConfigParser()
+            try:
+                config_object.read(config)
+                paths = config_object['paths']
+                return paths
+            except OSError:
+                dialog = init_error_dialog('Can\'t read from config file.')
+                dialog.exec_()
+                return False
+        else:
+            return False
+
+    # loads config into GUI
+    def prepare_paths_tab(self):
+        paths = self.read_config()
+        if paths:
+            self.parameters_container.load_ms_path(paths['ms_jar'])
+            self.parameters_container.load_id_path(paths['id_file'])
 
     # Saves all the parts of a project as a json file.
-    # THis file can later be used to reopen the project or to start the PASTAQ pipeline.
+    # This file can later be used to reopen the project or to start the PASTAQ pipeline.
     def save_project(self):
         try:
-            with open(self.project_path, 'w') as json_file:
-                params_values = self.parameters_container.parameters
-                params_values['input_files'] = self.parameters_container.input_files
-                json.dump(params_values, json_file)
+            self.save_json()
+            self.save_paths()
             parameter.saved = True
         except IOError:
-            dialog = init_error_dialog()
+            dialog = init_error_dialog('Can\'t save project at the given directory')
             dialog.exec_()
+
+    # Stores the project in a json file
+    def save_json(self):
+        with open(self.project_path, 'w') as json_file:
+            params_values = self.parameters_container.parameters
+            params_values['input_files'] = self.parameters_container.input_files
+            params_values['params_path'] = self.file_processor.params[1]
+            json.dump(params_values, json_file)
+
+    # Stores the paths in a config file
+    def save_paths(self):
+        if not self.check_config():
+            config_object = ConfigParser()
+            config_object['paths'] = {
+                'ms_jar': self.file_processor.ms_jar[1],
+                'id_file': self.file_processor.id_file[1]
+            }
+            with open(self.get_config_path(), 'w+') as conf:
+                config_object.write(conf)
+
+    # Check if the config file needs to be changed or not
+    def check_config(self):
+        # check if paths stayed the same
+        paths = self.read_config()
+        if paths:
+            if paths['ms_jar'] == self.file_processor.ms_jar[1] and paths['id_file'] == self.file_processor.id_file[1]:
+                return True
+            else:
+                return False
+        else:
+            return False
 
     # If the project is not saved open a popup otherwise close the UI
     def closeEvent(self, event):

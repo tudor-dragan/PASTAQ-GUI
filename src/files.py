@@ -6,6 +6,8 @@ from PyQt5.QtWidgets import QMessageBox, QVBoxLayout, QDialogButtonBox
 from PyQt5.QtWidgets import QWidget, QLineEdit, QFormLayout
 from PyQt5.QtWidgets import QPushButton, QFileDialog, QDialog, QLabel
 
+import parameter
+
 
 class EditFileDialog(QDialog):
     """
@@ -126,6 +128,10 @@ class FileProcessor:
     id_file = [False, '']
     params = [False, '']
 
+    # load given jar file
+    def load_ms_path(self, path):
+        self.ms_jar = [True, path]
+
     # browse for msfragger .jar file
     def set_jar_path(self, text):
         jar, _ = QFileDialog.getOpenFileName(
@@ -138,6 +144,10 @@ class FileProcessor:
             self.ms_jar = [True, jar]
             text.setText(self.ms_jar[1])
 
+    # load given id path
+    def load_id_path(self, path):
+        self.id_file = [True, path]
+
     # browse for idconvert.exe
     def set_id_path(self, text):
         file, _ = QFileDialog.getOpenFileName(
@@ -149,6 +159,11 @@ class FileProcessor:
         if len(file) > 0:
             self.id_file = [True, file]
             text.setText(self.id_file[1])
+            parameter.saved = False
+
+    # load given params path
+    def load_params_path(self, path):
+        self.params = [True, path]
 
     # browse for params
     def set_params_path(self, text):
@@ -161,6 +176,7 @@ class FileProcessor:
         if len(file) > 0:
             self.params = [True, file]
             text.setText(self.params[1])
+            parameter.saved = False
 
     # split path into jar file name and directory path
     def get_ms(self):

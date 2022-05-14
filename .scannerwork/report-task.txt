@@ -2,5 +2,5 @@ projectKey=PASTAQ-GUI
 serverUrl=http://localhost:9000
 serverVersion=9.3.0.51899
 dashboardUrl=http://localhost:9000/dashboard?id=PASTAQ-GUI
-ceTaskId=AYCec5JusKHoz0fBeXmA
-ceTaskUrl=http://localhost:9000/api/ce/task?id=AYCec5JusKHoz0fBeXmA
+ceTaskId=AYDBmAYG87udcT7S2K3p
+ceTaskUrl=http://localhost:9000/api/ce/task?id=AYDBmAYG87udcT7S2K3p

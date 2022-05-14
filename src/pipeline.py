@@ -109,7 +109,7 @@ class PipelineLogDialog(QDialog):
         text_box.setReadOnly(True)
         return text_box
 
-    # Allows for cancelation of the pipeline or confirmation once it is done
+    # Allows for cancellation of the pipeline or confirmation once it is done
     def init_buttons(self):
         buttons = QDialogButtonBox(QDialogButtonBox.Cancel)
         buttons.rejected.connect(self.exit_failure)
@@ -158,6 +158,6 @@ class PipelineLogDialog(QDialog):
         sys.stdout = sys.__stdout__
         # this does not quit, the thread it keeps running in the background
         self.pipeline_thread.quit()
-        # self.pipeline_thread.terminate() can be used in place of quit and it will end the thread
+        # self.pipeline_thread.terminate() can be used in place of quit, and it will end the thread
         # but not free the memory allocated in the C++ part of the code
         self.reject()

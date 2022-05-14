@@ -89,9 +89,10 @@ def init_label(text):
     return label
 
 
-def init_button(text, action):
+def init_button(text, action, tooltip):
     button = QPushButton(text)
     button.clicked.connect(action)
+    button.setToolTip(tooltip)
     return button
 
 
@@ -164,10 +165,11 @@ class ParametersWidget(QTabWidget):
         self.init_header()
 
         # buttons
-        add_button = init_button('Add', self.add_file)
-        edit_button = init_button('Edit', self.edit_file)
-        remove_button = init_button('Remove', self.remove_file)
-        select_all_button = init_button('Select All', self.select_all_files)
+        add_button = init_button('Add', self.add_file, 'Add identification files')
+        edit_button = init_button('Edit', self.edit_file,
+                                  'Add quantification files to the selected identification files')
+        remove_button = init_button('Remove', self.remove_file, 'Remove entire row')
+        select_all_button = init_button('Select All', self.select_all_files, 'Select all rows')
         # control panel
         input_file_buttons = self.init_control(add_button, edit_button, remove_button, select_all_button)
 
@@ -180,11 +182,12 @@ class ParametersWidget(QTabWidget):
     def msfragger_container(self):
         box = QGroupBox('MSFragger .jar file')
         lay_ms = QHBoxLayout()
-        input_ms = QLineEdit()
-        input_ms.setText(self.file_processor.ms_jar[1])
-        input_ms.isReadOnly()
-        browse_button_ms = init_button('Browse', lambda: self.file_processor.set_jar_path(input_ms))
-        lay_ms.addWidget(input_ms)
+        self.input_ms = QLineEdit()
+        self.input_ms.setText(self.file_processor.ms_jar[1])
+        self.input_ms.isReadOnly()
+        browse_button_ms = \
+            init_button('Browse', lambda: self.file_processor.set_jar_path(self.input_ms), 'Browse for .jar file')
+        lay_ms.addWidget(self.input_ms)
         lay_ms.addWidget(browse_button_ms)
         box.setLayout(lay_ms)
         return box
@@ -193,11 +196,12 @@ class ParametersWidget(QTabWidget):
     def idconvert_container(self):
         box = QGroupBox('idconvert.exe')
         lay_id = QHBoxLayout()
-        input_id = QLineEdit()
-        input_id.setText(self.file_processor.id_file[1])
-        input_id.isReadOnly()
-        browse_button_id = init_button('Browse', lambda: self.file_processor.set_id_path(input_id))
-        lay_id.addWidget(input_id)
+        self.input_id = QLineEdit()
+        self.input_id.setText(self.file_processor.id_file[1])
+        self.input_id.isReadOnly()
+        browse_button_id = \
+            init_button('Browse', lambda: self.file_processor.set_id_path(self.input_id), 'Browse for idconvert.exe')
+        lay_id.addWidget(self.input_id)
         lay_id.addWidget(browse_button_id)
         box.setLayout(lay_id)
         return box
@@ -206,11 +210,13 @@ class ParametersWidget(QTabWidget):
     def params_container(self):
         box = QGroupBox('.params file for MSFragger')
         lay_params = QHBoxLayout()
-        input_params = QLineEdit()
-        input_params.setText(self.file_processor.params[1])
-        input_params.isReadOnly()
-        browse_button_params = init_button('Browse', lambda: self.file_processor.set_params_path(input_params))
-        lay_params.addWidget(input_params)
+        self.input_params = QLineEdit()
+        self.input_params.setText(self.file_processor.params[1])
+        self.input_params.isReadOnly()
+        browse_button_params = \
+            init_button('Browse', lambda: self.file_processor.set_params_path(self.input_params),
+                        'Browse for .params file for MSFragger')
+        lay_params.addWidget(self.input_params)
         lay_params.addWidget(browse_button_params)
         box.setLayout(lay_params)
         return box
@@ -315,6 +321,18 @@ class ParametersWidget(QTabWidget):
             if 'reference' in input_file:
                 cell_widget = self.make_reference(input_file['reference'])
                 self.input_files_table.setCellWidget(i, 3, cell_widget)
+
+    def load_params(self, path):
+        self.file_processor.load_params_path(path)
+        self.input_params.setText(path)
+
+    def load_ms_path(self, path):
+        self.file_processor.load_ms_path(path)
+        self.input_ms.setText(path)
+
+    def load_id_path(self, path):
+        self.file_processor.load_id_path(path)
+        self.input_id.setText(path)
 
     # Enables the reference checkmark box next to each file pair
     def make_reference(self, reference):
