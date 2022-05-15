@@ -257,6 +257,7 @@ class ParametersWidget(QTabWidget):
                     input_files.append({'raw_path': file_path, 'reference': False})
             self.update_input_files(input_files)
 
+    # handle the files added to the edit dialog
     def examine_edit_files(self, old_list, edit_file_dialog, indexes):
         new_list = []
         for i, file in enumerate(old_list):

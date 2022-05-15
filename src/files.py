@@ -107,7 +107,7 @@ class EditFileDialog(QDialog):
     def set_group(self):
         self.group = self.group_box.text()
 
-    # Set file paths for the project
+    # Set file paths for the identification files for the project
     def set_mzid_paths(self):
         file_paths, _ = QFileDialog.getOpenFileNames(
             parent=self,
