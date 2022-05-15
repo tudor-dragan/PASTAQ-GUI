@@ -3,6 +3,7 @@ import subprocess
 
 from PyQt5.QtCore import Qt, QEvent
 from PyQt5 import QtGui
+from pathlib import Path
 from PyQt5.QtWidgets import QMessageBox, QVBoxLayout, QDialogButtonBox
 from PyQt5.QtWidgets import QWidget, QLineEdit, QFormLayout, QAction
 from PyQt5.QtWidgets import QPushButton, QFileDialog, QDialog, QLabel
@@ -144,9 +145,19 @@ class FileProcessor:
     id_file = [False, '']
     params = [False, '']
 
+    def check_path(self, path):
+        if not path or not Path(path).is_file():
+            return False
+        else:
+            return True
+
     # load given jar file
     def load_ms_path(self, path):
-        self.ms_jar = [True, path]
+        if self.check_path(path):
+            self.ms_jar = [True, path]
+            return True
+        else:
+            return False
 
     # browse for msfragger .jar file
     def set_jar_path(self, text):
@@ -162,7 +173,11 @@ class FileProcessor:
 
     # load given id path
     def load_id_path(self, path):
-        self.id_file = [True, path]
+        if self.check_path(path):
+            self.id_file = [True, path]
+            return True
+        else:
+            return False
 
     # browse for idconvert.exe
     def set_id_path(self, text):

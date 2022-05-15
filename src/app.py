@@ -152,6 +152,7 @@ class MainWindow(QMainWindow):
     def init_new_project(self):
         self.newProj = QAction('New Project', self)
         self.newProj.triggered.connect(self.new_project)
+        self.newProj.setShortcut(QKeySequence('Ctrl+n'))
         self.add_menu_action(self.newProj)
 
     def init_open_project(self):
@@ -459,7 +460,6 @@ class MainWindow(QMainWindow):
             self.parameters_container.update_input_files(self.parameters_container.parameters['input_files'])
         if 'params_path' in self.parameters_container.parameters:
             self.parameters_container.load_params(self.parameters_container.parameters['params_path'])
-        self.prepare_paths_tab()
 
     # creates config path
     def get_config_path(self):

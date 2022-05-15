@@ -170,6 +170,8 @@ class ParametersWidget(QTabWidget):
                                   'Add identification files to the selected quantification files')
         remove_button = init_button('Remove', self.remove_file, 'Remove entire row')
         select_all_button = init_button('Select All', self.select_all_files, 'Select all rows')
+        select_all_button.setShortcut('Ctrl+a')
+
         # control panel
         input_file_buttons = self.init_control(add_button, edit_button, remove_button, select_all_button)
 
@@ -327,12 +329,17 @@ class ParametersWidget(QTabWidget):
         self.input_params.setText(path)
 
     def load_ms_path(self, path):
-        self.file_processor.load_ms_path(path)
-        self.input_ms.setText(path)
+        if self.file_processor.load_ms_path(path):
+            self.input_ms.setText(path)
+        else:
+            files.popup_window('Error', 'Invalid MSFragger path')
+
 
     def load_id_path(self, path):
-        self.file_processor.load_id_path(path)
-        self.input_id.setText(path)
+        if self.file_processor.load_id_path(path):
+            self.input_id.setText(path)
+        else:
+            files.popup_window('Error', 'Invalid idconvert path')
 
     # Enables the reference checkmark box next to each file pair
     def make_reference(self, reference):
