@@ -8,8 +8,6 @@ from PyQt5.QtWidgets import QMessageBox, QVBoxLayout, QDialogButtonBox
 from PyQt5.QtWidgets import QWidget, QLineEdit, QFormLayout, QAction
 from PyQt5.QtWidgets import QPushButton, QFileDialog, QDialog, QLabel
 
-import parameter
-
 
 #  creates a popup
 def popup_window(status, text):
@@ -144,6 +142,10 @@ class FileProcessor:
     ms_jar = [False, '']
     id_file = [False, '']
     params = [False, '']
+    saved = True
+
+    def get_saved(self):
+        return self.saved
 
     def check_path(self, path):
         if not path or not Path(path).is_file():
@@ -190,7 +192,7 @@ class FileProcessor:
         if len(file) > 0:
             self.id_file = [True, file]
             text.setText(self.id_file[1])
-            parameter.saved = False
+            self.saved = False
 
     # load given params path
     def load_params_path(self, path):
@@ -207,7 +209,7 @@ class FileProcessor:
         if len(file) > 0:
             self.params = [True, file]
             text.setText(self.params[1])
-            parameter.saved = False
+            self.saved = False
 
     # split path into jar file name and directory path
     def get_ms(self):

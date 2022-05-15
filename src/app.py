@@ -534,7 +534,7 @@ class MainWindow(QMainWindow):
 
     # If the project is not saved open a popup otherwise close the UI
     def closeEvent(self, event):
-        if not parameter.saved:
+        if not self.parameters_container.get_saved():
             box, button_s, button_d, button_c = close_popup()
             box.exec_()
             if box.clickedButton() == button_s:

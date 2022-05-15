@@ -285,6 +285,8 @@ class ParametersWidget(QTabWidget):
             new_list = self.examine_edit_files(old_list, edit_file_dialog, indexes)
             self.update_input_files(new_list)
 
+    def get_saved(self):
+        return saved == self.file_processor.get_saved()
     def select_all_files(self):
         self.input_files_table.selectAll()
 
