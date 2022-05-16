@@ -18,3 +18,4 @@ jobs:
     - name: Perform tests
       run: |
         python src/tests/test.py
+        python src/tests/tests_CI.py
