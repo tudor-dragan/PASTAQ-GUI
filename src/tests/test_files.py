@@ -18,7 +18,6 @@ def test_check_path():
 def test_load_ms_path():
     assert not file_processor.ms_jar[0]
     filename = 'test.jar'
-    os.remove(filename)
     assert not file_processor.load_ms_path(filename)
     assert not file_processor.ms_jar[0]
     open(filename, 'w').close()
@@ -30,7 +29,6 @@ def test_load_ms_path():
 def test_load_id_path():
     assert not file_processor.id_file[0]
     filename = 'test.exe'
-    os.remove(filename)
     assert not file_processor.load_id_path(filename)
     assert not file_processor.id_file[0]
     open(filename, 'w').close()
