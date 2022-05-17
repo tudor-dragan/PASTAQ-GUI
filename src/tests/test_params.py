@@ -12,18 +12,22 @@ parentdir = os.path.dirname(currentdir)
 sys.path.append(parentdir)
 
 from parameter import *
-from files import EditFileDialog
+from files import EditFileDialog, FileProcessor
 from app import MainWindow
 
 import pytest
 
+#
+# FIXTURES (these are functions that are run before tests for setup purposes)
+#
 
-def func(x):
-    return x + 1
+@pytest.fixture
+def init_ParamsWidget():
+    widget = ParametersWidget()
 
-
-def test_answer():
-    assert func(3) == 4
+#
+# UNIT TESTS
+#
 
 # test if the tooltip is correctly set
 def test_init_button_params():
@@ -35,7 +39,7 @@ def test_PrameterItem():
     # a test here
     assert True
 
-# tests to see if path gets correctly updated for multiple files
+# tests to see if path gets correctly updated for multiple files when there is matching stems between the files
 def test_multiple_id_files_if_match():
     file = {'raw_path': 'C:/Users/tudor/Downloads/1_3.mzXML', 'reference': False, 'group': '', 'ident_path': 'C:/Users/tudor/Downloads/s174pfZefF5L.mzid', 'stem': 'D-10'}
     new_file = {'raw_path': 'C:/Users/tudor/Downloads/1_3.mzXML', 'reference': False, 'group': '', 'ident_path': 'C:/Users/tudor/Downloads/s174pfZefF5L.mzid', 'stem': 'D-10'}
@@ -43,7 +47,8 @@ def test_multiple_id_files_if_match():
     edit_file_dialog.mzid_paths = ['C:/Users/tudor/Downloads/1_3.mzid']
     multiple_id_files(file, new_file, edit_file_dialog)
     assert new_file["ident_path"] == 'C:/Users/tudor/Downloads/1_3.mzid'
-
+    
+# tests to see if path does not get changed if paths dont match
 def test_multiple_id_files_if_no_match():
     file = {'raw_path': 'C:/Users/tudor/Downloads/1_3.mzXML', 'reference': False, 'group': '', 'ident_path': 'C:/Users/tudor/Downloads/s174pfZefF5L.mzid', 'stem': 'D-10'}
     new_file = {'raw_path': 'C:/Users/tudor/Downloads/1_3.mzXML', 'reference': False, 'group': '', 'ident_path': 'C:/Users/tudor/Downloads/s174pfZefF5L.mzid', 'stem': 'D-10'}
@@ -69,7 +74,25 @@ def test_init_button():
     button = init_button("test_text", lambda a : a + 10, "test_tooltip")
     assert button.toolTip() == "test_tooltip"
 
+def test_ParametersWidget_components():
+    widget = ParametersWidget()
+    assert len(widget.findChildren(QScrollArea)) == 2
 
+def test_FileProcessor():
+    widget = ParametersWidget()
+    assert isinstance(widget.get_file_processor(), FileProcessor)
+
+def test_ParametersWidget_add_new_file():
+    widget = ParametersWidget()
+    # TODO add a fixture to create the files in a temporary directory
+    file_paths = ['C:/Users/tudor/Downloads/1_3.mzXML', 'C:/Users/tudor/Downloads/D-10.mzXML']
+    widget.add_new_file(file_paths)
+    assert len(widget.input_files) == 2
+    assert widget.input_files[0]['raw_path'] == 'C:/Users/tudor/Downloads/1_3.mzXML'
+    assert widget.input_files[1]['raw_path'] == 'C:/Users/tudor/Downloads/D-10.mzXML'
+
+def test_ParametersWidget_update_input_files():
+    assert True
 
 # put test_ in front to make it a test
 def input_files_tab():

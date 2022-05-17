@@ -63,6 +63,7 @@ def multiple_id_files(file, new_file, edit_file_dialog):
         base_name = os.path.basename(mzid)
         base_name = os.path.splitext(base_name)
         mzid_stem = base_name[0]
+        #compares the stem of the ML file to the one of the ID file for matching
         if mzid_stem == stem:
             new_file['ident_path'] = mzid
             break
@@ -248,6 +249,9 @@ class ParametersWidget(QTabWidget):
             directory=os.getcwd(),
             filter='MS files (*.mzXML *.mzML)',
         )
+        self.add_new_file(file_paths)
+
+    def add_new_file(self, file_paths):
         if len(file_paths) > 0:
             os.chdir(os.path.dirname(file_paths[0]))
             input_files = self.input_files
