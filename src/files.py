@@ -1,5 +1,6 @@
 import os
 import subprocess
+import inspect
 
 from PyQt5.QtCore import Qt, QEvent
 from PyQt5 import QtGui
@@ -8,6 +9,7 @@ from PyQt5.QtWidgets import QMessageBox, QVBoxLayout, QDialogButtonBox
 from PyQt5.QtWidgets import QWidget, QLineEdit, QFormLayout, QAction
 from PyQt5.QtWidgets import QPushButton, QFileDialog, QDialog, QLabel
 
+import parameter
 
 #  creates a popup
 def popup_window(status, text):
@@ -53,16 +55,23 @@ class EditFileDialog(QDialog):
         self.setLayout(layout)
 
     def event(self, event):
+        instruction = inspect.cleandoc('''Select/drop matching identification files to the selected quantification files.
+                .mgf and .mzid file formats can be uploaded.
+                .mgf files will automatically be processed to .mzid files, when the pipeline is started.
+                ''')
         if event.type() == QEvent.EnterWhatsThisMode:
             popup_window('Edit files',
-                         'Select/drop matching identification files to the selected quantification files.')
+                         instruction)
         return QDialog.event(self, event)
 
     # Layout of the modal
     def init_layout(self, mzid_picker, drop):
         form_layout = QFormLayout()
-        form_layout.addRow('Group', self.group_box)
-        form_layout.addRow('mgf/mzID', mzid_picker)
+        # TODO
+        tooltip_group = 'Placeholder'
+        form_layout.addRow(parameter.init_button_params('Group', tooltip_group), self.group_box)
+        tooltip_browse = 'Browse for identification files.'
+        form_layout.addRow(parameter.init_button_params('mgf/mzID', tooltip_browse), mzid_picker)
         form_layout.addRow(drop)
         return form_layout
 
@@ -146,6 +155,9 @@ class FileProcessor:
 
     def get_saved(self):
         return self.saved
+
+    def set_saved(self, bool):
+        self.saved = bool
 
     def check_path(self, path):
         if not path or not Path(path).is_file():

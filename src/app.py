@@ -227,15 +227,15 @@ class MainWindow(QMainWindow):
 
     def set_project_name(self):
         self.parameters_container.parameters['project_name'] = self.project_name_ui.text()
-        parameter.saved = False
+        self.parameters_container.set_saved(False)
 
     def set_project_description(self):
         self.parameters_container.parameters['project_description'] = self.project_description_ui.text()
-        parameter.saved = False
+        self.parameters_container.set_saved(False)
 
     def set_params_path(self):
         self.parameters_container.parameters['params_path'] = self.parameters_container.get_file_processor.params[1]
-        parameter.saved = False
+        self.parameters_container.set_saved(False)
 
     # Menu action that resets all parameters to default value.
     def reset_param(self):
@@ -248,7 +248,7 @@ class MainWindow(QMainWindow):
         box.exec_()
         if box.clickedButton() == button_s:
             self.update_ui(True)
-        parameter.saved = False
+        self.parameters_container.set_saved(False)
 
     def view_mode(self):
         if not self.dark:
@@ -414,7 +414,7 @@ class MainWindow(QMainWindow):
             self.prepare_paths_tab()
             self.update_ui()
             self.save_project()
-            parameter.saved = True
+            self.parameters_container.set_saved(True)
 
     # Enables the features of the UI once a project is created
     def prepare_new_project(self, dir_path):
@@ -443,7 +443,7 @@ class MainWindow(QMainWindow):
             self.prepare_open_project(tmp, file_path)
             self.prepare_paths_tab()
             self.update_ui()
-            parameter.saved = True
+            self.parameters_container.set_saved(True)
 
     # Enables the features of the UI once a project is opened
     def prepare_open_project(self, tmp, file_path):
@@ -496,7 +496,7 @@ class MainWindow(QMainWindow):
         try:
             self.save_json()
             self.save_paths()
-            parameter.saved = True
+            self.parameters_container.set_saved(True)
         except IOError:
             dialog = init_error_dialog('Can\'t save project at the given directory')
             dialog.exec_()
@@ -556,7 +556,7 @@ class MainWindow(QMainWindow):
             self.project_path = os.path.join(path, 'parameters.json')
             self.update_ui()
             self.save_project()
-            parameter.saved = True
+            self.parameters_container.set_saved(True)
 
     def prepare_run(self):
         # Save changes before running.
