@@ -3,7 +3,7 @@ import os
 
 from PyQt5.QtCore import Qt, QUrl
 from PyQt5.QtGui import QIcon
-from PyQt5.QtWidgets import QVBoxLayout, QTabWidget, QSpinBox, QAbstractSpinBox
+from PyQt5.QtWidgets import QVBoxLayout, QTabWidget, QSpinBox, QAbstractSpinBox, QListWidgetItem
 from PyQt5.QtWidgets import QWidget, QLineEdit, QDoubleSpinBox, QCheckBox, QStackedWidget, QListWidget
 from PyQt5.QtWidgets import QPushButton, QFileDialog, QScrollArea, QComboBox, QLabel
 from PyQt5.QtWidgets import QTableWidget, QHeaderView, QHBoxLayout, QGroupBox, QGridLayout
@@ -871,7 +871,7 @@ class ParametersWidget(QTabWidget):
 
         return grid_layout_quantt
 
-    # left navigation to switch between parameter categories
+    # navigation to switch between parameter categories
     def init_nav(self):
         self.nav = QListWidget()
         self.nav.insertItem(0, 'Instrument Settings')
@@ -882,6 +882,11 @@ class ParametersWidget(QTabWidget):
         self.nav.insertItem(5, 'Identification')
         self.nav.insertItem(6, 'Quantitive Table Generation')
         self.nav.insertItem(7, 'Quality Control')
+        for i in range(8):
+            item = self.nav.item(i)
+            item.setFlags(item.flags() | Qt.ItemIsUserCheckable)
+            item.setCheckState(Qt.Unchecked)
+
         self.nav.currentRowChanged.connect(self.display)
         self.nav.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.nav.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
