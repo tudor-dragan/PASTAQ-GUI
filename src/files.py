@@ -55,10 +55,14 @@ class EditFileDialog(QDialog):
         self.setLayout(layout)
 
     def event(self, event):
-        instruction = inspect.cleandoc('''Select/drop matching identification files to the selected quantification files.
-                .mgf and .mzid file formats can be uploaded.
-                .mgf files will automatically be processed to .mzid files, when the pipeline is started.
-                ''')
+        instruction = inspect.cleandoc(
+            '''Select/drop matching identification files to the selected quantification files.
+                mgf and mzID file formats can be uploaded.
+                mgf files will automatically be processed to mzID files, when the pipeline is started.
+                
+                WARNING: Automatic file processing not supported on MacOS
+            '''
+        )
         if event.type() == QEvent.EnterWhatsThisMode:
             popup_window('Edit files',
                          instruction)
