@@ -1,6 +1,7 @@
 import os
 import subprocess
 import inspect
+import buttons
 
 from PyQt5.QtCore import Qt, QEvent
 from PyQt5 import QtGui
@@ -9,34 +10,13 @@ from PyQt5.QtWidgets import QMessageBox, QVBoxLayout, QDialogButtonBox
 from PyQt5.QtWidgets import QWidget, QLineEdit, QFormLayout, QAction
 from PyQt5.QtWidgets import QPushButton, QFileDialog, QDialog, QLabel
 
-
-#  creates a popup
+# creates a popup
 def popup_window(status, text):
     popup = QMessageBox()
     popup.setText(text)
     popup.setWindowTitle(status)
     popup.exec_()
     return  # return is necessary regardless of sonarqube
-
-
-# Each changeable parameter in the parameters tab with its tooltip.
-def init_button(label, tooltip):
-    button = ParameterLabel(label)
-    button.setToolTip(tooltip)
-
-    icon = QtGui.QIcon(':/icons/question.png')
-    button.setLayoutDirection(Qt.RightToLeft)
-    button.setIcon(icon)
-    button.setFlat(True)
-
-    return button
-
-
-# Do nothing when pressing a label.
-class ParameterLabel(QPushButton):
-    def mousePressEvent(self, event):
-        return
-
 
 class EditFileDialog(QDialog):
     """
@@ -91,9 +71,9 @@ class EditFileDialog(QDialog):
         form_layout = QFormLayout()
         # TODO
         tooltip_group = 'Placeholder'
-        form_layout.addRow(init_button('Group', tooltip_group), self.group_box)
+        form_layout.addRow(buttons.init_button_params('Group', tooltip_group), self.group_box)
         tooltip_browse = 'Browse for identification files.'
-        form_layout.addRow(init_button('mgf/mzID', tooltip_browse), mzid_picker)
+        form_layout.addRow(buttons.init_button_params('mgf/mzID', tooltip_browse), mzid_picker)
         form_layout.addRow(drop)
         return form_layout
 
@@ -147,7 +127,6 @@ class EditFileDialog(QDialog):
         if len(file_paths) > 0:
             self.mzid_paths = file_paths
 
-
 # class for drag and drop field (aesthetics)
 class ImageLabel(QLabel):
     def __init__(self):
@@ -163,7 +142,6 @@ class ImageLabel(QLabel):
 
     def set_pixmap(self, image):
         super().set_pixmap(image)
-
 
 class FileProcessor:
     """

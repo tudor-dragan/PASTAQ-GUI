@@ -8,26 +8,12 @@ from PyQt5.QtWidgets import QWidget, QLineEdit, QDoubleSpinBox, QCheckBox, QStac
 from PyQt5.QtWidgets import QPushButton, QFileDialog, QScrollArea, QComboBox, QLabel
 from PyQt5.QtWidgets import QTableWidget, QHeaderView, QHBoxLayout, QGroupBox, QGridLayout
 
-
+import buttons
 import files
 import resources
 
 global saved
 saved = True
-
-
-# Each changeable parameter in the parameters tab with its tooltip.
-def init_button_params(label, tooltip):
-    button = ParameterLabel(label)
-    button.setToolTip(tooltip)
-
-    icon = QIcon(':/icons/question.png')
-    button.setLayoutDirection(Qt.RightToLeft)
-    button.setIcon(icon)
-    button.setFlat(True)
-
-    return button
-
 
 class ParameterItem(QWidget):
     """
@@ -42,17 +28,10 @@ class ParameterItem(QWidget):
         QWidget.__init__(self, parent=parent)
         layout = QVBoxLayout(self)
 
-        button = init_button_params(label, tooltip)
+        button = buttons.init_button_params(label, tooltip)
 
         layout.addWidget(button)
         layout.addWidget(widget)
-
-
-# Do nothing when pressing a label.
-class ParameterLabel(QPushButton):
-    def mousePressEvent(self, event):
-        return
-
 
 # Function for dealing with adding multiple identification files at once
 def multiple_id_files(file, new_file, edit_file_dialog):
@@ -69,12 +48,10 @@ def multiple_id_files(file, new_file, edit_file_dialog):
             break
         os.chdir(os.path.dirname(mzid))  # sets directory to last identification file added
 
-
 # For when a single .mzID file is added
 def single_id_file(path, new_file):
     new_file['ident_path'] = path
     os.chdir(os.path.dirname(path))  # sets directory to last identification file added
-
 
 def init_check(cell_widget, checkbox):
     lay_out = QHBoxLayout(cell_widget)
@@ -83,19 +60,16 @@ def init_check(cell_widget, checkbox):
     lay_out.setContentsMargins(0, 0, 0, 0)
     return lay_out
 
-
 def init_label(text):
     label = QLabel(text)
     label.setAlignment(Qt.AlignCenter)
     return label
-
 
 def init_button(text, action, tooltip):
     button = QPushButton(text)
     button.clicked.connect(action)
     button.setToolTip(tooltip)
     return button
-
 
 class ParametersWidget(QTabWidget):
     """
