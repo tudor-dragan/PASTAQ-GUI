@@ -629,7 +629,7 @@ class SplashScreen(QSplashScreen):
     def __init__(self):
         super(QSplashScreen, self).__init__()
         # TODO another pic
-        pixmap = QPixmap(':/icons/pastaq.png')
+        pixmap = QPixmap(':/splash/loading.png')
         self.setPixmap(pixmap)
 
         self.window = MainWindow()
