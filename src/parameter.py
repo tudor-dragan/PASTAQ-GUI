@@ -146,6 +146,7 @@ class ParametersWidget(QTabWidget):
         ]
         input_files_table.setHorizontalHeaderLabels(column_names)
         input_files_table.verticalHeader().hide()
+        input_files_table.setAlternatingRowColors(True)
         return input_files_table
 
     def init_header(self):
@@ -330,6 +331,7 @@ class ParametersWidget(QTabWidget):
 
     def get_saved(self):
         return saved == self.file_processor.get_saved()
+
     def select_all_files(self):
         self.input_files_table.selectAll()
 
