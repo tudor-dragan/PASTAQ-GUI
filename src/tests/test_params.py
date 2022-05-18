@@ -35,7 +35,7 @@ def test_init_button_params():
     print(button.toolTip)
     assert button.toolTip() == "test_tooltip"
 
-def test_PrameterItem():
+def test_ParameterItem():
     # a test here
     assert True
 
@@ -82,17 +82,37 @@ def test_FileProcessor():
     widget = ParametersWidget()
     assert isinstance(widget.get_file_processor(), FileProcessor)
 
-def test_ParametersWidget_add_new_file():
+def test_ParametersWidget_add_new_file(tmp_path):
     widget = ParametersWidget()
+    dir = tmp_path / "mydir"
+    dir.mkdir()
+    f1 = dir / "myfile.mzXML"
+    f2 = dir / "myfile2.mzXML"
     # TODO add a fixture to create the files in a temporary directory
-    file_paths = ['C:/Users/tudor/Downloads/1_3.mzXML', 'C:/Users/tudor/Downloads/D-10.mzXML']
+    file_paths = [f1.as_posix(), f2.as_posix()]
     widget.add_new_file(file_paths)
     assert len(widget.input_files) == 2
-    assert widget.input_files[0]['raw_path'] == 'C:/Users/tudor/Downloads/1_3.mzXML'
-    assert widget.input_files[1]['raw_path'] == 'C:/Users/tudor/Downloads/D-10.mzXML'
+    assert widget.input_files[0]['raw_path'] == f1.as_posix()
+    assert widget.input_files[1]['raw_path'] == f2.as_posix()
+
+def test_ParametersWidget_examine_edit_files():
+    assert True
 
 def test_ParametersWidget_update_input_files():
-    assert True
+    widget = ParametersWidget()
+    widget.input_files = [{'raw_path': 'C:/Users/tudor/Downloads/1_3.mzXML', 'reference': False}]
+    widget.update_input_files(widget.input_files)
+    assert widget.input_files_table.rowCount() == 1
+
+def test_ParametersWidget_remove_file():
+    widget = ParametersWidget()
+    widget.input_files = [{'raw_path': 'C:/Users/tudor/Downloads/1_3.mzXML', 'reference': False}, {'raw_path': 'C:/Users/tudor/Downloads/1_4.mzXML', 'reference': False}, {'raw_path': 'C:/Users/tudor/Downloads/1_5.mzXML', 'reference': False}]
+    widget.update_input_files(widget.input_files)
+    widget.input_files_table.selectRow(0)
+    widget.remove_file()
+    assert widget.input_files_table.rowCount() == 2
+
+
 
 # put test_ in front to make it a test
 def input_files_tab():
