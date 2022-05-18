@@ -330,6 +330,7 @@ class ParametersWidget(QTabWidget):
 
     def get_saved(self):
         return saved == self.file_processor.get_saved()
+        
     def select_all_files(self):
         self.input_files_table.selectAll()
 
