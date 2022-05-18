@@ -1,6 +1,7 @@
 import os
 import subprocess
 import inspect
+import buttons
 
 from PyQt5.QtCore import Qt, QEvent
 from PyQt5 import QtGui
@@ -9,16 +10,13 @@ from PyQt5.QtWidgets import QMessageBox, QVBoxLayout, QDialogButtonBox
 from PyQt5.QtWidgets import QWidget, QLineEdit, QFormLayout, QAction
 from PyQt5.QtWidgets import QPushButton, QFileDialog, QDialog, QLabel
 
-import parameter
-
-#  creates a popup
+# creates a popup
 def popup_window(status, text):
     popup = QMessageBox()
     popup.setText(text)
     popup.setWindowTitle(status)
     popup.exec_()
     return  # return is necessary regardless of sonarqube
-
 
 class EditFileDialog(QDialog):
     """
@@ -55,10 +53,14 @@ class EditFileDialog(QDialog):
         self.setLayout(layout)
 
     def event(self, event):
-        instruction = inspect.cleandoc('''Select/drop matching identification files to the selected quantification files.
-                .mgf and .mzid file formats can be uploaded.
-                .mgf files will automatically be processed to .mzid files, when the pipeline is started.
-                ''')
+        instruction = inspect.cleandoc(
+            '''Select/drop matching identification files to the selected quantification files.
+                mgf and mzID file formats can be uploaded.
+                mgf files will automatically be processed to mzID files, when the pipeline is started.
+                
+                WARNING: Automatic file processing not supported on MacOS
+            '''
+        )
         if event.type() == QEvent.EnterWhatsThisMode:
             popup_window('Edit files',
                          instruction)
@@ -69,9 +71,9 @@ class EditFileDialog(QDialog):
         form_layout = QFormLayout()
         # TODO
         tooltip_group = 'Placeholder'
-        form_layout.addRow(parameter.init_button_params('Group', tooltip_group), self.group_box)
+        form_layout.addRow(buttons.init_button_params('Group', tooltip_group), self.group_box)
         tooltip_browse = 'Browse for identification files.'
-        form_layout.addRow(parameter.init_button_params('mgf/mzID', tooltip_browse), mzid_picker)
+        form_layout.addRow(buttons.init_button_params('mgf/mzID', tooltip_browse), mzid_picker)
         form_layout.addRow(drop)
         return form_layout
 
@@ -125,7 +127,6 @@ class EditFileDialog(QDialog):
         if len(file_paths) > 0:
             self.mzid_paths = file_paths
 
-
 # class for drag and drop field (aesthetics)
 class ImageLabel(QLabel):
     def __init__(self):
@@ -141,7 +142,6 @@ class ImageLabel(QLabel):
 
     def set_pixmap(self, image):
         super().set_pixmap(image)
-
 
 class FileProcessor:
     """

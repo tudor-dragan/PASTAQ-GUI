@@ -3,31 +3,17 @@ import os
 
 from PyQt5.QtCore import Qt, QUrl
 from PyQt5.QtGui import QIcon
-from PyQt5.QtWidgets import QVBoxLayout, QTabWidget, QSpinBox, QAbstractSpinBox
-from PyQt5.QtWidgets import QWidget, QLineEdit, QDoubleSpinBox, QCheckBox
+from PyQt5.QtWidgets import QVBoxLayout, QTabWidget, QSpinBox, QAbstractSpinBox, QListWidgetItem
+from PyQt5.QtWidgets import QWidget, QLineEdit, QDoubleSpinBox, QCheckBox, QStackedWidget, QListWidget
 from PyQt5.QtWidgets import QPushButton, QFileDialog, QScrollArea, QComboBox, QLabel
 from PyQt5.QtWidgets import QTableWidget, QHeaderView, QHBoxLayout, QGroupBox, QGridLayout
 
-
+import buttons
 import files
 import resources
 
 global saved
 saved = True
-
-
-# Each changeable parameter in the parameters tab with its tooltip.
-def init_button_params(label, tooltip):
-    button = ParameterLabel(label)
-    button.setToolTip(tooltip)
-
-    icon = QIcon(':/icons/question.png')
-    button.setLayoutDirection(Qt.RightToLeft)
-    button.setIcon(icon)
-    button.setFlat(True)
-
-    return button
-
 
 class ParameterItem(QWidget):
     """
@@ -42,17 +28,10 @@ class ParameterItem(QWidget):
         QWidget.__init__(self, parent=parent)
         layout = QVBoxLayout(self)
 
-        button = init_button_params(label, tooltip)
+        button = buttons.init_button_params(label, tooltip)
 
         layout.addWidget(button)
         layout.addWidget(widget)
-
-
-# Do nothing when pressing a label.
-class ParameterLabel(QPushButton):
-    def mousePressEvent(self, event):
-        return
-
 
 # Function for dealing with adding multiple identification files at once
 def multiple_id_files(file, new_file, edit_file_dialog):
@@ -69,12 +48,10 @@ def multiple_id_files(file, new_file, edit_file_dialog):
             break
         os.chdir(os.path.dirname(mzid))  # sets directory to last identification file added
 
-
 # For when a single .mzID file is added
 def single_id_file(path, new_file):
     new_file['ident_path'] = path
     os.chdir(os.path.dirname(path))  # sets directory to last identification file added
-
 
 def init_check(cell_widget, checkbox):
     lay_out = QHBoxLayout(cell_widget)
@@ -83,19 +60,16 @@ def init_check(cell_widget, checkbox):
     lay_out.setContentsMargins(0, 0, 0, 0)
     return lay_out
 
-
 def init_label(text):
     label = QLabel(text)
     label.setAlignment(Qt.AlignCenter)
     return label
-
 
 def init_button(text, action, tooltip):
     button = QPushButton(text)
     button.clicked.connect(action)
     button.setToolTip(tooltip)
     return button
-
 
 class ParametersWidget(QTabWidget):
     """
@@ -330,7 +304,11 @@ class ParametersWidget(QTabWidget):
 
     def get_saved(self):
         return saved == self.file_processor.get_saved()
+<<<<<<< HEAD
         
+=======
+
+>>>>>>> 0cc1cc7d1a6269999cd11d2cb0a2287d73f3223c
     def select_all_files(self):
         self.input_files_table.selectAll()
 
@@ -872,17 +850,52 @@ class ParametersWidget(QTabWidget):
 
         return grid_layout_quantt
 
-    # Adds all sections of parameters to the layout
+    # navigation to switch between parameter categories
+    def init_nav(self):
+        self.nav = QListWidget()
+        self.nav.insertItem(0, 'Instrument Settings')
+        self.nav.insertItem(1, 'Raw Data')
+        self.nav.insertItem(2, 'Quantification')
+        self.nav.insertItem(3, 'Warp2D')
+        self.nav.insertItem(4, 'MetaMatch')
+        self.nav.insertItem(5, 'Identification')
+        self.nav.insertItem(6, 'Quantitive Table Generation')
+        self.nav.insertItem(7, 'Quality Control')
+        for i in range(8):
+            item = self.nav.item(i)
+            item.setFlags(item.flags() | Qt.ItemIsUserCheckable)
+            item.setCheckState(Qt.Unchecked)
+
+        self.nav.currentRowChanged.connect(self.display)
+        self.nav.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.nav.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.nav.setAlternatingRowColors(True)
+        self.nav.setMinimumWidth(175)
+        self.nav.setMaximumWidth(300)
+
+    # determines what parameter category is shown
+    def display(self, i):
+        self.stack.setCurrentIndex(i)
+
+    # Creates stack of parameter categories
+    def init_stack(self):
+        self.stack = QStackedWidget()
+        self.stack.addWidget(self.inst_settings_box)
+        self.stack.addWidget(self.raw_data_box)
+        self.stack.addWidget(self.quantification_box)
+        self.stack.addWidget(self.warp_box)
+        self.stack.addWidget(self.meta_box)
+        self.stack.addWidget(self.ident_box)
+        self.stack.addWidget(self.quantt_box)
+        self.stack.addWidget(self.qual_box)
+
+    # Puts navigation and stack together
     def init_layout(self):
-        layout = QVBoxLayout()
-        layout.addWidget(self.inst_settings_box)
-        layout.addWidget(self.raw_data_box)
-        layout.addWidget(self.quantification_box)
-        layout.addWidget(self.warp_box)
-        layout.addWidget(self.meta_box)
-        layout.addWidget(self.ident_box)
-        layout.addWidget(self.quantt_box)
-        layout.addWidget(self.qual_box)
+        layout = QGridLayout()
+        self.init_nav()
+        layout.addWidget(self.nav, 0, 0)
+        self.init_stack()
+        layout.addWidget(self.stack, 0, 1)
         return layout
 
     # Creates the UI for the parameters tab
