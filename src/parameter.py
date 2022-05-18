@@ -4,7 +4,7 @@ import os
 from PyQt5.QtCore import Qt, QUrl
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QVBoxLayout, QTabWidget, QSpinBox, QAbstractSpinBox
-from PyQt5.QtWidgets import QWidget, QLineEdit, QDoubleSpinBox, QCheckBox
+from PyQt5.QtWidgets import QWidget, QLineEdit, QDoubleSpinBox, QCheckBox, QStackedWidget, QListWidget
 from PyQt5.QtWidgets import QPushButton, QFileDialog, QScrollArea, QComboBox, QLabel
 from PyQt5.QtWidgets import QTableWidget, QHeaderView, QHBoxLayout, QGroupBox, QGridLayout
 
@@ -871,17 +871,47 @@ class ParametersWidget(QTabWidget):
 
         return grid_layout_quantt
 
-    # Adds all sections of parameters to the layout
+    # left navigation to switch between parameter categories
+    def init_nav(self):
+        self.nav = QListWidget()
+        self.nav.insertItem(0, 'Instrument Settings')
+        self.nav.insertItem(1, 'Raw Data')
+        self.nav.insertItem(2, 'Quantification')
+        self.nav.insertItem(3, 'Warp2D')
+        self.nav.insertItem(4, 'MetaMatch')
+        self.nav.insertItem(5, 'Identification')
+        self.nav.insertItem(6, 'Quantitive Table Generation')
+        self.nav.insertItem(7, 'Quality Control')
+        self.nav.currentRowChanged.connect(self.display)
+        self.nav.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.nav.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.nav.setAlternatingRowColors(True)
+        self.nav.setMinimumWidth(175)
+        self.nav.setMaximumWidth(300)
+
+    # determines what parameter category is shown
+    def display(self, i):
+        self.stack.setCurrentIndex(i)
+
+    # Creates stack of parameter categories
+    def init_stack(self):
+        self.stack = QStackedWidget()
+        self.stack.addWidget(self.inst_settings_box)
+        self.stack.addWidget(self.raw_data_box)
+        self.stack.addWidget(self.quantification_box)
+        self.stack.addWidget(self.warp_box)
+        self.stack.addWidget(self.meta_box)
+        self.stack.addWidget(self.ident_box)
+        self.stack.addWidget(self.quantt_box)
+        self.stack.addWidget(self.qual_box)
+
+    # Puts navigation and stack together
     def init_layout(self):
-        layout = QVBoxLayout()
-        layout.addWidget(self.inst_settings_box)
-        layout.addWidget(self.raw_data_box)
-        layout.addWidget(self.quantification_box)
-        layout.addWidget(self.warp_box)
-        layout.addWidget(self.meta_box)
-        layout.addWidget(self.ident_box)
-        layout.addWidget(self.quantt_box)
-        layout.addWidget(self.qual_box)
+        layout = QGridLayout()
+        self.init_nav()
+        layout.addWidget(self.nav, 0, 0)
+        self.init_stack()
+        layout.addWidget(self.stack, 0, 1)
         return layout
 
     # Creates the UI for the parameters tab

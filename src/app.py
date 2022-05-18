@@ -3,18 +3,22 @@ import os
 import platform
 import sys
 import webbrowser
+import time
 
 import pastaq
+from time import time, sleep
 from pathlib import Path
 from configparser import ConfigParser
-from PyQt5.QtCore import QSize, Qt
-from PyQt5.QtGui import QIcon, QKeySequence, QPalette, QColor
-from PyQt5.QtWidgets import QMessageBox, QMainWindow, QVBoxLayout
-from PyQt5.QtWidgets import QWidget, QAction, QLineEdit, QFormLayout
-from PyQt5.QtWidgets import QPushButton, QFileDialog, QApplication
+from PyQt5.QtCore import QSize, Qt, QTimer
+from PyQt5.QtGui import QIcon, QKeySequence, QPalette, QColor, QPixmap
+
+from PyQt5.QtWidgets import QMessageBox, QMainWindow, QVBoxLayout, QLabel, QSplashScreen
+from PyQt5.QtWidgets import QWidget, QAction, QLineEdit, QFormLayout, QFrame
+from PyQt5.QtWidgets import QPushButton, QFileDialog, QApplication, QHBoxLayout
 
 import parameter
 import pipeline
+import resources
 
 
 # Setting the color palette of the UI to dark colors.
@@ -77,7 +81,7 @@ class MainWindow(QMainWindow):
 
     def __init__(self):
         super().__init__()
-
+        #self.setStyleSheet(open("src/stylesheet.qss", "r").read())
         self.setWindowTitle('PASTAQ: DDA Pipeline')
         # Tabbed input files/parameters
         self.parameters_container = parameter.ParametersWidget()
@@ -115,8 +119,17 @@ class MainWindow(QMainWindow):
         # Project variables.
         self.project_variables_container = self.init_var()
         self.project_variables_container.setEnabled(False)
-        layout.addWidget(self.project_variables_container)
 
+        header = QHBoxLayout()
+        meta = QVBoxLayout()
+        icon = self.init_logo()
+
+        # project meta
+        meta.addWidget(self.project_variables_container)
+        # add meta and logo
+        header.addLayout(meta)
+        header.addWidget(icon)
+        layout.addLayout(header)
         # Applying layout to tabbed input files/parameters
         layout.addWidget(self.parameters_container)
 
@@ -130,6 +143,13 @@ class MainWindow(QMainWindow):
         # Set the central widget of the Window.
         self.setCentralWidget(container)
         self.default_param = pastaq.default_parameters('orbitrap', 10)
+
+    def init_logo(self):
+        label = QLabel()
+        pixmap = QPixmap(':/icons/pastaq.png')
+        pixmap = pixmap.scaled(100, 100, Qt.KeepAspectRatio)
+        label.setPixmap(pixmap)
+        return label
 
     # Project menu allowing for creating opening and saving.
     def init_menu(self):
@@ -601,17 +621,39 @@ class MainWindow(QMainWindow):
         self.restore_run()
 
 
-# Initialize main window.
+class SplashScreen(QSplashScreen):
+    """
+    This is the splash screen of the GUI, and it contains the logo
+    and informs that the main frame of the GUI is loading.
+    """
+    def __init__(self):
+        super(QSplashScreen, self).__init__()
+        # TODO another pic
+        pixmap = QPixmap(':/icons/pastaq.png')
+        self.setPixmap(pixmap)
+
+        self.window = MainWindow()
+        self.window.resize(QSize(800, 600))
+        QTimer.singleShot(1500, self.done)
+
+    def done(self):
+        self.close()
+        self.window.show()
+
+
 app = QApplication(sys.argv)
 app.setWindowIcon(QIcon(':/icons/pastaq.png'))
+
 if platform.system() == 'Windows':
-    import ctypes
-    ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID('pastaq-gui')
+   import ctypes
+   ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID('pastaq-gui')
 app.setStyle("Fusion")
 
-window = MainWindow()
-window.resize(QSize(600, 600))
-window.show()
+# show splash screen before opening GUI
+splash = SplashScreen()
+splash.show()
 
-# Start the event loop.
-app.exec()
+app.processEvents()
+
+app.exec_()
+
