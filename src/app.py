@@ -645,8 +645,8 @@ app = QApplication(sys.argv)
 app.setWindowIcon(QIcon(':/icons/pastaq.png'))
 
 if platform.system() == 'Windows':
-   import ctypes
-   ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID('pastaq-gui')
+    import ctypes
+    ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID('pastaq-gui')
 app.setStyle("Fusion")
 
 # show splash screen before opening GUI
