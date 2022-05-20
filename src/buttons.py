@@ -15,6 +15,7 @@ def init_button_params(label, tooltip):
 
     return button
 
+
 # Do nothing when pressing a label.
 class ParameterLabel(QPushButton):
     def mousePressEvent(self, event):

@@ -1,17 +1,53 @@
 import os
 import sys
+import mock
+import pytest
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from files import FileProcessor
-from pathlib import Path
+import files
+file_processor = files.FileProcessor()
 
-file_processor = FileProcessor()
 
+class TestPaths:
+
+    # path not None and is path exists
+    @mock.patch('files.Path.is_file')
+    def test_check_path_valid(self, mock_path):
+        mock_path.return_value = True
+        assert file_processor.check_path('test')
+
+    # path not None, so path should be verified
+    @mock.patch('files.Path.is_file')
+    def test_check_path_call(self, mock_path):
+        file_processor.check_path('test')
+        mock_path.assert_called()
+
+    # path not None and path does not exist
+    @mock.patch('files.Path.is_file')
+    def test_check_path_invalid(self, mock_path):
+        mock_path.return_value = False
+        assert not file_processor.check_path('test')
+
+    # path None
+    def test_check_path_none(self):
+        assert not file_processor.check_path(None)
+
+    # path None, so should not be verified
+    @mock.patch('files.Path.is_file')
+    def test_check_path_none_call(self, mock_path):
+        file_processor.check_path(None)
+        mock_path.assert_not_called()
+
+
+
+
+'''
 def test_check_path():
     filename = 'test.txt'
     open(filename, 'w').close()
     assert file_processor.check_path(filename)
     os.remove(filename)
     assert not file_processor.check_path(filename)
+
 
 def test_load_ms_path():
     assert not file_processor.ms_jar[0]
@@ -24,6 +60,7 @@ def test_load_ms_path():
     assert file_processor.ms_jar[1] == filename
     os.remove(filename)
 
+
 def test_load_id_path():
     assert not file_processor.id_file[0]
     filename = 'test.exe'
@@ -35,6 +72,7 @@ def test_load_id_path():
     assert file_processor.id_file[1] == filename
     os.remove(filename)
 
+
 def test_load_params_path():
     assert not file_processor.params[0]
     filename = 'test.params'
@@ -43,6 +81,7 @@ def test_load_params_path():
     assert file_processor.params[0]
     assert file_processor.params[1] == filename
     os.remove(filename)
+
 
 def test_get_ms():
     dir = 'test'
@@ -60,11 +99,13 @@ def test_make_pep_path():
     actual_output = FileProcessor.make_pep_path(input)
     assert expected_output == actual_output
 
+
 def test_make_mzid_path():
     input = 'test.mgf'
     expected_output = 'test.mzID'
     actual_output = FileProcessor.make_mzid_path(input)
     assert expected_output == actual_output
+
 
 def tests_CI():
     test_check_path()
@@ -74,3 +115,4 @@ def tests_CI():
     test_load_params_path()
     test_make_pep_path()
     test_make_mzid_path()
+'''

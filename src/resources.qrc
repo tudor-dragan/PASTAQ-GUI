@@ -1,8 +1,5 @@
 <!DOCTYPE RCC>
 <RCC version="1.0">
-    <qresource prefix="splash">
-        <file alias="loading.png">../resources/loading.png</file>
-    </qresource>
     <qresource prefix="icons">
         <file alias="question.png">../resources/question.png</file>
         <file alias="pastaq.ico">../resources/pastaq.ico</file>

@@ -10,6 +10,7 @@ from PyQt5.QtWidgets import QMessageBox, QVBoxLayout, QDialogButtonBox
 from PyQt5.QtWidgets import QWidget, QLineEdit, QFormLayout, QAction
 from PyQt5.QtWidgets import QPushButton, QFileDialog, QDialog, QLabel
 
+
 # creates a popup
 def popup_window(status, text):
     popup = QMessageBox()
@@ -17,6 +18,7 @@ def popup_window(status, text):
     popup.setWindowTitle(status)
     popup.exec_()
     return  # return is necessary regardless of sonarqube
+
 
 class EditFileDialog(QDialog):
     """
@@ -127,6 +129,7 @@ class EditFileDialog(QDialog):
         if len(file_paths) > 0:
             self.mzid_paths = file_paths
 
+
 # class for drag and drop field (aesthetics)
 class ImageLabel(QLabel):
     def __init__(self):
@@ -142,6 +145,7 @@ class ImageLabel(QLabel):
 
     def set_pixmap(self, image):
         super().set_pixmap(image)
+
 
 class FileProcessor:
     """
@@ -159,6 +163,7 @@ class FileProcessor:
     def set_saved(self, bool):
         self.saved = bool
 
+    # checks path
     def check_path(self, path):
         if not path or not Path(path).is_file():
             return False

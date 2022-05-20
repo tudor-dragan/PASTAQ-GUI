@@ -81,7 +81,6 @@ class MainWindow(QMainWindow):
 
     def __init__(self):
         super().__init__()
-        #self.setStyleSheet(open("src/stylesheet.qss", "r").read())
         self.setWindowTitle('PASTAQ: DDA Pipeline')
         # Tabbed input files/parameters
         self.parameters_container = parameter.ParametersWidget()
