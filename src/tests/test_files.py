@@ -16,6 +16,7 @@ class TestCheckPaths:
     # 1
     def test_check_path_valid(self, mock_path):
         mock_path.return_value = True
+        assert False #TEST
         assert file_processor.check_path('path')
 
     # path not None, so path should be verified
