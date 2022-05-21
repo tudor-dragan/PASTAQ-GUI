@@ -113,18 +113,3 @@ def test_ParametersWidget_parameters_update():
     assert widget.parameters['resolution_ms1'] == 3000
     assert widget.parameters['instrument_type'] == "orbitrap"
     assert widget.get_saved() == False
-
-# Tests to run in CI
-def tests_CI():
-    test_init_button_params()
-    test_multiple_id_files_if_match()
-    test_multiple_id_files_if_no_match()
-    test_single_id_file()
-    test_init_label()
-    test_init_button()
-    test_FileProcessor()
-    test_ParametersWidget_add_new_file()
-    test_ParametersWidget_examine_edit_files()
-    test_ParametersWidget_update_input_files
-    test_ParametersWidget_remove_file()
-    test_ParametersWidget_parameters_update()
