@@ -27,29 +27,34 @@ def test_init_button_params():
 
 # tests to see if path gets correctly updated for multiple files when there is matching stems between the files
 def test_multiple_id_files_if_match():
-    file = {'raw_path': 'C:/Users/tudor/Downloads/1_3.mzXML', 'reference': False, 'group': '', 'ident_path': 'C:/Users/tudor/Downloads/s174pfZefF5L.mzid', 'stem': 'D-10'}
-    new_file = {'raw_path': 'C:/Users/tudor/Downloads/1_3.mzXML', 'reference': False, 'group': '', 'ident_path': 'C:/Users/tudor/Downloads/s174pfZefF5L.mzid', 'stem': 'D-10'}
+    file = {'raw_path': 'C:/Users/Downloads/1_3.mzXML', 'reference': False, 'group': '', 'ident_path': 'C:/Users/Downloads/s174pfZefF5L.mzid', 'stem': 'D-10'}
+    new_file = {'raw_path': 'C:/Users/Downloads/1_3.mzXML', 'reference': False, 'group': '', 'ident_path': 'C:/Users/Downloads/s174pfZefF5L.mzid', 'stem': 'D-10'}
     edit_file_dialog = EditFileDialog()
-    edit_file_dialog.mzid_paths = ['C:/Users/tudor/Downloads/1_3.mzid']
+    edit_file_dialog.mzid_paths = ['C:/Users/Downloads/1_3.mzid']
     multiple_id_files(file, new_file, edit_file_dialog)
-    assert new_file["ident_path"] == 'C:/Users/tudor/Downloads/1_3.mzid'
+    assert new_file["ident_path"] == 'C:/Users/Downloads/1_3.mzid'
     
 # tests to see if path does not get changed if paths dont match
-def test_multiple_id_files_if_no_match():
-    file = {'raw_path': 'C:/Users/tudor/Downloads/1_3.mzXML', 'reference': False, 'group': '', 'ident_path': 'C:/Users/tudor/Downloads/s174pfZefF5L.mzid', 'stem': 'D-10'}
-    new_file = {'raw_path': 'C:/Users/tudor/Downloads/1_3.mzXML', 'reference': False, 'group': '', 'ident_path': 'C:/Users/tudor/Downloads/s174pfZefF5L.mzid', 'stem': 'D-10'}
+def test_multiple_id_files_if_no_match(tmp_path):
+    file = {'raw_path': 'C:/Users/Downloads/1_3.mzXML', 'reference': False, 'group': '', 'ident_path': 'C:/Users/Downloads/s174pfZefF5L.mzid', 'stem': 'D-10'}
+    new_file = {'raw_path': 'C:/Users/Downloads/1_3.mzXML', 'reference': False, 'group': '', 'ident_path': 'C:/Users/Downloads/s174pfZefF5L.mzid', 'stem': 'D-10'}
+    dir = tmp_path / "mydir"
+    dir.mkdir()
+    mzid_file = dir / "myfile.mzid"
     edit_file_dialog = EditFileDialog()
-    edit_file_dialog.mzid_paths = ['C:/Users/tudor/Downloads/abcd.mzid']
+    edit_file_dialog.mzid_paths = [mzid_file.as_posix()]
     multiple_id_files(file, new_file, edit_file_dialog)
-    assert new_file["ident_path"] == 'C:/Users/tudor/Downloads/s174pfZefF5L.mzid'
+    assert new_file["ident_path"] == 'C:/Users/Downloads/s174pfZefF5L.mzid'
 
 # test to see if the path of a single file gets changed
-def test_single_id_file():
-    path = 'C:/Users/tudor/Downloads/1_3.mzid'
-    new_file = {'raw_path': 'C:/Users/tudor/Downloads/D-10.mzXML', 'reference': False, 'group': '', 'ident_path': 'C:/Users/tudor/Downloads/s174pfZefF5L.mzid', 'stem': 'D-10'}
-    single_id_file(path, new_file)
-    assert new_file['ident_path'] == path
-    assert os.getcwd().replace('\\', '/') == os.path.dirname(path)
+def test_single_id_file(tmp_path):
+    dir = tmp_path / "mydir"
+    dir.mkdir()
+    file = dir / "myfile.mzid"
+    new_file = {'raw_path': 'C:/Users/Downloads/D-10.mzXML', 'reference': False, 'group': '', 'ident_path': 'C:/Users/Downloads/s174pfZefF5L.mzid', 'stem': 'D-10'}
+    single_id_file(file.as_posix(), new_file)
+    assert new_file['ident_path'] == file.as_posix()
+    assert os.getcwd().replace('\\', '/') == os.path.dirname(file.as_posix())
 
 # test if the name of the parameter is correctly set
 def test_init_label():
@@ -84,7 +89,7 @@ def test_ParametersWidget_examine_edit_files():
     efd = files.EditFileDialog()
     widget = ParametersWidget()
     efd.group = "group 1"
-    input_files = [{'raw_path': 'C:/Users/tudor/Downloads/1_3.mzXML', 'reference': False, 'group': '', 'ident_path': 'C:/Users/tudor/Downloads/s174pfZefF5L.mzid', 'stem': 'D-10'}]
+    input_files = [{'raw_path': 'C:/Users/Downloads/1_3.mzXML', 'reference': False, 'group': '', 'ident_path': 'C:/Users/Downloads/s174pfZefF5L.mzid', 'stem': 'D-10'}]
     widget.input_files = input_files
     widget.examine_edit_files(widget.input_files, efd, [0])
     assert widget.input_files[0]['group'] == "group 1"
@@ -92,14 +97,14 @@ def test_ParametersWidget_examine_edit_files():
 #test to see if fils get updated correctly
 def test_ParametersWidget_update_input_files():
     widget = ParametersWidget()
-    widget.input_files = [{'raw_path': 'C:/Users/tudor/Downloads/1_3.mzXML', 'reference': False}]
+    widget.input_files = [{'raw_path': 'C:/Users/Downloads/1_3.mzXML', 'reference': False}]
     widget.update_input_files(widget.input_files)
     assert widget.input_files_table.rowCount() == 1
 
 # test to see if files get removed
 def test_ParametersWidget_remove_file():
     widget = ParametersWidget()
-    widget.input_files = [{'raw_path': 'C:/Users/tudor/Downloads/1_3.mzXML', 'reference': False}, {'raw_path': 'C:/Users/tudor/Downloads/1_4.mzXML', 'reference': False}, {'raw_path': 'C:/Users/tudor/Downloads/1_5.mzXML', 'reference': False}]
+    widget.input_files = [{'raw_path': 'C:/Users/Downloads/1_3.mzXML', 'reference': False}, {'raw_path': 'C:/Users/Downloads/1_4.mzXML', 'reference': False}, {'raw_path': 'C:/Users/Downloads/1_5.mzXML', 'reference': False}]
     widget.update_input_files(widget.input_files)
     widget.input_files_table.selectRow(0)
     widget.remove_file()
