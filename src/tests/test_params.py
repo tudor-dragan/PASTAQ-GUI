@@ -1,12 +1,5 @@
 import os, sys
 
-from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QIcon
-from PyQt5.QtWidgets import QVBoxLayout, QTabWidget, QSpinBox, QAbstractSpinBox
-from PyQt5.QtWidgets import QWidget, QLineEdit, QDoubleSpinBox, QCheckBox
-from PyQt5.QtWidgets import QPushButton, QFileDialog, QScrollArea, QComboBox, QLabel, QMainWindow
-from PyQt5.QtWidgets import QTableWidget, QHeaderView, QHBoxLayout, QGroupBox, QGridLayout
-
 # This is done for importing from a parent directory
 currentdir = os.path.dirname(os.path.realpath(__file__))
 parentdir = os.path.dirname(currentdir)
@@ -15,7 +8,6 @@ sys.path.append(parentdir)
 from parameter import *
 from buttons import init_button_params
 from files import EditFileDialog, FileProcessor
-from app import MainWindow
 
 import pytest
 
