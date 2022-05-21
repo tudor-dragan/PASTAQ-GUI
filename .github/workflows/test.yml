@@ -34,4 +34,5 @@ jobs:
         cd ..
     - name: Perform tests
       run: |
+        export QT_DEBUG_PLUGINS=1
         python src/tests/tests_CI.py
