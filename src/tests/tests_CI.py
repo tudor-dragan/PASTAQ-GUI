@@ -1,5 +1,5 @@
 from PyQt5.QtWidgets import QApplication
-app = QApplication()
+app = QApplication([])
 
 import test_params as params
 import test_files as files
