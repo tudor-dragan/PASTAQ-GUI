@@ -243,7 +243,7 @@ class FileProcessor:
     # string manipulation to get .mzID path because location and name are guaranteed
     @staticmethod
     def make_mzid_path(mzid):
-        return mzid.replace(".mgf", ".mzID")
+        return mzid.replace('.mgf', '.mzID')
 
     # msfragger process
     def execute_msfragger(self, mgf):
@@ -253,12 +253,12 @@ class FileProcessor:
         # try/exception process failure
         try:
             msfragger = subprocess.run(
-                ["java", "-Xmx32g", "-jar", ms_jar, params, mgf],
+                ['java', '-Xmx32g', '-jar', ms_jar, params, mgf],
                 cwd=ms,
                 capture_output=True
             )
         except Exception:
-            self.popup_window('Error', "MSFragger failure")
+            popup_window('Error', 'MSFragger failure')
             return False
 
         # try/exception output failure
@@ -267,7 +267,7 @@ class FileProcessor:
         except subprocess.CalledProcessError:
             # print(subprocess.CalledProcessError.output) error in terminal
             # popup window if there was an error
-            self.popup_window('Error', "MSFragger failure")
+            popup_window('Error', 'MSFragger failure')
             return False
         return True
 
@@ -276,9 +276,9 @@ class FileProcessor:
         id_file = self.id_file[1]
 
         try:
-            idconvert = subprocess.run([id_file, pep, "-o", os.path.dirname(mgf)], capture_output=True)
+            idconvert = subprocess.run([id_file, pep, '-o', os.path.dirname(mgf)], capture_output=True)
         except Exception:
-            self.popup_window('Error', "idconvert failure")
+            popup_window('Error', 'idconvert failure')
             return False
 
         # check if idconvert was successful
@@ -286,20 +286,20 @@ class FileProcessor:
             idconvert.check_returncode()
         except subprocess.CalledProcessError:
             # print(subprocess.CalledProcessError.output) error in terminal
-            self.popup_window('Error', "idconvert failure")
+            popup_window('Error', 'idconvert failure')
             return False
         return True
 
     # check all the paths needed for identification
     def check(self):
         if not self.ms_jar[0]:
-            self.popup_window('Error', 'MSFragger path is not valid')
+            popup_window('Error', 'MSFragger path is not valid')
             return False
         if not self.id_file[0]:
-            self.popup_window('Error', 'idconvert path is not valid')
+            popup_window('Error', 'idconvert path is not valid')
             return False
         if not self.params[0]:
-            self.popup_window('Error', '.params path is not valid')
+            popup_window('Error', '.params path is not valid')
             return False
         return True
 
@@ -324,7 +324,7 @@ class FileProcessor:
 
         # check if path exists just to be sure
         if not os.path.exists(pep):
-            self.popup_window('Error', '.pepXML does not exist')
+            popup_window('Error', '.pepXML does not exist')
             return False
 
         # idconvert
@@ -337,6 +337,6 @@ class FileProcessor:
         mzid = self.make_mzid_path(mgf)
         # check if the .mzid file exists
         if not os.path.exists(mzid):
-            self.popup_window('Error', '.mzid does not exist')
+            popup_window('Error', '.mzid does not exist')
             return False
         return mzid
