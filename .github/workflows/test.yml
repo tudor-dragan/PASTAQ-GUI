@@ -24,7 +24,7 @@ jobs:
         sudo apt-get install qttools5-dev-tools
         sudo apt update
         sudo apt install xcb
-        sudo apt-get install libxkbcommon-x11-0 libxcb-randr0-dev libxcb-xtest0-dev libxcb-xinerama0-dev libxcb-shape0-dev libxcb-xkb-dev
+        sudo apt-get install '^libxcb.*-dev' libxkbcommon-x11-0 libxcb-randr0-dev libxcb-xtest0-dev libxcb-xinerama0-dev libxcb-shape0-dev libxcb-xkb-dev
         pip install cmake
         pip install pastaq
     - name: Compile resources
