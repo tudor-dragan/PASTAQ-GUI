@@ -36,4 +36,5 @@ jobs:
     - name: Perform tests
       run: |
         export QT_DEBUG_PLUGINS=1
+        export QT_QPA_PLATFORM=offscreen
         python src/tests/tests_CI.py
