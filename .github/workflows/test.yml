@@ -37,6 +37,7 @@ jobs:
         cd ..
     - name: Perform tests
       run: |
+        pytest src/tests/test_files.py
         #export QT_DEBUG_PLUGINS=1
         #export QT_QPA_PLATFORM=offscreen
-        python src/tests/tests_CI.py
+        #python src/tests/tests_CI.py
