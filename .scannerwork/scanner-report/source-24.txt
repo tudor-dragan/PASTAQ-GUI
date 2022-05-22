@@ -362,6 +362,7 @@ class ParametersWidget(QTabWidget):
         else:
             files.popup_window('Error', 'Invalid MSFragger path')
 
+
     def load_id_path(self, path):
         if self.file_processor.load_id_path(path):
             self.input_id.setText(path)

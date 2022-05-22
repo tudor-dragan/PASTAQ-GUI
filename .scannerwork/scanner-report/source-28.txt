@@ -3,10 +3,8 @@ import sys
 import mock
 import pytest
 import subprocess
-
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import files
-
 file_processor = files.FileProcessor()
 path = 'path'
 ms_path = 'ms_path'
@@ -135,6 +133,7 @@ class TestPathManipulationDeletion:
         mock_unlink.assert_called()
 
 
+
 @mock.patch('files.popup_window')
 class TestMS:
 
@@ -143,8 +142,8 @@ class TestMS:
     # 17
     @mock.patch(run)
     def test_execute_msfragger_call(self, mock_run, mock_popup):
-        file_processor.execute_msfragger(mgf_path)
-        mock_run.assert_called()
+            file_processor.execute_msfragger(mgf_path)
+            mock_run.assert_called()
 
     # tests when subprocess throws exception, should trigger popup window
     # 18
@@ -301,21 +300,21 @@ class TestProcess:
     # mzid already exists so no need to continue
     # 35
     def test_process_discontinue_call(self, mock_os_path, mock_make_mzid, mock_delete_pep, mock_make_pep,
-                                      mock_idconvert, mock_msfragger, mock_check, mock_popup):
+                     mock_idconvert, mock_msfragger, mock_check, mock_popup):
         mock_os_path.return_value = True
         file_processor.process(mgf_path)
         mock_check.assert_not_called()
 
     # 36
     def test_process_fail_check(self, mock_popup, mock_make_mzid, mock_delete_pep, mock_make_pep,
-                                mock_idconvert, mock_msfragger, mock_check, mock_os_path):
+                     mock_idconvert, mock_msfragger, mock_check, mock_os_path):
         mock_os_path.return_value = False
         mock_check.return_value = False
         assert not file_processor.process(mgf_path)
 
     # 37
     def test_process_fail_check_call(self, mock_os_path, mock_make_mzid, mock_delete_pep, mock_make_pep,
-                                     mock_idconvert, mock_msfragger, mock_check, mock_popup):
+                     mock_idconvert, mock_msfragger, mock_check, mock_popup):
         mock_os_path.return_value = False
         mock_check.return_value = False
         file_processor.process(mgf_path)
@@ -323,7 +322,7 @@ class TestProcess:
 
     # 38
     def test_process_fail_msfragger(self, mock_popup, mock_make_mzid, mock_delete_pep, mock_make_pep,
-                                    mock_idconvert, mock_msfragger, mock_check, mock_os_path):
+                     mock_idconvert, mock_msfragger, mock_check, mock_os_path):
         mock_os_path.return_value = False
         mock_check.return_value = True
         mock_msfragger.return_value = False
@@ -331,7 +330,7 @@ class TestProcess:
 
     # 39
     def test_process_fail_msfragger_call(self, mock_os_path, mock_make_mzid, mock_delete_pep, mock_make_pep,
-                                         mock_idconvert, mock_msfragger, mock_check, mock_popup):
+                     mock_idconvert, mock_msfragger, mock_check, mock_popup):
         mock_os_path.return_value = False
         mock_check.return_value = True
         mock_msfragger.return_value = False
@@ -340,7 +339,7 @@ class TestProcess:
 
     # 40
     def test_process_fail_pep(self, mock_popup, mock_make_mzid, mock_delete_pep, mock_make_pep,
-                              mock_idconvert, mock_msfragger, mock_check, mock_os_path):
+                                    mock_idconvert, mock_msfragger, mock_check, mock_os_path):
         mock_os_path.side_effect = lambda x: {1: False, 2: False}[x]
         mock_make_mzid.return_value = 1
         mock_check.return_value = True
@@ -361,7 +360,7 @@ class TestProcess:
 
     # 42
     def test_process_fail_pep_call(self, mock_popup, mock_make_mzid, mock_delete_pep, mock_make_pep,
-                                   mock_idconvert, mock_msfragger, mock_check, mock_os_path):
+                                    mock_idconvert, mock_msfragger, mock_check, mock_os_path):
         mock_os_path.side_effect = lambda x: {1: False, 2: False}[x]
         mock_make_mzid.return_value = 1
         mock_check.return_value = True
@@ -383,7 +382,7 @@ class TestProcess:
 
     # 44
     def test_process_fail_idconvert_call(self, mock_popup, mock_make_mzid, mock_delete_pep, mock_make_pep,
-                                         mock_idconvert, mock_msfragger, mock_check, mock_os_path):
+                                    mock_idconvert, mock_msfragger, mock_check, mock_os_path):
         mock_os_path.side_effect = lambda x: {1: False, 2: True}[x]
         mock_make_mzid.return_value = 1
         mock_check.return_value = True
@@ -395,7 +394,7 @@ class TestProcess:
 
     # 45
     def test_process_fail_mzid(self, mock_popup, mock_make_mzid, mock_delete_pep, mock_make_pep,
-                               mock_idconvert, mock_msfragger, mock_check, mock_os_path):
+                                    mock_idconvert, mock_msfragger, mock_check, mock_os_path):
         mock_os_path.side_effect = lambda x: {1: False, 2: True}[x]
         mock_make_mzid.return_value = 1
         mock_check.return_value = True
@@ -406,7 +405,7 @@ class TestProcess:
 
     # 46
     def test_process_fail_mzid_popup(self, mock_popup, mock_make_mzid, mock_delete_pep, mock_make_pep,
-                                     mock_idconvert, mock_msfragger, mock_check, mock_os_path):
+                                    mock_idconvert, mock_msfragger, mock_check, mock_os_path):
         mock_os_path.side_effect = lambda x: {1: False, 2: True}[x]
         mock_make_mzid.return_value = 1
         mock_check.return_value = True
