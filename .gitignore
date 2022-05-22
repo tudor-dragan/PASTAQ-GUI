@@ -140,3 +140,4 @@ cython_debug/
 src/resources.py
 .idea
 config.ini
+.scannerwork
