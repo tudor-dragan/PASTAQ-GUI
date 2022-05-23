@@ -25,21 +25,19 @@
 
 #
 import sys, os
-import unittest
-
+import pytest
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QApplication, QLabel, QMenuBar, QMenu
 from PyQt5.QtTest import QTest
 from PyQt5.QtCore import Qt
-sys.path.append('PASTAQ-GUI/src/app.py')
-sys.path.append('../')
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))  # fixed this for importing app properly
 #from app.py import MainWindow
 from app import MainWindow, dark_mode, light_mode
 
 mainWindow = MainWindow()
 
 def test_init_light_mode():
-    assert mainWindow.dark == False
+    assert not mainWindow.dark
 
 # def test_change_dark_mode():
 #     mainWindow = MainWindow()
@@ -86,7 +84,7 @@ def test_help_menu():
 
 def test_number_menu():
     menus = mainWindow.findChildren(QMenu)
-    assert len(menus)== 3
+    assert len(menus) == 3
 
 def test_app():
     test_init_light_mode()
