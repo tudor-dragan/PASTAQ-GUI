@@ -18,22 +18,7 @@ from pathlib import Path
 from time import time, sleep
 
 
-# Setting the color palette of the UI to dark colors.
-def dark_mode():
-    app.setStyle("Fusion")
-    palette = QPalette()
-    palette.setColor(QPalette.Window, QColor(53, 53, 53))
-    palette.setColor(QPalette.WindowText, Qt.white)
-    palette.setColor(QPalette.Base, QColor(25, 25, 25))
-    palette.setColor(QPalette.AlternateBase, QColor(53, 53, 53))
-    palette.setColor(QPalette.Text, Qt.white)
-    palette.setColor(QPalette.Button, QColor(53, 53, 53))
-    palette.setColor(QPalette.ButtonText, Qt.white)
-    palette.setColor(QPalette.BrightText, Qt.red)
-    palette.setColor(QPalette.Link, QColor(42, 130, 218))
-    palette.setColor(QPalette.Highlight, QColor(42, 130, 218))
 
-    app.setPalette(palette)
 
 
 # Setting the colors to lighter colors
@@ -266,9 +251,27 @@ class MainWindow(QMainWindow):
             self.update_ui(True)
         self.parameters_container.set_saved(False)
 
+    # Setting the color palette of the UI to dark colors.
+    def dark_mode(self):
+        self.setStyle("Fusion")
+        palette = QPalette()
+        palette.setColor(QPalette.Window, QColor(53, 53, 53))
+        palette.setColor(QPalette.WindowText, Qt.white)
+        palette.setColor(QPalette.Base, QColor(25, 25, 25))
+        palette.setColor(QPalette.AlternateBase, QColor(53, 53, 53))
+        palette.setColor(QPalette.Text, Qt.white)
+        palette.setColor(QPalette.Button, QColor(53, 53, 53))
+        palette.setColor(QPalette.ButtonText, Qt.white)
+        palette.setColor(QPalette.BrightText, Qt.red)
+        palette.setColor(QPalette.Link, QColor(42, 130, 218))
+        palette.setColor(QPalette.Highlight, QColor(42, 130, 218))
+
+        self.setPalette(palette)
+
+    # changes the colors of the GUI to either dark or light
     def view_mode(self):
         if not self.dark:
-            dark_mode()
+            self.dark_mode()
             self.dark = True
             self.view_mode_btn.setText('Light Mode')
         else:
