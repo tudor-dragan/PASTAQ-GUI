@@ -1,24 +1,21 @@
 import json
 import os
-import platform
-import sys
-import webbrowser
-import time
-
+import parameter
 import pastaq
-from time import time, sleep
-from pathlib import Path
-from configparser import ConfigParser
+import pipeline
+import platform
+import resources
+import sys
+import time
+import webbrowser
 from PyQt5.QtCore import QSize, Qt, QTimer
 from PyQt5.QtGui import QIcon, QKeySequence, QPalette, QColor, QPixmap
-
 from PyQt5.QtWidgets import QMessageBox, QMainWindow, QVBoxLayout, QLabel, QSplashScreen
-from PyQt5.QtWidgets import QWidget, QAction, QLineEdit, QFormLayout, QFrame
 from PyQt5.QtWidgets import QPushButton, QFileDialog, QApplication, QHBoxLayout
-
-import parameter
-import pipeline
-import resources
+from PyQt5.QtWidgets import QWidget, QAction, QLineEdit, QFormLayout, QFrame
+from configparser import ConfigParser
+from pathlib import Path
+from time import time, sleep
 
 
 # Setting the color palette of the UI to dark colors.
@@ -638,6 +635,7 @@ class SplashScreen(QSplashScreen):
     def done(self):
         self.close()
         self.window.show()
+
 
 def main():
     app = QApplication(sys.argv)

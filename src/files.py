@@ -1,14 +1,13 @@
+import buttons
+import inspect
 import os
 import subprocess
-import inspect
-import buttons
-
-from PyQt5.QtCore import Qt, QEvent
 from PyQt5 import QtGui
-from pathlib import Path
+from PyQt5.QtCore import Qt, QEvent
 from PyQt5.QtWidgets import QMessageBox, QVBoxLayout, QDialogButtonBox
-from PyQt5.QtWidgets import QWidget, QLineEdit, QFormLayout, QAction
 from PyQt5.QtWidgets import QPushButton, QFileDialog, QDialog, QLabel
+from PyQt5.QtWidgets import QWidget, QLineEdit, QFormLayout, QAction
+from pathlib import Path
 
 
 # creates a popup

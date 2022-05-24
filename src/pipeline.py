@@ -1,11 +1,9 @@
+import files
+import pastaq
 import sys
 import time
-
-import pastaq
 from PyQt5.QtCore import QObject, pyqtSignal, QThread, QObjectCleanupHandler
 from PyQt5.QtWidgets import QDialog, QTextEdit, QDialogButtonBox, QVBoxLayout
-
-import files
 
 
 class TextStream(QObject):

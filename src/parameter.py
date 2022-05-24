@@ -1,16 +1,14 @@
-import inspect
-import os
-
-from PyQt5.QtCore import Qt, QUrl
-from PyQt5.QtGui import QIcon
-from PyQt5.QtWidgets import QVBoxLayout, QTabWidget, QSpinBox, QAbstractSpinBox
-from PyQt5.QtWidgets import QWidget, QLineEdit, QDoubleSpinBox, QCheckBox, QStackedWidget, QListWidget
-from PyQt5.QtWidgets import QPushButton, QFileDialog, QScrollArea, QComboBox, QLabel
-from PyQt5.QtWidgets import QTableWidget, QHeaderView, QHBoxLayout, QGroupBox, QGridLayout
-
 import buttons
 import files
+import inspect
+import os
 import resources
+from PyQt5.QtCore import Qt, QUrl
+from PyQt5.QtGui import QIcon
+from PyQt5.QtWidgets import QPushButton, QFileDialog, QScrollArea, QComboBox, QLabel
+from PyQt5.QtWidgets import QTableWidget, QHeaderView, QHBoxLayout, QGroupBox, QGridLayout
+from PyQt5.QtWidgets import QVBoxLayout, QTabWidget, QSpinBox, QAbstractSpinBox
+from PyQt5.QtWidgets import QWidget, QLineEdit, QDoubleSpinBox, QCheckBox, QStackedWidget, QListWidget
 
 global saved
 saved = True
@@ -44,7 +42,7 @@ def multiple_id_files(file, new_file, edit_file_dialog):
         base_name = os.path.basename(mzid)
         base_name = os.path.splitext(base_name)
         mzid_stem = base_name[0]
-        #compares the stem of the ML file to the one of the ID file for matching
+        # compares the stem of the ML file to the one of the ID file for matching
         if mzid_stem == stem:
             new_file['ident_path'] = mzid
             break
