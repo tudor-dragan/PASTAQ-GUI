@@ -21,7 +21,7 @@ run = 'files.subprocess.run'
 class TestCheckPaths:
 
     # tests for check_path
-    # path not None and is path exists
+    # path not None and is path exists, should return True
     # 3.1
     def test_check_path_valid(self, mock_path):
         mock_path.return_value = True
@@ -33,13 +33,13 @@ class TestCheckPaths:
         file_processor.check_path(path)
         mock_path.assert_called()
 
-    # path not None and path does not exist
+    # path not None and path does not exist, should return False
     # 3.3
     def test_check_path_invalid(self, mock_path):
         mock_path.return_value = False
         assert not file_processor.check_path(path)
 
-    # path None
+    # path None, should return False
     # 3.4
     def test_check_path_none(self, mock_path):
         assert not file_processor.check_path(None)
@@ -61,20 +61,20 @@ class TestLoadMs:
         mock_check.return_value = False
         assert not file_processor.load_ms_path(ms_path)
 
-    # check_path is False
+    # check_path is False, so ms_jar should stay the same
     # 3.7
     def test_load_ms_path_false_value(self, mock_check):
         mock_check.return_value = False
         file_processor.load_ms_path(ms_path)
         assert file_processor.ms_jar == [False, '']
 
-    # check_path is True
+    # check_path is True, should return True
     # 3.8
     def test_load_ms_path_true(self, mock_check):
         mock_check.return_value = True
         assert file_processor.load_ms_path(ms_path)
 
-    # check_path is True
+    # check_path is True, should set the ms_path
     # 3.9
     def test_load_ms_path_true_value(self, mock_check):
         mock_check.return_value = True
@@ -82,26 +82,26 @@ class TestLoadMs:
         assert file_processor.ms_jar == [True, ms_path]
 
     # tests load_id_path
-    # check_path is False
+    # check_path is False, should return False
     # 3.10
     def test_load_id_path_false(self, mock_check):
         mock_check.return_value = False
         assert not file_processor.load_id_path(id_path)
 
-    # check_path is False
+    # check_path is False, so id_file should stay the same
     # 3.11
     def test_load_id_path_false_value(self, mock_check):
         mock_check.return_value = False
         file_processor.load_ms_path(id_path)
         assert file_processor.id_file == [False, '']
 
-    # check_path is True
+    # check_path is True, should return True
     # 3.12
     def test_load_id_path_true(self, mock_check):
         mock_check.return_value = True
         assert file_processor.load_id_path(id_path)
 
-    # check_path is True
+    # check_path is True, should set id_file
     # 3.13
     def test_load_id_path_true_value(self, mock_check):
         mock_check.return_value = True

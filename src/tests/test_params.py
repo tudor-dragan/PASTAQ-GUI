@@ -1,15 +1,12 @@
 import os, sys
+import pytest
 
-# This is done for importing from a parent directory
-currentdir = os.path.dirname(os.path.realpath(__file__))
-parentdir = os.path.dirname(currentdir)
-sys.path.append(parentdir)
-
-from parameter import *
+# since we're kinda manipulating the system, keep it to one line instead of 3 to make it less obvious
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from parameter import ParametersWidget, multiple_id_files, single_id_file, init_label, init_button
 from buttons import init_button_params
 from files import EditFileDialog, FileProcessor
 
-import pytest
 
 #
 # FIXTURES & GLOBALS (these are functions that are run before tests for setup purposes)
@@ -21,11 +18,14 @@ mzID = 'C:/Users/Downloads/s174pfZefF5L.mzid'
 # UNIT TESTS
 #
 
+
+# 2 blank lines inbetween individual defs like this, standard
 # test if the tooltip is correctly set
 def test_init_button_params():
     button = init_button_params("test_label", "test_tooltip")
     print(button.toolTip)
     assert button.toolTip() == "test_tooltip"
+
 
 # tests to see if path gets correctly updated for multiple files when there is matching stems between the files
 def test_multiple_id_files_if_match():
@@ -35,18 +35,20 @@ def test_multiple_id_files_if_match():
     edit_file_dialog.mzid_paths = ['C:/Users/Downloads/1_3.mzid']
     multiple_id_files(file, new_file, edit_file_dialog)
     assert new_file["ident_path"] == 'C:/Users/Downloads/1_3.mzid'
-    
+
+
 # tests to see if path does not get changed if paths dont match
 def test_multiple_id_files_if_no_match(tmp_path):
     file = {'raw_path': mzXML, 'reference': False, 'group': '', 'ident_path': mzID, 'stem': 'D-10'}
     new_file = {'raw_path': mzXML, 'reference': False, 'group': '', 'ident_path': mzID, 'stem': 'D-10'}
-    dir = tmp_path / "mydir"
-    dir.mkdir()
-    mzid_file = dir / "myfile.mzid"
+    directory = tmp_path / "mydir"
+    directory.mkdir()
+    mzid_file = directory / "myfile.mzid"
     edit_file_dialog = EditFileDialog()
     edit_file_dialog.mzid_paths = [mzid_file.as_posix()]
     multiple_id_files(file, new_file, edit_file_dialog)
     assert new_file["ident_path"] == mzID
+
 
 # test to see if the path of a single file gets changed
 def test_single_id_file(tmp_path):
@@ -58,20 +60,24 @@ def test_single_id_file(tmp_path):
     assert new_file['ident_path'] == file.as_posix()
     assert os.getcwd().replace('\\', '/') == os.path.dirname(file.as_posix())
 
+
 # test if the name of the parameter is correctly set
 def test_init_label():
     label = init_label("test_text")
     assert label.text() == "test_text"
+
 
 # test to see if tooltip is the right one
 def test_init_button():
     button = init_button("test_text", lambda a : a + 10, "test_tooltip")
     assert button.toolTip() == "test_tooltip"
 
+
 # test to see if the file processor is available to the parameters tab
-def test_FileProcessor():
+def test_file_processor():
     widget = ParametersWidget()
     assert isinstance(widget.get_file_processor(), FileProcessor)
+
 
 # test to see if a new file gets added correctly
 def test_add_new_file(tmp_path):
@@ -86,9 +92,10 @@ def test_add_new_file(tmp_path):
     assert widget.input_files[0]['raw_path'] == f1.as_posix()
     assert widget.input_files[1]['raw_path'] == f2.as_posix()
 
+
 # test to see if files get updated correctly
 def test_examine_edit_files():
-    efd = files.EditFileDialog()
+    efd = EditFileDialog()
     widget = ParametersWidget()
     efd.group = "group 1"
     input_files = [{'raw_path': mzXML, 'reference': False, 'group': '', 'ident_path': mzID, 'stem': 'D-10'}]
@@ -96,12 +103,14 @@ def test_examine_edit_files():
     widget.examine_edit_files(widget.input_files, efd, [0])
     assert widget.input_files[0]['group'] == "group 1"
 
-#test to see if fils get updated correctly
+
+# test to see if fils get updated correctly
 def test_update_input_files():
     widget = ParametersWidget()
     widget.input_files = [{'raw_path': mzXML, 'reference': False}]
     widget.update_input_files(widget.input_files)
     assert widget.input_files_table.rowCount() == 1
+
 
 # test to see if files get removed
 def test_remove_file():
@@ -112,6 +121,7 @@ def test_remove_file():
     widget.remove_file()
     assert widget.input_files_table.rowCount() == 2
 
+
 def test_parameters_update():
     widget = ParametersWidget()
     widget.res_ms1.setValue(3000)
@@ -119,4 +129,4 @@ def test_parameters_update():
     widget.update_parameters()
     assert widget.parameters['resolution_ms1'] == 3000
     assert widget.parameters['instrument_type'] == "orbitrap"
-    assert widget.get_saved() == False
+    assert not widget.get_saved()

@@ -24,6 +24,7 @@
 #
 
 #
+# also optimize your imports, when you want to mock something, you have to mock it from the file that imports it and not here
 import sys, os
 import pytest
 from PyQt5.QtGui import QPixmap
@@ -31,10 +32,11 @@ from PyQt5.QtWidgets import QApplication, QLabel, QMenuBar, QMenu
 from PyQt5.QtTest import QTest
 from PyQt5.QtCore import Qt
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))  # fixed this for importing app properly
-#from app.py import MainWindow
-from app import MainWindow, dark_mode, light_mode
+import app
 
-mainWindow = MainWindow()
+# this is the application stuff that i meant
+application = QApplication(sys.argv)
+mainWindow = app.MainWindow()
 
 def test_init_light_mode():
     assert not mainWindow.dark
@@ -86,6 +88,8 @@ def test_number_menu():
     menus = mainWindow.findChildren(QMenu)
     assert len(menus) == 3
 
+# test_app is unnecessary because everything will be executed with pytest anyways, so i dont get why this is needed
+# since no other test file has this, we should stay consistent
 def test_app():
     test_init_light_mode()
     # test_change_dark_mode()
