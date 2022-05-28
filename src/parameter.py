@@ -342,7 +342,7 @@ class ParametersWidget(QTabWidget):
             self.run_btn.setEnabled(False)
             return
         for _, input_file in enumerate(self.input_files):
-            if not Path(input_file['raw_path']).is_file() or not Path(input_file['ident_path']).is_file():
+            if not Path(input_file['raw_path']).is_file() or not 'ident_path' in input_file or not Path(input_file['ident_path']).is_file():
                 self.run_btn.setEnabled(False)
                 return
         self.run_btn.setEnabled(True)
