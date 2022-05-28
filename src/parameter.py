@@ -382,13 +382,25 @@ class ParametersWidget(QTabWidget):
             checkbox = self.input_files_table.cellWidget(row, 3).children()[1]
             self.input_files[row]['reference'] = checkbox.isChecked()
 
+    # creates a gridlayout and sets the default row stretch
+    def get_grid(self):
+        grid = QGridLayout()
+        grid.setRowStretch(0, 1)
+        grid.setRowStretch(1, 2)
+        grid.setRowStretch(2, 2)
+        grid.setRowStretch(3, 2)
+        return grid
+
     # Section of parameters
     # This initialises the UI for each parameter, as well as the values it can take
     def init_inst(self):
-        grid_layout_inst = QGridLayout()
+        grid_layout_inst = self.get_grid()
         # TODO
-        description = 'Description of container'
-        grid_layout_inst.addWidget(QLabel(description), 0, 0)
+        description = inspect.cleandoc('''These parameters are used mostly for configuring the extent of smoothing 
+        that is applied when resampling the data and the initial estimation of the region-of-interest (ROI) 
+        for the quantification of isotope peaks via peak fitting.''')
+        label = QLabel(description)
+        grid_layout_inst.addWidget(label, 0, 0, 1, 3)
 
         self.inst_type = QComboBox()
         self.inst_type.addItems(['orbitrap', 'tof', 'ft-icr', 'quadrupole'])
@@ -424,10 +436,14 @@ class ParametersWidget(QTabWidget):
 
     # Section of parameters
     def init_raw_data(self):
-        grid_layout_raw_data = QGridLayout()
+        grid_layout_raw_data = self.get_grid()
         # TODO
-        description = 'Description of container'
-        grid_layout_raw_data.addWidget(QLabel(description), 0, 0)
+        description = inspect.cleandoc('''If users want to process only a subrange in the m/z and/or retention time dimensions, 
+        they can do so by adjusting min_mz, max_mz, min_rt and max_rt parameters. 
+        Additionally, if the data contains scans in both positive and negative polarities, 
+        the polarity setting must be set to either 'pos' or 'neg'. ''')
+        label = QLabel(description)
+        grid_layout_raw_data.addWidget(label, 0, 0, 1, 3)
 
         self.min_mz = QDoubleSpinBox()
         self.min_mz.setRange(0, LARGE)
@@ -468,10 +484,12 @@ class ParametersWidget(QTabWidget):
 
     # Section of parameters
     def init_resamp(self):
-        grid_layout_resamp = QGridLayout()
+        grid_layout_resamp = self.get_grid()
         # TODO
-        description = 'Description of container'
-        grid_layout_resamp.addWidget(QLabel(description), 0, 0)
+        description = inspect.cleandoc('''These parameters can be used for controlling the extent of smoothing applied 
+        to the data when resampling and to adjust the size of the output matrix. ''')
+        label = QLabel(description)
+        grid_layout_resamp.addWidget(label, 0, 0, 1, 3)
 
         self.num_samples_mz = QSpinBox()
         self.num_samples_mz.setRange(-LARGE, LARGE)
@@ -529,10 +547,11 @@ class ParametersWidget(QTabWidget):
 
     # Section of parameters
     def init_warp(self):
-        grid_layout_warp = QGridLayout()
+        grid_layout_warp = self.get_grid()
         # TODO
         description = 'Description of container'
-        grid_layout_warp.addWidget(QLabel(description), 0, 0)
+        label = QLabel(description)
+        grid_layout_warp.addWidget(label, 0, 0, 1, 3)
 
         self.warp2d_slack = QSpinBox()
         self.warp2d_slack.setRange(-LARGE, LARGE)
@@ -570,10 +589,11 @@ class ParametersWidget(QTabWidget):
 
     # Section of parameters
     def init_meta(self):
-        grid_layout_meta = QGridLayout()
+        grid_layout_meta = self.get_grid()
         # TODO
         description = 'Description of container'
-        grid_layout_meta.addWidget(QLabel(description), 0, 0)
+        label = QLabel(description)
+        grid_layout_meta.addWidget(label, 0, 0, 1, 3)
 
         self.metamatch_fraction = QDoubleSpinBox()
         self.metamatch_fraction.setRange(-LARGE, LARGE)
@@ -604,10 +624,12 @@ class ParametersWidget(QTabWidget):
 
     # Section of parameters
     def init_ident(self):
-        grid_layout_ident = QGridLayout()
+        grid_layout_ident = self.get_grid()
         # TODO
         description = 'Description of container'
-        grid_layout_ident.addWidget(QLabel(description), 0, 0)
+        label = QLabel(description)
+        grid_layout_ident.addWidget(label, 0, 0, 1, 3)
+
         self.ident_max_rank_only = QCheckBox()
         self.ident_max_rank_only.stateChanged.connect(self.update_parameters)
         tooltip = 'Only select the most confident PSM from each MS/MS spectra.'
@@ -641,10 +663,11 @@ class ParametersWidget(QTabWidget):
 
     # Section of parameters
     def init_qual(self):
-        grid_layout_qual = QGridLayout()
+        grid_layout_qual = self.get_grid()
         # TODO
         description = 'Description of container'
-        grid_layout_qual.addWidget(QLabel(description), 0, 0)
+        label = QLabel(description)
+        grid_layout_qual.addWidget(label, 0, 0, 1, 3)
 
         self.similarity_num_peaks = QSpinBox()
         self.similarity_num_peaks.setRange(-LARGE, LARGE)
@@ -762,10 +785,11 @@ class ParametersWidget(QTabWidget):
 
     # Section of parameters
     def init_quantt(self):
-        grid_layout_quantt = QGridLayout()
+        grid_layout_quantt = self.get_grid()
         # TODO
         description = 'Description of container'
-        grid_layout_quantt.addWidget(QLabel(description), 0, 0)
+        label = QLabel(description)
+        grid_layout_quantt.addWidget(label, 0, 0, 1, 3)
 
         self.quant_isotopes = QComboBox()
         self.quant_isotopes.addItems(['height', 'volume'])

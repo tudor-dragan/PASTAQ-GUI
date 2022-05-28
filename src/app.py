@@ -18,9 +18,6 @@ from pathlib import Path
 from time import time, sleep
 
 
-
-
-
 # Setting the colors to lighter colors
 def light_mode():
     app.setStyle("Fusion")
@@ -632,7 +629,7 @@ class SplashScreen(QSplashScreen):
         self.setPixmap(pixmap)
 
         self.window = MainWindow()
-        self.window.resize(QSize(800, 600))
+        self.window.resize(QSize(900, 700))
         QTimer.singleShot(1500, self.done)
 
     def done(self):
@@ -658,6 +655,5 @@ def main():
     app.exec_()
 
 
-if __name__ == "__app__":
+if __name__ == "__main__":
     main()
-

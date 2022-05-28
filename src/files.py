@@ -70,10 +70,9 @@ class EditFileDialog(QDialog):
     # Layout of the modal
     def init_layout(self, mzid_picker, drop):
         form_layout = QFormLayout()
-        # TODO
-        tooltip_group = 'Placeholder'
+        tooltip_group = 'Sample group'
         form_layout.addRow(buttons.init_button_params('Group', tooltip_group), self.group_box)
-        tooltip_browse = 'Browse for identification files.'
+        tooltip_browse = 'Browse for identification files'
         form_layout.addRow(buttons.init_button_params('mgf/mzID', tooltip_browse), mzid_picker)
         form_layout.addRow(drop)
         return form_layout
@@ -84,7 +83,7 @@ class EditFileDialog(QDialog):
         group_box.textChanged.connect(self.set_group)
         return group_box
 
-    # File browing for corresponding .mzIDs
+    # File browsing for corresponding .mzIDs
     def init_mzid_picker(self):
         mzid_picker = QPushButton('Browse')
         mzid_picker.clicked.connect(self.set_mzid_paths)
@@ -256,7 +255,7 @@ class FileProcessor:
                 cwd=ms,
                 capture_output=True
             )
-        except Exception:
+        except subprocess.SubprocessError:
             popup_window('Error', 'MSFragger failure')
             return False
 
@@ -276,7 +275,7 @@ class FileProcessor:
 
         try:
             idconvert = subprocess.run([id_file, pep, '-o', os.path.dirname(mgf)], capture_output=True)
-        except Exception:
+        except subprocess.SubprocessError:
             popup_window('Error', 'idconvert failure')
             return False
 
