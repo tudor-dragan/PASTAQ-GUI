@@ -222,6 +222,7 @@ class MainWindow(QMainWindow):
         self.run_btn = QPushButton('Run')
         self.run_btn.clicked.connect(self.run_pipeline)
         self.run_btn.setEnabled(False)
+        self.parameters_container.set_run_btn(self.run_btn)
 
     def set_project_name(self):
         self.parameters_container.parameters['project_name'] = self.project_name_ui.text()
@@ -439,7 +440,7 @@ class MainWindow(QMainWindow):
         self.save_project_btn.setEnabled(True)
         self.save_project_as_btn.setEnabled(True)
         self.remove_file_btn.setEnabled(True)
-        self.run_btn.setEnabled(True)
+        self.parameters_container.check_run_btn()
         self.reset_param_btn.setEnabled(True)
         self.project_variables_container.setEnabled(True)
         self.parameters_container.setEnabled(True)
@@ -468,7 +469,7 @@ class MainWindow(QMainWindow):
         self.save_project_btn.setEnabled(True)
         self.save_project_as_btn.setEnabled(True)
         self.remove_file_btn.setEnabled(True)
-        self.run_btn.setEnabled(True)
+        self.parameters_container.check_run_btn()
         self.reset_param_btn.setEnabled(True)
         self.project_variables_container.setEnabled(True)
         self.parameters_container.setEnabled(True)
@@ -597,7 +598,7 @@ class MainWindow(QMainWindow):
     def restore_run(self):
         # Restore previous button statuses.
         self.run_btn.setText('Run')
-        self.run_btn.setEnabled(True)
+        self.parameters_container.check_run_btn()
         self.project_variables_container.setEnabled(True)
         self.parameters_container.setEnabled(True)
 

@@ -9,6 +9,7 @@ from PyQt5.QtWidgets import QPushButton, QFileDialog, QScrollArea, QComboBox, QL
 from PyQt5.QtWidgets import QTableWidget, QHeaderView, QHBoxLayout, QGroupBox, QGridLayout
 from PyQt5.QtWidgets import QVBoxLayout, QTabWidget, QSpinBox, QAbstractSpinBox
 from PyQt5.QtWidgets import QWidget, QLineEdit, QDoubleSpinBox, QCheckBox, QStackedWidget, QListWidget
+from pathlib import Path
 
 global saved
 saved = True
@@ -332,6 +333,20 @@ class ParametersWidget(QTabWidget):
                 indexes += [i]
         return indexes
 
+    def set_run_btn(self, run_btn):
+        self.run_btn = run_btn
+    
+    # Checks whether the run button should be enabled or not
+    def check_run_btn(self):
+        if not self.input_files:
+            self.run_btn.setEnabled(False)
+            return
+        for _, input_file in enumerate(self.input_files):
+            if not Path(input_file['raw_path']).is_file() or not Path(input_file['ident_path']).is_file():
+                self.run_btn.setEnabled(False)
+                return
+        self.run_btn.setEnabled(True)
+
     # Updates the UI in case of a change in the input files
     def update_input_files(self, input_files):
         global saved
@@ -349,6 +364,7 @@ class ParametersWidget(QTabWidget):
             if 'reference' in input_file:
                 cell_widget = self.make_reference(input_file['reference'])
                 self.input_files_table.setCellWidget(i, 3, cell_widget)
+        self.check_run_btn()
 
     def load_params(self, path):
         self.file_processor.load_params_path(path)
