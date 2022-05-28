@@ -149,14 +149,14 @@ class TestMS:
     # tests when subprocess throws exception, should trigger popup window
     # 3.18
     def test_execute_msfragger_popup(self, mock_popup):
-        with mock.patch(run, side_effect=Exception("ERROR")):
+        with mock.patch(run, side_effect=subprocess.CalledProcessError(1, 'java')):
             file_processor.execute_msfragger(mgf_path)
             mock_popup.assert_called()
 
     # tests when subprocess throws exception, should return False
     # 3.19
     def test_execute_msfragger_return(self, mock_popup):
-        with mock.patch(run, side_effect=Exception("ERROR")):
+        with mock.patch(run, side_effect=subprocess.CalledProcessError(1, 'java')):
             assert not file_processor.execute_msfragger(mgf_path)
 
     # test return code checking
@@ -200,14 +200,14 @@ class TestID:
     # tests when subprocess throws exception, should trigger popup window
     # 3.24
     def test_execute_idconvert_popup(self, mock_popup):
-        with mock.patch(run, side_effect=Exception("ERROR")):
+        with mock.patch(run, side_effect=subprocess.CalledProcessError(1, 'java')):
             file_processor.execute_idconvert(pep_path, mgf_path)
             mock_popup.assert_called()
 
     # tests when subprocess throws exception, should return False
     # 3.25
     def test_execute_idconvert_return(self, mock_popup):
-        with mock.patch(run, side_effect=Exception("ERROR")):
+        with mock.patch(run, side_effect=subprocess.CalledProcessError(1, 'java')):
             assert not file_processor.execute_idconvert(pep_path, mgf_path)
 
     # test return code checking
