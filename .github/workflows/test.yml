@@ -39,6 +39,8 @@ jobs:
       run: |
         pytest src/tests/test_files.py
         pytest src/tests/test_pipeline.py
+        pytest src/tests/test_params_buttons.py
+        pytest src/tests/test_app.py
         #export QT_DEBUG_PLUGINS=1
         #export QT_QPA_PLATFORM=offscreen
         #python src/tests/tests_CI.py
