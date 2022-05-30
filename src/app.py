@@ -83,9 +83,6 @@ class MainWindow(QMainWindow):
         # Save Project As
         self.init_save_as()
 
-        # remove file menu button
-        self.init_remove()
-
         # reset button
         self.init_reset()
 
@@ -174,13 +171,6 @@ class MainWindow(QMainWindow):
 
     def add_action_menu_action(self, action):
         self.actionMenu.addAction(action)
-
-    def init_remove(self):
-        self.remove_file_btn = QAction('Remove Selected Files', self)
-        self.remove_file_btn.triggered.connect(self.parameters_container.remove_file)
-        self.remove_file_btn.setShortcut(QKeySequence('Del'))
-        self.remove_file_btn.setEnabled(False)
-        self.add_action_menu_action(self.remove_file_btn)
 
     def init_reset(self):
         self.reset_param_btn = QAction('Reset Parameters', self)
@@ -439,7 +429,6 @@ class MainWindow(QMainWindow):
         self.parameters_container.parameters = pastaq.default_parameters('orbitrap', 10)
         self.save_project_btn.setEnabled(True)
         self.save_project_as_btn.setEnabled(True)
-        self.remove_file_btn.setEnabled(True)
         self.parameters_container.check_run_btn()
         self.reset_param_btn.setEnabled(True)
         self.project_variables_container.setEnabled(True)
@@ -468,7 +457,6 @@ class MainWindow(QMainWindow):
         self.project_path = file_path
         self.save_project_btn.setEnabled(True)
         self.save_project_as_btn.setEnabled(True)
-        self.remove_file_btn.setEnabled(True)
         self.parameters_container.check_run_btn()
         self.reset_param_btn.setEnabled(True)
         self.project_variables_container.setEnabled(True)

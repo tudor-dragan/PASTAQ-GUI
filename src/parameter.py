@@ -4,7 +4,7 @@ import inspect
 import os
 import resources
 from PyQt5.QtCore import Qt, QUrl
-from PyQt5.QtGui import QIcon
+from PyQt5.QtGui import QIcon, QKeySequence
 from PyQt5.QtWidgets import QPushButton, QFileDialog, QScrollArea, QComboBox, QLabel
 from PyQt5.QtWidgets import QTableWidget, QHeaderView, QHBoxLayout, QGroupBox, QGridLayout
 from PyQt5.QtWidgets import QVBoxLayout, QTabWidget, QSpinBox, QAbstractSpinBox
@@ -155,8 +155,9 @@ class ParametersWidget(QTabWidget):
         edit_button = init_button('Edit', self.edit_file,
                                   'Add identification files to the selected quantification files (.mgf or .mzID)')
         remove_button = init_button('Remove', self.remove_file, 'Remove entire row')
+        remove_button.setShortcut(QKeySequence('Del'))
         select_all_button = init_button('Select All', self.select_all_files, 'Select all rows')
-        select_all_button.setShortcut('Ctrl+a')
+        select_all_button.setShortcut(QKeySequence('Ctrl+A'))
 
         # control panel
         input_file_buttons = self.init_control(add_button, edit_button, remove_button, select_all_button)
