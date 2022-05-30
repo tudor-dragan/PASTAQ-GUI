@@ -3,7 +3,6 @@ import pytest
 
 # since we're kinda manipulating the system, keep it to one line instead of 3 to make it less obvious
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from buttons import *
 from files import *
 from parameter import *
 import buttons
