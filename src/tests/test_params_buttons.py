@@ -11,6 +11,7 @@ from files import EditFileDialog, FileProcessor
 #
 # FIXTURES & GLOBALS (these are functions that are run before tests for setup purposes)
 #
+
 mzXML = 'C:/Users/Downloads/1_3.mzXML'
 mzID = 'C:/Users/Downloads/s174pfZefF5L.mzid'
 
@@ -18,8 +19,7 @@ mzID = 'C:/Users/Downloads/s174pfZefF5L.mzid'
 # UNIT TESTS
 #
 
-
-# 2 blank lines inbetween individual defs like this, standard
+# T2.1
 # test if the tooltip is correctly set
 def test_init_button_params():
     button = init_button_params("test_label", "test_tooltip")
@@ -27,6 +27,7 @@ def test_init_button_params():
     assert button.toolTip() == "test_tooltip"
 
 
+#T4.1
 # tests to see if path gets correctly updated for multiple files when there is matching stems between the files
 def test_multiple_id_files_if_match():
     file = {'raw_path': mzXML, 'reference': False, 'group': '', 'ident_path': mzID, 'stem': 'D-10'}
@@ -37,6 +38,7 @@ def test_multiple_id_files_if_match():
     assert new_file["ident_path"] == 'C:/Users/Downloads/1_3.mzid'
 
 
+#T4.2
 # tests to see if path does not get changed if paths dont match
 def test_multiple_id_files_if_no_match(tmp_path):
     file = {'raw_path': mzXML, 'reference': False, 'group': '', 'ident_path': mzID, 'stem': 'D-10'}
@@ -50,6 +52,7 @@ def test_multiple_id_files_if_no_match(tmp_path):
     assert new_file["ident_path"] == mzID
 
 
+#T4.3
 # test to see if the path of a single file gets changed
 def test_single_id_file(tmp_path):
     directory = tmp_path / "mydir"
@@ -61,24 +64,28 @@ def test_single_id_file(tmp_path):
     assert os.getcwd().replace('\\', '/') == os.path.dirname(file.as_posix())
 
 
+#T4.4
 # test if the name of the parameter is correctly set
 def test_init_label():
     label = init_label("test_text")
     assert label.text() == "test_text"
 
 
+#T4.5
 # test to see if tooltip is the right one
 def test_init_button():
     button = init_button("test_text", lambda a : a + 10, "test_tooltip")
     assert button.toolTip() == "test_tooltip"
 
 
+#T4.6
 # test to see if the file processor is available to the parameters tab
 def test_file_processor():
     widget = ParametersWidget()
     assert isinstance(widget.get_file_processor(), FileProcessor)
 
 
+#T4.7
 # test to see if a new file gets added correctly
 def test_add_new_file(tmp_path):
     widget = ParametersWidget()
@@ -93,6 +100,7 @@ def test_add_new_file(tmp_path):
     assert widget.input_files[1]['raw_path'] == f2.as_posix()
 
 
+#T4.8
 # test to see if files get updated correctly
 def test_examine_edit_files():
     efd = EditFileDialog()
@@ -104,6 +112,7 @@ def test_examine_edit_files():
     assert widget.input_files[0]['group'] == "group 1"
 
 
+#T4.9
 # test to see if fils get updated correctly
 def test_update_input_files():
     widget = ParametersWidget()
@@ -112,6 +121,7 @@ def test_update_input_files():
     assert widget.input_files_table.rowCount() == 1
 
 
+#T4.10
 # test to see if files get removed
 def test_remove_file():
     widget = ParametersWidget()
@@ -121,7 +131,8 @@ def test_remove_file():
     widget.remove_file()
     assert widget.input_files_table.rowCount() == 2
 
-
+#T4.11
+# test to see if the parameters update accordingly
 def test_parameters_update():
     widget = ParametersWidget()
     widget.res_ms1.setValue(3000)
