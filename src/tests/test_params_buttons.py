@@ -3,9 +3,8 @@ import pytest
 
 # since we're kinda manipulating the system, keep it to one line instead of 3 to make it less obvious
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-import buttons
-from parameter import ParametersWidget, multiple_id_files, single_id_file, init_label, init_button
-from files import EditFileDialog, FileProcessor
+import files
+import parameter
 
 
 #
