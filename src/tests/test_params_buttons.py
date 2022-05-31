@@ -24,7 +24,7 @@ mzID = 'C:/Users/Downloads/s174pfZefF5L.mzid'
 # T2.1
 # test if the tooltip is correctly set
 def test_init_button_params():
-    button = init_button_params("test_label", "test_tooltip")
+    button = buttons.init_button_params("test_label", "test_tooltip")
     print(button.toolTip)
     assert button.toolTip() == "test_tooltip"
 
