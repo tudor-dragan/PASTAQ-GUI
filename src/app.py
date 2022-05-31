@@ -241,7 +241,7 @@ class MainWindow(QMainWindow):
 
     # Setting the color palette of the UI to dark colors.
     def dark_mode(self):
-        self.setStyle("Fusion")
+        app.setStyle("Fusion")
         palette = QPalette()
         palette.setColor(QPalette.Window, QColor(53, 53, 53))
         palette.setColor(QPalette.WindowText, Qt.white)
@@ -627,6 +627,7 @@ class SplashScreen(QSplashScreen):
 
 
 def main():
+    global app
     app = QApplication(sys.argv)
     app.setWindowIcon(QIcon(':/icons/pastaq.png'))
 
