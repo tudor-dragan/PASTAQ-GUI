@@ -5,12 +5,11 @@ import os
 import resources
 from PyQt5.QtCore import Qt, QUrl
 from PyQt5.QtGui import QIcon, QKeySequence
-from PyQt5.QtWidgets import QPushButton, QFileDialog, QScrollArea, QComboBox, QLabel
+from PyQt5.QtWidgets import QPushButton, QFileDialog, QScrollArea, QComboBox, QLabel, QHeaderView
 from PyQt5.QtWidgets import QTableWidget, QHeaderView, QHBoxLayout, QGroupBox, QGridLayout
 from PyQt5.QtWidgets import QVBoxLayout, QTabWidget, QSpinBox, QAbstractSpinBox
 from PyQt5.QtWidgets import QWidget, QLineEdit, QDoubleSpinBox, QCheckBox, QStackedWidget, QListWidget
 from pathlib import Path
-
 global saved
 saved = True
 
@@ -92,7 +91,7 @@ class ParametersWidget(QTabWidget):
 
         # The tabs that make up the widget
         self.input_files_tab = QWidget()
-        self.parameters_tab = QScrollArea()
+        self.parameters_tab = QWidget()
         self.input_paths_tab = QScrollArea()
 
         self.addTab(self.input_files_tab, 'Input files')
@@ -126,6 +125,8 @@ class ParametersWidget(QTabWidget):
         ]
         input_files_table.setHorizontalHeaderLabels(column_names)
         input_files_table.verticalHeader().hide()
+        header = input_files_table.horizontalHeader()
+        header.setSectionResizeMode(QHeaderView.ResizeToContents)
         return input_files_table
 
     def init_header(self):
@@ -151,8 +152,8 @@ class ParametersWidget(QTabWidget):
         self.init_header()
 
         # buttons
-        add_button = init_button('Add', self.add_file, 'Add quantification files (.mzXML or .mzML)')
-        edit_button = init_button('Edit', self.edit_file,
+        add_button = init_button('Add mzXML/mzML', self.add_file, 'Add quantification files (.mzXML or .mzML)')
+        edit_button = init_button('Add/Edit mgf/mzID and group', self.edit_file,
                                   'Add identification files to the selected quantification files (.mgf or .mzID)')
         remove_button = init_button('Remove', self.remove_file, 'Remove entire row')
         remove_button.setShortcut(QKeySequence('Del'))
@@ -166,6 +167,32 @@ class ParametersWidget(QTabWidget):
         layout.addWidget(input_file_buttons)
         layout.addWidget(self.input_files_table)
         self.input_files_tab.setLayout(layout)
+
+    # Makes text bold
+    def make_bold(self, group_box):
+        font = group_box.font()
+        font.setBold(True)
+        group_box.setFont(font)
+
+        font.setBold(False)
+        for child in group_box.children():
+            try:
+                child.setFont(font)
+            except AttributeError as e:
+                pass
+
+    # Provides information about the paths tab
+    def information_container(self):
+        box = QGroupBox('Important')
+        lay_info = QVBoxLayout()
+        description = inspect.cleandoc('''This tab should only be filled out when one wishes to utilize the automatic file processing.
+        The automatic file processing takes place when the the identification file(s) are of the format .mgf.''')
+        label = QLabel(description)
+        lay_info.addWidget(label)
+        box.setLayout(lay_info)
+        self.make_bold(box)
+        box.setMaximumHeight(80)
+        return box
 
     # Creates the container for the path to MSFragger
     def msfragger_container(self):
@@ -184,12 +211,14 @@ class ParametersWidget(QTabWidget):
         self.input_ms = QLineEdit()
         self.input_ms.setText(self.file_processor.ms_jar[1])
         self.input_ms.isReadOnly()
+        self.input_ms.setPlaceholderText('Browse (only) for the .jar file of MSFragger')
         browse_button_ms = \
             init_button('Browse', lambda: self.file_processor.set_jar_path(self.input_ms), 'Browse for .jar file')
         hlay.addWidget(self.input_ms)
         hlay.addWidget(browse_button_ms)
         lay_ms.addLayout(hlay)
         box.setLayout(lay_ms)
+        self.make_bold(box)
         return box
 
     # Creates the container for the path to idconvert
@@ -210,12 +239,14 @@ class ParametersWidget(QTabWidget):
         self.input_id = QLineEdit()
         self.input_id.setText(self.file_processor.id_file[1])
         self.input_id.isReadOnly()
+        self.input_id.setPlaceholderText('Browse (only) for the .exe file of idconvert')
         browse_button_id = \
             init_button('Browse', lambda: self.file_processor.set_id_path(self.input_id), 'Browse for idconvert.exe')
         hlay.addWidget(self.input_id)
         hlay.addWidget(browse_button_id)
         lay_id.addLayout(hlay)
         box.setLayout(lay_id)
+        self.make_bold(box)
         return box
 
     # Path to a parameters file for MSFragger
@@ -223,7 +254,8 @@ class ParametersWidget(QTabWidget):
         box = QGroupBox('.params file for MSFragger')
         lay_params = QVBoxLayout()
 
-        description = 'For the automatic file processing, MSFragger requires a .params file to run.'
+        description = inspect.cleandoc('''For the automatic file processing, MSFragger requires a .params file to run.
+        The .params file requires a protein database in .FASTA format of which the path needs to be specified in the .params file.''')
         lay_params.addWidget(QLabel(description))
         url = "<a href=\"https://msfragger.nesvilab.org/\">" \
               "<font color='Tomato'>'More info and docs: MSFragger parameters'</font></a>"
@@ -235,6 +267,7 @@ class ParametersWidget(QTabWidget):
         self.input_params = QLineEdit()
         self.input_params.setText(self.file_processor.params[1])
         self.input_params.isReadOnly()
+        self.input_ms.setPlaceholderText('Browse (only) for the .params file for MSFragger')
         browse_button_params = \
             init_button('Browse', lambda: self.file_processor.set_params_path(self.input_params),
                         'Browse for .params file for MSFragger')
@@ -242,10 +275,12 @@ class ParametersWidget(QTabWidget):
         hlay.addWidget(browse_button_params)
         lay_params.addLayout(hlay)
         box.setLayout(lay_params)
+        self.make_bold(box)
         return box
 
     # Adding the paths input to the UI
     def input_paths_tab_ui(self):
+        info_box = self.information_container()
         msfragger_box = self.msfragger_container()
         id_box = self.idconvert_container()
         params_box = self.params_container()
@@ -255,10 +290,10 @@ class ParametersWidget(QTabWidget):
         self.input_paths_tab.setWidgetResizable(True)
 
         layout = QVBoxLayout()
+        layout.addWidget(info_box)
         layout.addWidget(msfragger_box)
         layout.addWidget(id_box)
         layout.addWidget(params_box)
-
         widget.setLayout(layout)
 
     # Adds a file to the GUI
@@ -982,17 +1017,13 @@ class ParametersWidget(QTabWidget):
 
         self.qual_box.setLayout(grid_layout_qual)
 
-        # Quantitive Table Generation
+        # Quantitative Table Generation
         self.quantt_box = QGroupBox('Quantitive Table Generation')
         grid_layout_quantt = self.init_quantt()
         self.quantt_box.setLayout(grid_layout_quantt)
+        self.quantt_box.setLayout(grid_layout_quantt)
 
-        # Enable scrolling
-        content_widget = QWidget()
-        self.parameters_tab.setWidget(content_widget)
-        self.parameters_tab.setWidgetResizable(True)
-
-        content_widget.setLayout(self.init_layout())
+        self.parameters_tab.setLayout(self.init_layout())
         self.update_allowed = True
 
     # Updates parameters to values set in the UI by the user for the instrument section

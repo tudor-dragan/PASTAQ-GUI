@@ -34,15 +34,15 @@ class EditFileDialog(QDialog):
         super().__init__(parent)
 
         self.setWindowTitle('PASTAQ: DDA Pipeline - Add files')
-        # Edit parameters.
+        # Edit parameters
         form_container = QWidget()
         self.group_box = self.init_group()
         mzid_picker = self.init_mzid_picker()
 
-        drop = ImageLabel()
+        self.drop = ImageLabel()
         self.setAcceptDrops(True)
 
-        form_layout = self.init_layout(mzid_picker, drop)
+        form_layout = self.init_layout(mzid_picker)
         form_container.setLayout(form_layout)
 
         # Dialog buttons (Ok/Cancel).
@@ -68,13 +68,13 @@ class EditFileDialog(QDialog):
         return QDialog.event(self, event)
 
     # Layout of the modal
-    def init_layout(self, mzid_picker, drop):
+    def init_layout(self, mzid_picker):
         form_layout = QFormLayout()
         tooltip_group = 'Sample group'
         form_layout.addRow(buttons.init_button_params('Group', tooltip_group), self.group_box)
         tooltip_browse = 'Browse for identification files'
         form_layout.addRow(buttons.init_button_params('mgf/mzID', tooltip_browse), mzid_picker)
-        form_layout.addRow(drop)
+        form_layout.addRow(self.drop)
         return form_layout
 
     # Grouping for the measurements
@@ -103,8 +103,17 @@ class EditFileDialog(QDialog):
         else:
             event.ignore()
 
+    def feedback_drop(self):
+        self.drop.setStyleSheet('''
+            QLabel{
+                border: 4px dashed #aaa;
+                border-color: #8cff66;
+            }
+        ''')
+
     # When a file is dropped on the UI
     def dropEvent(self, event):
+        self.feedback_drop()
         files = [u.toLocalFile() for u in event.mimeData().urls()]
         listing = []
         for file in files:

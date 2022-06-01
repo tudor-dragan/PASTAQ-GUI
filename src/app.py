@@ -245,13 +245,13 @@ class MainWindow(QMainWindow):
         palette.setColor(QPalette.BrightText, Qt.red)
         palette.setColor(QPalette.Link, QColor(42, 130, 218))
         palette.setColor(QPalette.Highlight, QColor(42, 130, 218))
-        self.setPalette(palette)
+        app.setPalette(palette)
     
     # Setting the colors to lighter colors
     def light_mode(self):
         app.setStyle("Fusion")
         palette = QPalette()
-        self.setPalette(palette)
+        app.setPalette(palette)
 
     # changes the colors of the GUI to either dark or light
     def view_mode(self):
@@ -513,6 +513,8 @@ class MainWindow(QMainWindow):
 
     # Stores the paths in a config file
     def save_paths(self):
+        if self.file_processor.ms_jar[1] == '' and self.file_processor.id_file[1] == '':
+            return
         if not self.check_config():
             config_object = ConfigParser()
             config_object['paths'] = {
@@ -610,7 +612,6 @@ class SplashScreen(QSplashScreen):
     """
     def __init__(self):
         super(QSplashScreen, self).__init__()
-        # TODO another pic
         pixmap = QPixmap(':/splash/loading.png')
         self.setPixmap(pixmap)
 
@@ -636,8 +637,6 @@ def main():
     # show splash screen before opening GUI
     splash = SplashScreen()
     splash.show()
-
-    app.processEvents()
 
     app.exec_()
 
