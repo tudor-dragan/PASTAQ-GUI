@@ -42,17 +42,18 @@ class PipelineRunner(QThread):
     # this will be run when the thread is started
     def run(self):
         skip = False
-        print('Starting automatic identification process')
         for entry in self.input_files:
             path = entry['ident_path']
-            mzid = self.file_processor.process(path)
-            if mzid:
-                print(entry['ident_path'] + ' successfully processed to ' + mzid)
-                entry['ident_path'] = mzid
-            else:
-                print('Automatic identification process not successful')
-                skip = True
-                break
+            if path.endswith('.mgf'):
+                print('Starting automatic identification process of ' + path)
+                mzid = self.file_processor.process(path)
+                if mzid:
+                    print(entry['ident_path'] + ' successfully processed to ' + mzid)
+                    entry['ident_path'] = mzid
+                else:
+                    print('Automatic identification process not successful')
+                    skip = True
+                    break
 
         if not skip:
             print('Starting DDA Pipeline')
