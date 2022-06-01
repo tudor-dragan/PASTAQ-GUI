@@ -17,14 +17,6 @@ from configparser import ConfigParser
 from pathlib import Path
 from time import time, sleep
 
-
-# Setting the colors to lighter colors
-def light_mode():
-    app.setStyle("Fusion")
-    palette = QPalette()
-    app.setPalette(palette)
-
-
 # Error dialog when unable to save the project.
 def init_error_dialog(text):
     error_dialog = QMessageBox()
@@ -253,7 +245,12 @@ class MainWindow(QMainWindow):
         palette.setColor(QPalette.BrightText, Qt.red)
         palette.setColor(QPalette.Link, QColor(42, 130, 218))
         palette.setColor(QPalette.Highlight, QColor(42, 130, 218))
-
+        self.setPalette(palette)
+    
+    # Setting the colors to lighter colors
+    def light_mode(self):
+        app.setStyle("Fusion")
+        palette = QPalette()
         self.setPalette(palette)
 
     # changes the colors of the GUI to either dark or light
@@ -263,7 +260,7 @@ class MainWindow(QMainWindow):
             self.dark = True
             self.view_mode_btn.setText('Light Mode')
         else:
-            light_mode()
+            self.light_mode()
             self.dark = False
             self.view_mode_btn.setText('Dark Mode')
 
