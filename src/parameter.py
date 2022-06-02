@@ -267,7 +267,7 @@ class ParametersWidget(QTabWidget):
         self.input_params = QLineEdit()
         self.input_params.setText(self.file_processor.params[1])
         self.input_params.isReadOnly()
-        self.input_ms.setPlaceholderText('Browse (only) for the .params file for MSFragger')
+        self.input_params.setPlaceholderText('Browse (only) for the .params file for MSFragger')
         browse_button_params = \
             init_button('Browse', lambda: self.file_processor.set_params_path(self.input_params),
                         'Browse for .params file for MSFragger')
