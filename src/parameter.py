@@ -7,7 +7,7 @@ from PyQt5.QtCore import Qt, QUrl
 from PyQt5.QtGui import QIcon, QKeySequence
 from PyQt5.QtWidgets import QPushButton, QFileDialog, QScrollArea, QComboBox, QLabel, QHeaderView
 from PyQt5.QtWidgets import QTableWidget, QHeaderView, QHBoxLayout, QGroupBox, QGridLayout
-from PyQt5.QtWidgets import QVBoxLayout, QTabWidget, QSpinBox, QAbstractSpinBox
+from PyQt5.QtWidgets import QVBoxLayout, QTabWidget, QSpinBox, QAbstractSpinBox, QMessageBox
 from PyQt5.QtWidgets import QWidget, QLineEdit, QDoubleSpinBox, QCheckBox, QStackedWidget, QListWidget
 from pathlib import Path
 global saved
@@ -390,7 +390,7 @@ class ParametersWidget(QTabWidget):
         self.input_files = input_files
         self.input_files_table.setRowCount(len(self.input_files))
         for i, input_file in enumerate(self.input_files):
-            label = QLabel(input_file['raw_path'])
+            label = QLabel('<b>(missing)</b> ' + input_file['raw_path'])
             self.input_files_table.setCellWidget(i, 0, label)
             if 'ident_path' in input_file:
                 self.input_files_table.setCellWidget(i, 1, QLabel(input_file['ident_path']))
