@@ -389,17 +389,31 @@ class ParametersWidget(QTabWidget):
         saved = False
         self.input_files = input_files
         self.input_files_table.setRowCount(len(self.input_files))
+        missing = False
         for i, input_file in enumerate(self.input_files):
-            label = QLabel('<b>(missing)</b> ' + input_file['raw_path'])
-            self.input_files_table.setCellWidget(i, 0, label)
+            text = input_file['raw_path']
+            if not Path(text).is_file():
+                text = '<b>(missing)</b> ' + text
+                missing = True
+            self.input_files_table.setCellWidget(i, 0, QLabel(text))
             if 'ident_path' in input_file:
-                self.input_files_table.setCellWidget(i, 1, QLabel(input_file['ident_path']))
+                text = input_file['ident_path']
+                if not Path(text).is_file():
+                    text = '<b>(missing)</b> ' + text
+                    missing = True
+                self.input_files_table.setCellWidget(i, 1, QLabel(text))
             if 'group' in input_file:
-                label = init_label(input_file['group'])
-                self.input_files_table.setCellWidget(i, 2, label)
+                text = input_file['group']
+                self.input_files_table.setCellWidget(i, 2, QLabel(text))
             if 'reference' in input_file:
                 cell_widget = self.make_reference(input_file['reference'])
                 self.input_files_table.setCellWidget(i, 3, cell_widget)
+        if missing:
+            popup = QMessageBox()
+            popup.setText('Some input files are missing!')
+            popup.setIcon(QMessageBox.Warning)
+            popup.setWindowTitle('Warning')
+            popup.exec_()
         self.check_run_btn()
 
     def load_params(self, path):
