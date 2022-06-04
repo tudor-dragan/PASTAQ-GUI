@@ -951,10 +951,6 @@ class ParametersWidget(QTabWidget):
         self.nav.insertItem(5, 'Identification')
         self.nav.insertItem(6, 'Quantitive Table Generation')
         self.nav.insertItem(7, 'Quality Control')
-        for i in range(8):
-            item = self.nav.item(i)
-            item.setFlags(item.flags() | Qt.ItemIsUserCheckable)
-            item.setCheckState(Qt.Unchecked)
 
         self.nav.currentRowChanged.connect(self.display)
         self.nav.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)

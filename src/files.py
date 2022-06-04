@@ -5,7 +5,7 @@ import subprocess
 from PyQt5 import QtGui
 from PyQt5.QtCore import Qt, QEvent
 from PyQt5.QtWidgets import QMessageBox, QVBoxLayout, QDialogButtonBox
-from PyQt5.QtWidgets import QPushButton, QFileDialog, QDialog, QLabel
+from PyQt5.QtWidgets import QPushButton, QFileDialog, QDialog, QLabel,  QListWidget
 from PyQt5.QtWidgets import QWidget, QLineEdit, QFormLayout, QAction
 from pathlib import Path
 
@@ -69,13 +69,17 @@ class EditFileDialog(QDialog):
 
     # Layout of the modal
     def init_layout(self, mzid_picker):
+        lay = QVBoxLayout()
         form_layout = QFormLayout()
         tooltip_group = 'Sample group'
         form_layout.addRow(buttons.init_button_params('Group', tooltip_group), self.group_box)
         tooltip_browse = 'Browse for identification files'
         form_layout.addRow(buttons.init_button_params('mgf/mzID', tooltip_browse), mzid_picker)
         form_layout.addRow(self.drop)
-        return form_layout
+        lay.addLayout(form_layout)
+        self.files_list = QListWidget()
+        lay.addWidget(self.files_list)
+        return lay
 
     # Grouping for the measurements
     def init_group(self):
@@ -111,15 +115,24 @@ class EditFileDialog(QDialog):
             }
         ''')
 
+    # Update the list of the files
+    def update_files(self, files):
+        self.files_list.clear()
+        i = 0
+        for file in files:
+            self.files_list.insertItem(i, file)
+            i += 1
+
     # When a file is dropped on the UI
     def dropEvent(self, event):
         self.feedback_drop()
         files = [u.toLocalFile() for u in event.mimeData().urls()]
         listing = []
         for file in files:
-            if file.endswith('.mzID') or file.endswith('.mzIdentML') or file.endswith('.mgf'):
+            if file.lower().endswith('.mzid') or file.lower().endswith('.mzidentmL') or file.lower().endswith('.mgf'):
                 listing.append(file)
         if len(listing) > 0:
+            self.update_files(listing)
             self.mzid_paths = listing
 
     def set_group(self):
@@ -134,6 +147,7 @@ class EditFileDialog(QDialog):
             filter='Identification files (*.mzID *.mzIdentML *.mgf)'
         )
         if len(file_paths) > 0:
+            self.update_files(file_paths)
             self.mzid_paths = file_paths
 
 

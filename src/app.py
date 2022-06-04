@@ -12,10 +12,11 @@ from PyQt5.QtCore import QSize, Qt, QTimer
 from PyQt5.QtGui import QIcon, QKeySequence, QPalette, QColor, QPixmap
 from PyQt5.QtWidgets import QMessageBox, QMainWindow, QVBoxLayout, QLabel, QSplashScreen
 from PyQt5.QtWidgets import QPushButton, QFileDialog, QApplication, QHBoxLayout
-from PyQt5.QtWidgets import QWidget, QAction, QLineEdit, QFormLayout, QFrame
+from PyQt5.QtWidgets import QWidget, QAction, QLineEdit, QFormLayout, QFrame, QDesktopWidget
 from configparser import ConfigParser
 from pathlib import Path
 from time import time, sleep
+
 
 # Error dialog when unable to save the project.
 def init_error_dialog(text):
