@@ -409,11 +409,7 @@ class ParametersWidget(QTabWidget):
                 cell_widget = self.make_reference(input_file['reference'])
                 self.input_files_table.setCellWidget(i, 3, cell_widget)
         if missing:
-            popup = QMessageBox()
-            popup.setText('Some input files are missing!')
-            popup.setIcon(QMessageBox.Warning)
-            popup.setWindowTitle('Warning')
-            popup.exec_()
+            files.popup_window('Warning', QMessageBox.Warning, 'Some input files are missing!')
         self.check_run_btn()
 
     def load_params(self, path):
