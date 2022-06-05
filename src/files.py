@@ -74,7 +74,7 @@ class EditFileDialog(QDialog):
         form_layout = QFormLayout()
         tooltip_group = 'Sample group'
         form_layout.addRow(buttons.init_button_params('Group', tooltip_group), self.group_box)
-        tooltip_browse = 'Browse for identification files'
+        tooltip_browse = 'Browse for identification files (.mgf needs to be processed to .mzId, see paths tab)'
         form_layout.addRow(buttons.init_button_params('mgf/mzID', tooltip_browse), mzid_picker)
         form_layout.addRow(self.drop)
         lay.addLayout(form_layout)
