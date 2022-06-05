@@ -436,7 +436,7 @@ class MainWindow(QMainWindow):
     def open_project(self):
         file_path, _ = QFileDialog.getOpenFileName(
             parent=self,
-            caption='Select project file',
+            caption='Select project file called parameters.json',
             directory=os.getcwd(),
             filter='Project file (*.json)',
         )
@@ -554,7 +554,7 @@ class MainWindow(QMainWindow):
     def save_project_as(self):
         path = QFileDialog.getExistingDirectory(
             parent=self,
-            caption='Select project file',
+            caption='Select project directory',
             directory=os.getcwd(),
         )
         if len(path) > 0:

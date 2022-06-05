@@ -143,7 +143,7 @@ class EditFileDialog(QDialog):
     def set_mzid_paths(self):
         file_paths, _ = QFileDialog.getOpenFileNames(
             parent=self,
-            caption='Select input files',
+            caption='Select identification files',
             directory=os.getcwd(),
             filter='Identification files (*.mzID *.mzIdentML *.mgf)'
         )
