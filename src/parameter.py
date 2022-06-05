@@ -420,13 +420,13 @@ class ParametersWidget(QTabWidget):
         if self.file_processor.load_ms_path(path):
             self.input_ms.setText(path)
         else:
-            files.popup_window('Error', 'Invalid MSFragger path')
+            files.popup_window('Error', QMessageBox.Warning, 'Invalid MSFragger path')
 
     def load_id_path(self, path):
         if self.file_processor.load_id_path(path):
             self.input_id.setText(path)
         else:
-            files.popup_window('Error', 'Invalid idconvert path')
+            files.popup_window('Error', QMessageBox.Warning, 'Invalid idconvert path')
 
     # Enables the reference checkmark box next to each file pair
     def make_reference(self, reference):
