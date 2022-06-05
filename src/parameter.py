@@ -185,7 +185,7 @@ class ParametersWidget(QTabWidget):
     def information_container(self):
         box = QGroupBox('Important')
         lay_info = QVBoxLayout()
-        description = inspect.cleandoc('''This tab should only be filled out when one wishes to utilize the automatic file processing.
+        description = inspect.cleandoc('''This tab should only be filled out when one wishes to utilize the automatic file processing of .mgf file into .mzID files.
         The automatic file processing takes place when the the identification file(s) are of the format .mgf.''')
         label = QLabel(description)
         lay_info.addWidget(label)
