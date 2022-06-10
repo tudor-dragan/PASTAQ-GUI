@@ -14,7 +14,7 @@ import app
 
 class TestApp:
     application = QApplication(sys.argv)
-    mainWindow = app.MainWindow()
+    main_window = app.MainWindow()
     default_param = {'instrument_type': 'orbitrap', 'resolution_ms1': 70000,
                      'resolution_msn': 30000,
                      'reference_mz': 200, 'avg_fwhm_rt': 10, 'num_samples_mz': 5,
@@ -63,156 +63,156 @@ class TestApp:
     # test if the dark mode is of at initialisation
     # T1.1
     def test_init_light_mode(self):
-        assert not self.mainWindow.dark
+        assert not self.main_window.dark
 
     # check if the icon is right
     # T1.2
     def test_icon(self):
-        testIcon = self.mainWindow.init_logo()
+        test_icon = self.main_window.init_logo()
         pixmap = QPixmap(':/icons/pastaq.png')
         pixmap = pixmap.scaled(100, 100, Qt.KeepAspectRatio)
         icon = QLabel()
         icon.setPixmap(pixmap)
-        assert icon.layout() == testIcon.layout()
-        assert icon.font() == testIcon.font()
-        assert icon.height() == testIcon.height()
-        assert icon.picture() == testIcon.picture()
+        assert icon.layout() == test_icon.layout()
+        assert icon.font() == test_icon.font()
+        assert icon.height() == test_icon.height()
+        assert icon.picture() == test_icon.picture()
 
     # check if the menu bar is present and that there is only one
     # T1.3
     def test_menu_bar(self):
-        menu_bar = self.mainWindow.findChildren(QMenuBar)
+        menu_bar = self.main_window.findChildren(QMenuBar)
         assert len(menu_bar) == 1
 
     # test if there is a file menu
     # T1.4
     def test_file_menu(self):
-        menu = self.mainWindow.findChildren(QMenu)
-        assert self.mainWindow.fileMenu in menu
+        menu = self.main_window.findChildren(QMenu)
+        assert self.main_window.fileMenu in menu
 
     # test if there is a action menu
     # T1.5
     def test_action_menu(self):
-        menu = self.mainWindow.findChildren(QMenu)
-        assert self.mainWindow.actionMenu in menu
+        menu = self.main_window.findChildren(QMenu)
+        assert self.main_window.actionMenu in menu
 
     # test if there is a help menu
     # T1.6
     def test_help_menu(self):
-        menu = self.mainWindow.findChildren(QMenu)
-        assert self.mainWindow.fileMenu in menu
+        menu = self.main_window.findChildren(QMenu)
+        assert self.main_window.helpMenu in menu
 
     # test the number of menus
     # T1.7
-    def test_number_menu(self):
-        menus = self.mainWindow.findChildren(QMenu)
+    def test_number_menu_num(self):
+        menus = self.main_window.findChildren(QMenu)
         assert len(menus) == 3
 
     # test the number of actions
     # T1.8
     def test_number_actions(self):
-        actions = self.mainWindow.findChildren(QAction)
+        actions = self.main_window.findChildren(QAction)
         assert len(actions) == 10
 
     # test the number of buttons
     # T1.9
     def test_number_btn(self):
-        buttons = self.mainWindow.findChildren(QPushButton)
+        buttons = self.main_window.findChildren(QPushButton)
         assert len(buttons) == 66
 
     # test is the save project btn is the main window
     # T1.10
     def test_save_proj_btn(self):
-        buttons = self.mainWindow.findChildren(QAction)
-        assert self.mainWindow.save_project_btn in buttons
+        buttons = self.main_window.findChildren(QAction)
+        assert self.main_window.save_project_btn in buttons
 
     # test is the save project as btn is the main window
     # T1.11
     def test_save_proj_as_btn(self):
-        buttons = self.mainWindow.findChildren(QAction)
-        assert self.mainWindow.save_project_as_btn in buttons
+        buttons = self.main_window.findChildren(QAction)
+        assert self.main_window.save_project_as_btn in buttons
 
     # test if the run btn is the main window
     # T1.12
     def test_run_btn(self):
-        buttons = self.mainWindow.findChildren(QPushButton)
-        assert self.mainWindow.run_btn in buttons
+        buttons = self.main_window.findChildren(QPushButton)
+        assert self.main_window.run_btn in buttons
 
     # test if the reset btn is the main window
     # T1.13
     def test_reset_btn(self):
-        buttons = self.mainWindow.findChildren(QAction)
-        assert self.mainWindow.reset_param_btn in buttons
+        buttons = self.main_window.findChildren(QAction)
+        assert self.main_window.reset_param_btn in buttons
 
     # test is the view mode btn is the main window
     # T1.14
     def test_view_mode_btn(self):
-        buttons = self.mainWindow.findChildren(QAction)
-        assert self.mainWindow.view_mode_btn in buttons
+        buttons = self.main_window.findChildren(QAction)
+        assert self.main_window.view_mode_btn in buttons
 
     # test if the guide is the main window
     # T1.15
     def test_guide(self):
-        actions = self.mainWindow.findChildren(QAction)
-        assert self.mainWindow.guide in actions
+        actions = self.main_window.findChildren(QAction)
+        assert self.main_window.guide in actions
 
     # test if the default parameters are the right ones
     # T1.16
     def test_default_param(self):
-        assert self.mainWindow.default_param == self.default_param
+        assert self.main_window.default_param == self.default_param
 
     # check if the default parameter have the right length
     # T1.17
     def test_len_default_param(self):
-        assert len(self.mainWindow.default_param) == 57
+        assert len(self.main_window.default_param) == 57
 
     # check if the project desc is in the main window
     # T1.18
     def test_project_desc(self):
-        lineEdits = self.mainWindow.findChildren(QLineEdit)
-        assert self.mainWindow.project_description_ui in lineEdits
+        line_edits = self.main_window.findChildren(QLineEdit)
+        assert self.main_window.project_description_ui in line_edits
 
     # check if the project dir is in the main window
     # T1.19
     def test_project_dir(self):
-        lineEdits = self.mainWindow.findChildren(QLineEdit)
-        assert self.mainWindow.project_directory_ui in lineEdits
+        line_edits = self.main_window.findChildren(QLineEdit)
+        assert self.main_window.project_directory_ui in line_edits
 
     # check if the project name ui is in the main window
     # T1.20
     def test_project_name_ui(self):
-        lineEdits = self.mainWindow.findChildren(QLineEdit)
-        assert self.mainWindow.project_name_ui in lineEdits
+        line_edits = self.main_window.findChildren(QLineEdit)
+        assert self.main_window.project_name_ui in line_edits
 
     # check if the project variable container is in the main window
     # T1.21
     def test_project_variables_container(self):
-        lineEdits = self.mainWindow.findChildren(QWidget)
-        assert self.mainWindow.project_variables_container in lineEdits
+        line_edits = self.main_window.findChildren(QWidget)
+        assert self.main_window.project_variables_container in line_edits
 
     # check if preparing a new project sets the right parameters and enables the right buttons
     # T1.22
     def test_prepare_new_project(self):
-        self.mainWindow.prepare_new_project('')
-        assert self.mainWindow.parameters_container.parameters == self.default_param
-        assert self.mainWindow.save_project_btn.isEnabled()
-        assert self.mainWindow.save_project_as_btn.isEnabled()
-        assert self.mainWindow.reset_param_btn.isEnabled()
-        assert self.mainWindow.project_variables_container.isEnabled()
-        assert self.mainWindow.parameters_container.isEnabled()
+        self.main_window.prepare_new_project('')
+        assert self.main_window.parameters_container.parameters == self.default_param
+        assert self.main_window.save_project_btn.isEnabled()
+        assert self.main_window.save_project_as_btn.isEnabled()
+        assert self.main_window.reset_param_btn.isEnabled()
+        assert self.main_window.project_variables_container.isEnabled()
+        assert self.main_window.parameters_container.isEnabled()
 
     # check if preparing to open a project sets the right parameters and enables the right buttons
     # T1.23
     def test_prepare_open_project(self):
-        self.mainWindow.parameters_container.parameters = self.default_param
-        self.mainWindow.prepare_open_project(self.test_param, '')
-        assert self.mainWindow.parameters_container.parameters == self.test_param
-        assert self.mainWindow.project_path == ''
-        assert self.mainWindow.save_project_btn.isEnabled()
-        assert self.mainWindow.save_project_as_btn.isEnabled()
-        assert self.mainWindow.reset_param_btn.isEnabled()
-        assert self.mainWindow.project_variables_container.isEnabled()
-        assert self.mainWindow.parameters_container.isEnabled()
+        self.main_window.parameters_container.parameters = self.default_param
+        self.main_window.prepare_open_project(self.test_param, '')
+        assert self.main_window.parameters_container.parameters == self.test_param
+        assert self.main_window.project_path == ''
+        assert self.main_window.save_project_btn.isEnabled()
+        assert self.main_window.save_project_as_btn.isEnabled()
+        assert self.main_window.reset_param_btn.isEnabled()
+        assert self.main_window.project_variables_container.isEnabled()
+        assert self.main_window.parameters_container.isEnabled()
 
     # check if reading the config without config file behaves correctly
     # T1.24
@@ -220,8 +220,6 @@ class TestApp:
     def test_read_config_without_file(self, mock_window):
         mock_window.get_config_path.return_value = ''
         assert mock_window.read_config()
-
-    # TODO: test config with config file (I don't have any - nacer)
 
     # check if the paths are being loaded when there is no config
     # T1.25
@@ -247,17 +245,82 @@ class TestApp:
     def test_save_project(self, mock_window):
         mock_window.save_json = True
         mock_window.save_paths = True
-        self.mainWindow.parameters_container.set_saved(False)
+        self.main_window.parameters_container.set_saved(False)
         mock_window.save_project()
-        assert self.mainWindow.parameters_container.get_saved()
+        assert self.main_window.parameters_container.get_saved()
 
     # test if the run restoration functions properly
     # T1.28
     def test_restore_run(self):
-        self.mainWindow.run_btn.setText('')
-        self.mainWindow.project_variables_container.setEnabled(False)
-        self.mainWindow.parameters_container.setEnabled(False)
-        self.mainWindow.restore_run()
-        assert self.mainWindow.run_btn.text() == 'Run'
-        assert self.mainWindow.project_variables_container.isEnabled()
-        assert self.mainWindow.parameters_container.isEnabled()
+        self.main_window.run_btn.setText('')
+        self.main_window.project_variables_container.setEnabled(False)
+        self.main_window.parameters_container.setEnabled(False)
+        self.main_window.restore_run()
+        assert self.main_window.run_btn.text() == 'Run'
+        assert self.main_window.project_variables_container.isEnabled()
+        assert self.main_window.parameters_container.isEnabled()
+
+    # tests if function returns config.ini that should be placed in PASTAQ-GUI directory
+    def test_config_path(self):
+        path = str(self.main_window.get_config_path())
+        assert path.endswith('PASTAQ-GUI\config.ini')
+
+    # tests if it returns False if the config is not a file
+    @mock.patch('app.Path.is_file')
+    def test_read_config(self, mock_is_file):
+        mock_is_file.return_value = False
+        assert not self.main_window.read_config()
+
+    @mock.patch('app.Path.is_file')
+    @mock.patch('app.ConfigParser.read')
+    @mock.patch('app.QMessageBox.exec_')
+    def test_read_config_call(self, mock_dialog, mock_parser, mock_is_file):
+        mock_is_file.return_value = True
+        self.main_window.read_config()
+        mock_parser.assert_called()
+
+    @mock.patch('app.Path.is_file')
+    @mock.patch('app.ConfigParser.read')
+    @mock.patch('app.QMessageBox.exec_')
+    def test_read_config_dialog_keyerror(self, mock_dialog, mock_parser, mock_is_file):
+        mock_is_file.return_value = True
+        mock_parser.side_effect = KeyError('Some error')
+        self.main_window.read_config()
+        mock_dialog.assert_called()
+
+    @mock.patch('app.Path.is_file')
+    @mock.patch('app.ConfigParser.read')
+    @mock.patch('app.QMessageBox.exec_')
+    def test_read_config_dialog_oserror(self, mock_dialog, mock_parser, mock_is_file):
+        mock_is_file.return_value = True
+        mock_parser.side_effect = OSError('Some error')
+        self.main_window.read_config()
+        mock_dialog.assert_called()
+
+    @mock.patch('app.MainWindow.read_config')
+    @mock.patch('app.parameter.ParametersWidget.load_ms_path')
+    @mock.patch('app.parameter.ParametersWidget.load_id_path')
+    @mock.patch('app.parameter.files.popup_window')
+    def test_prepare_paths_true(self, mock_popup, mock_id, mock_ms, mock_read):
+        mock_read.return_value = False
+        self.main_window.prepare_paths_tab()
+        mock_ms.assert_not_called()
+        mock_id.assert_not_called()
+
+    @mock.patch('app.MainWindow.read_config')
+    @mock.patch('app.parameter.ParametersWidget.load_ms_path')
+    @mock.patch('app.parameter.ParametersWidget.load_id_path')
+    @mock.patch('app.parameter.files.popup_window')
+    def test_prepare_paths_true(self, mock_popup, mock_id, mock_ms, mock_read):
+        mock_read.return_value = {'ms_jar': 'ms_jar', 'id_file': 'id_file'}
+        self.main_window.prepare_paths_tab()
+        mock_ms.assert_called()
+        mock_id.assert_called()
+
+    @mock.patch('app.MainWindow.save_json')
+    @mock.patch('app.MainWindow.save_paths')
+    @mock.patch('app.QMessageBox.exec_')
+    def test_save_project(self, mock_popup, mock_save_paths, mock_save_json):
+        mock_save_paths.side_effect = IOError('IOError')
+        self.main_window.save_project()
+        mock_popup.assert_called()

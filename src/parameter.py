@@ -85,7 +85,7 @@ class ParametersWidget(QTabWidget):
     parameters = {}
     # creates a file processor for processing .mgf files
     file_processor = files.FileProcessor()
-
+    placeholder = 'Description of container'
     def __init__(self, parent=None):
         super(ParametersWidget, self).__init__(parent)
 
@@ -178,15 +178,14 @@ class ParametersWidget(QTabWidget):
         for child in group_box.children():
             try:
                 child.setFont(font)
-            except AttributeError as e:
+            except AttributeError:
                 pass
 
     # Provides information about the paths tab
     def information_container(self):
         box = QGroupBox('Important')
         lay_info = QVBoxLayout()
-        description = inspect.cleandoc('''This tab should only be filled out when one wishes to utilize the automatic file processing of .mgf file into .mzID files.
-        The automatic file processing takes place when the the identification file(s) are of the format .mgf.''')
+        description = self.placeholder
         label = QLabel(description)
         lay_info.addWidget(label)
         box.setLayout(lay_info)
@@ -199,7 +198,7 @@ class ParametersWidget(QTabWidget):
         box = QGroupBox('MSFragger .jar file')
         lay_ms = QVBoxLayout()
 
-        description = 'For the automatic file processing, MSFragger needs to be installed.'
+        description = self.placeholder
         lay_ms.addWidget(QLabel(description))
         url = "<a href=\"https://msfragger.nesvilab.org/\">" \
               "<font color='Tomato'>'More info and docs: MSFragger'</font></a>"
@@ -226,8 +225,7 @@ class ParametersWidget(QTabWidget):
         box = QGroupBox('idconvert.exe')
         lay_id = QVBoxLayout()
 
-        description = inspect.cleandoc('''For the automatic file processing,
-        ProteoWizard (which containes idconvert) needs to be installed.''')
+        description = self.placeholder
         lay_id.addWidget(QLabel(description))
         url = "<a href=\"https://proteowizard.sourceforge.io//\">" \
               "<font color='Tomato'>'More info and docs: ProteoWizard'</font></a>"
@@ -254,8 +252,7 @@ class ParametersWidget(QTabWidget):
         box = QGroupBox('.params file for MSFragger')
         lay_params = QVBoxLayout()
 
-        description = inspect.cleandoc('''For the automatic file processing, MSFragger requires a .params file to run.
-        The .params file requires a protein database in .FASTA format of which the path needs to be specified in the .params file.''')
+        description = self.placeholder
         lay_params.addWidget(QLabel(description))
         url = "<a href=\"https://msfragger.nesvilab.org/\">" \
               "<font color='Tomato'>'More info and docs: MSFragger parameters'</font></a>"
@@ -458,9 +455,7 @@ class ParametersWidget(QTabWidget):
     def init_inst(self):
         grid_layout_inst = self.get_grid()
         # TODO
-        description = inspect.cleandoc('''These parameters are used mostly for configuring the extent of smoothing 
-        that is applied when resampling the data and the initial estimation of the region-of-interest (ROI) 
-        for the quantification of isotope peaks via peak fitting.''')
+        description = self.placeholder
         label = QLabel(description)
         grid_layout_inst.addWidget(label, 0, 0, 1, 3)
 
@@ -500,10 +495,7 @@ class ParametersWidget(QTabWidget):
     def init_raw_data(self):
         grid_layout_raw_data = self.get_grid()
         # TODO
-        description = inspect.cleandoc('''If users want to process only a subrange in the m/z and/or retention time dimensions, 
-        they can do so by adjusting min_mz, max_mz, min_rt and max_rt parameters. 
-        Additionally, if the data contains scans in both positive and negative polarities, 
-        the polarity setting must be set to either 'pos' or 'neg'. ''')
+        description = self.placeholder
         label = QLabel(description)
         grid_layout_raw_data.addWidget(label, 0, 0, 1, 3)
 
@@ -548,8 +540,7 @@ class ParametersWidget(QTabWidget):
     def init_resamp(self):
         grid_layout_resamp = self.get_grid()
         # TODO
-        description = inspect.cleandoc('''These parameters can be used for controlling the extent of smoothing applied 
-        to the data when resampling and to adjust the size of the output matrix. ''')
+        description = self.placeholder
         label = QLabel(description)
         grid_layout_resamp.addWidget(label, 0, 0, 1, 3)
 
@@ -611,7 +602,7 @@ class ParametersWidget(QTabWidget):
     def init_warp(self):
         grid_layout_warp = self.get_grid()
         # TODO
-        description = 'Description of container'
+        description = self.placeholder
         label = QLabel(description)
         grid_layout_warp.addWidget(label, 0, 0, 1, 3)
 
@@ -653,7 +644,7 @@ class ParametersWidget(QTabWidget):
     def init_meta(self):
         grid_layout_meta = self.get_grid()
         # TODO
-        description = 'Description of container'
+        description = self.placeholder
         label = QLabel(description)
         grid_layout_meta.addWidget(label, 0, 0, 1, 3)
 
@@ -688,7 +679,7 @@ class ParametersWidget(QTabWidget):
     def init_ident(self):
         grid_layout_ident = self.get_grid()
         # TODO
-        description = 'Description of container'
+        description = self.placeholder
         label = QLabel(description)
         grid_layout_ident.addWidget(label, 0, 0, 1, 3)
 
@@ -727,7 +718,7 @@ class ParametersWidget(QTabWidget):
     def init_qual(self):
         grid_layout_qual = self.get_grid()
         # TODO
-        description = 'Description of container'
+        description = self.placeholder
         label = QLabel(description)
         grid_layout_qual.addWidget(label, 0, 0, 1, 3)
 
@@ -848,8 +839,7 @@ class ParametersWidget(QTabWidget):
     # Section of parameters
     def init_quantt(self):
         grid_layout_quantt = self.get_grid()
-        # TODO
-        description = 'Description of container'
+        description = self.placeholder
         label = QLabel(description)
         grid_layout_quantt.addWidget(label, 0, 0, 1, 3)
 

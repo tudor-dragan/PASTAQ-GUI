@@ -483,6 +483,10 @@ class MainWindow(QMainWindow):
                 dialog = init_error_dialog('Can\'t read from config file.')
                 dialog.exec_()
                 return False
+            except KeyError:
+                dialog = init_error_dialog('Does not contain the right keys.')
+                dialog.exec_()
+                return False
         else:
             return False
 
@@ -629,7 +633,6 @@ def main():
     global app
     app = QApplication(sys.argv)
     app.setWindowIcon(QIcon(':/icons/pastaq.png'))
-
     if platform.system() == 'Windows':
         import ctypes
         ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID('pastaq-gui')
