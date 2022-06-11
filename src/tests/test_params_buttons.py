@@ -5,11 +5,17 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import buttons
 from parameter import single_id_file, init_label, init_button, ParametersWidget, multiple_id_files
 from files import EditFileDialog, FileProcessor
+from PyQt5.QtWidgets import QPushButton
 
 
 mzXML = 'C:/Users/Downloads/1_3.mzXML'
 mzID = 'C:/Users/Downloads/s174pfZefF5L.mzid'
 
+def create_widget():
+    widget = ParametersWidget()
+    run_btn = QPushButton('Run')
+    widget.set_run_btn(run_btn)
+    return widget
 
 class TestButtons:
 
@@ -69,13 +75,13 @@ class TestButtons:
     # T4.6
     # test to see if the file processor is available to the parameters tab
     def test_file_processor(self):
-        widget = ParametersWidget()
+        widget = create_widget
         assert isinstance(widget.get_file_processor(), FileProcessor)
 
     # T4.7
     # test to see if a new file gets added correctly
     def test_add_new_file(self, tmp_path):
-        widget = ParametersWidget()
+        widget = create_widget()
         directory = tmp_path / "mydir"
         directory.mkdir()
         f1 = directory / "myfile.mzXML"
@@ -90,7 +96,7 @@ class TestButtons:
     # test to see if files get updated correctly
     def test_examine_edit_files(self):
         efd = EditFileDialog()
-        widget = ParametersWidget()
+        widget = create_widget()
         efd.group = "group 1"
         input_files = [{'raw_path': mzXML, 'reference': False, 'group': '', 'ident_path': mzID, 'stem': 'D-10'}]
         widget.input_files = input_files
@@ -99,16 +105,19 @@ class TestButtons:
 
     # T4.9
     # test to see if fils get updated correctly
-    def test_update_input_files(self):
-        widget = ParametersWidget()
-        widget.input_files = [{'raw_path': mzXML, 'reference': False}]
+    def test_update_input_files(self, tmp_path):
+        widget = create_widget()
+        directory = tmp_path / "mydir"
+        directory.mkdir()
+        f1 = directory / mzXML
+        widget.input_files = [{'raw_path': f1, 'reference': False}]
         widget.update_input_files(widget.input_files)
         assert widget.input_files_table.rowCount() == 1
 
     # T4.10
     # test to see if files get removed
     def test_remove_file(self):
-        widget = ParametersWidget()
+        widget = create_widget()
         widget.input_files = [{'raw_path': mzXML, 'reference': False}, {'raw_path': 'C:/Users/Downloads/1_4.mzXML', 'reference': False}, {'raw_path': 'C:/Users/Downloads/1_5.mzXML', 'reference': False}]
         widget.update_input_files(widget.input_files)
         widget.input_files_table.selectRow(0)
@@ -118,7 +127,7 @@ class TestButtons:
     # T4.11
     # test to see if the parameters update accordingly
     def test_parameters_update(self):
-        widget = ParametersWidget()
+        widget = create_widget()
         widget.res_ms1.setValue(3000)
         widget.inst_type.setCurrentIndex(0)
         widget.update_parameters()
