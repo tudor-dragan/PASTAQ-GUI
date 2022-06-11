@@ -261,16 +261,20 @@ class TestApp:
         assert self.main_window.parameters_container.isEnabled()
 
     # tests if function returns config.ini that should be placed in PASTAQ-GUI directory
+    # T1.29
     def test_config_path(self):
         path = str(self.main_window.get_config_path())
         assert path.endswith('PASTAQ-GUI\config.ini')
 
     # tests if it returns False if the config is not a file
+    # T1.30
     @mock.patch('app.Path.is_file')
     def test_read_config(self, mock_is_file):
         mock_is_file.return_value = False
         assert not self.main_window.read_config()
 
+    # if the configuration file is a file, it should be read
+    # T1.31
     @mock.patch('app.Path.is_file')
     @mock.patch('app.ConfigParser.read')
     @mock.patch('app.QMessageBox.exec_')
@@ -279,6 +283,8 @@ class TestApp:
         self.main_window.read_config()
         mock_parser.assert_called()
 
+    # KeyError after having read the config needs to be caught and inform user
+    # T1.32
     @mock.patch('app.Path.is_file')
     @mock.patch('app.ConfigParser.read')
     @mock.patch('app.QMessageBox.exec_')
@@ -288,6 +294,8 @@ class TestApp:
         self.main_window.read_config()
         mock_dialog.assert_called()
 
+    # OSErrror of COnfigParser needs to be caught and inform user
+    # T1.33
     @mock.patch('app.Path.is_file')
     @mock.patch('app.ConfigParser.read')
     @mock.patch('app.QMessageBox.exec_')
@@ -297,16 +305,20 @@ class TestApp:
         self.main_window.read_config()
         mock_dialog.assert_called()
 
+    # paths could not be read an should not be loaded into the tab
+    # T1.34
     @mock.patch('app.MainWindow.read_config')
     @mock.patch('app.parameter.ParametersWidget.load_ms_path')
     @mock.patch('app.parameter.ParametersWidget.load_id_path')
     @mock.patch('app.parameter.files.popup_window')
-    def test_prepare_paths_true(self, mock_popup, mock_id, mock_ms, mock_read):
+    def test_prepare_paths_false(self, mock_popup, mock_id, mock_ms, mock_read):
         mock_read.return_value = False
         self.main_window.prepare_paths_tab()
         mock_ms.assert_not_called()
         mock_id.assert_not_called()
 
+    # paths need to be loaded into the tab
+    # T1.35
     @mock.patch('app.MainWindow.read_config')
     @mock.patch('app.parameter.ParametersWidget.load_ms_path')
     @mock.patch('app.parameter.ParametersWidget.load_id_path')
@@ -317,10 +329,62 @@ class TestApp:
         mock_ms.assert_called()
         mock_id.assert_called()
 
+    # writing config throws error that needs to be caught and trigger popup
+    # T1.36
     @mock.patch('app.MainWindow.save_json')
     @mock.patch('app.MainWindow.save_paths')
     @mock.patch('app.QMessageBox.exec_')
-    def test_save_project(self, mock_popup, mock_save_paths, mock_save_json):
+    def test_save_project_error(self, mock_popup, mock_save_paths, mock_save_json):
         mock_save_paths.side_effect = IOError('IOError')
         self.main_window.save_project()
         mock_popup.assert_called()
+
+    # sets the paths to empty strings
+    def set_to_empty(self):
+        self.main_window.file_processor.ms_jar = [False, '']
+        self.main_window.file_processor.id_file = [False, '']
+
+    # paths do not need to be stored if they are empty strings
+    # T1.37
+    @mock.patch('app.MainWindow.check_config')
+    def test_save_paths_empty(self, mock_check):
+        self.set_to_empty()
+        self.main_window.save_paths()
+        mock_check.assert_not_called()
+
+    # sets the values of the paths
+    def set_to_filled(self):
+        self.main_window.file_processor.ms_jar = [True, 'ms_jar']
+        self.main_window.file_processor.id_file = [True, 'id_file']
+
+    # paths need to be stored if they are not empty strings
+    # T1.38
+    @mock.patch('app.ConfigParser')
+    @mock.patch('app.MainWindow.check_config')
+    def test_save_paths_filled(self, mock_check, mock_config):
+        self.set_to_filled()
+        self.main_window.save_paths()
+        mock_check.assert_called()
+
+    # return False if the reading of the config failed
+    # T1.39
+    @mock.patch('app.MainWindow.read_config')
+    def test_check_config_fail(self, mock_read):
+        mock_read.return_value = False
+        assert not self.main_window.check_config()
+
+    # return True if the paths are the same
+    # T1.40
+    @mock.patch('app.MainWindow.read_config')
+    def test_check_config_same(self, mock_read):
+        mock_read.return_value = {'ms_jar': 'ms_jar', 'id_file': 'id_file'}
+        self.set_to_filled()
+        assert self.main_window.check_config()
+
+    # return False if the paths are different
+    # T1.41
+    @mock.patch('app.MainWindow.read_config')
+    def test_check_config_different(self, mock_read):
+        mock_read.return_value = {'ms_jar': 'ms_exe', 'id_file': 'id_file'}
+        self.set_to_filled()
+        assert not self.main_window.check_config()
