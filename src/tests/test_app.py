@@ -294,7 +294,7 @@ class TestApp:
         self.main_window.read_config()
         mock_dialog.assert_called()
 
-    # OSErrror of COnfigParser needs to be caught and inform user
+    # OSErrror of ConfigParser needs to be caught and inform user
     # T1.33
     @mock.patch('app.Path.is_file')
     @mock.patch('app.ConfigParser.read')
@@ -305,7 +305,7 @@ class TestApp:
         self.main_window.read_config()
         mock_dialog.assert_called()
 
-    # paths could not be read an should not be loaded into the tab
+    # paths could not be read and should not be loaded into the tab
     # T1.34
     @mock.patch('app.MainWindow.read_config')
     @mock.patch('app.parameter.ParametersWidget.load_ms_path')

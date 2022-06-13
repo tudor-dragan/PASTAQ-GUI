@@ -53,5 +53,3 @@ class TestRun:
         mock_files.process.return_value = True
         pipe.run()
         assert mock_print.getvalue().startswith('ERROR:')
-
-
