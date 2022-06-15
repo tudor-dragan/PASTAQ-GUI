@@ -45,18 +45,6 @@ jobs:
             CMD_PASTAQ: pip install pastaq
             OUT_FILE_NAME: PASTAQ-GUI.zip
             ASSET_MIME: application/zip
-          - os: ubuntu-latest
-            TARGET: ubuntu
-            CMD_BUILD: >
-                pyinstaller -F -w -n PASTAQ-GUI -i resources/pastaq.png src/app.py &&
-                cd dist &&
-                zip -r9 PASTAQ-GUI-LINUX PASTAQ-GUI
-            CMD_PASTAQ: >
-                sudo apt update &&
-                sudo apt install xcb &&
-                pip install pastaq
-            OUT_FILE_NAME: PASTAQ-GUI-LINUX.zip
-            ASSET_MIME: application/zip
           - os: windows-latest
             TARGET: windows
             CMD_BUILD: pyinstaller -F -w -n PASTAQ-GUI -i resources/pastaq.ico src/app.py
