@@ -17,17 +17,9 @@ jobs:
         python-version: 3.8
     - name: Install dependencies
       run: |
-        #export QT_DEBUG_PLUGINS=1
-        #export QT_QPA_PLATFORM=offscreen
         pip install PyQt5
         pip install pytest
         pip install mock
-        #sudo apt-get install python3-pyqt5  
-        #sudo apt-get install pyqt5-dev-tools
-        #sudo apt-get install qttools5-dev-tools
-        #sudo apt update
-        #sudo apt install xcb
-        #sudo apt-get install '^libxcb.*-dev' libxkbcommon-x11-0 libxcb-randr0-dev libxcb-xtest0-dev libxcb-xinerama0-dev libxcb-shape0-dev libxcb-xkb-dev
         pip install cmake
         pip install pastaq
     - name: Compile resources
@@ -38,10 +30,3 @@ jobs:
     - name: Perform tests
       run: |
         python -m pytest src/tests
-        #pytest src/tests/test_files.py
-        #pytest src/tests/test_pipeline.py
-        #pytest src/tests/test_params_buttons.py
-        #pytest src/tests/test_app.py
-        #export QT_DEBUG_PLUGINS=1
-        #export QT_QPA_PLATFORM=offscreen
-        #python src/tests/tests_CI.py
