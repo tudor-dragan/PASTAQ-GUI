@@ -264,8 +264,7 @@ class TestApp:
     # T1.29
     def test_config_path(self):
         path = str(self.main_window.get_config_path())
-        print(path)
-        assert path.endswith('PASTAQ-GUI\config.ini')
+        assert path.endswith('PASTAQ-GUI/config.ini')
 
     # tests if it returns False if the config is not a file
     # T1.30
