@@ -629,21 +629,18 @@ class SplashScreen(QSplashScreen):
         self.window.show()
 
 
-def main():
-    global app
-    app = QApplication(sys.argv)
-    app.setWindowIcon(QIcon(':/icons/pastaq.png'))
-    if platform.system() == 'Windows':
-        import ctypes
-        ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID('pastaq-gui')
-    app.setStyle("Fusion")
+global app
+app = QApplication(sys.argv)
+app.setWindowIcon(QIcon(':/icons/pastaq.png'))
+if platform.system() == 'Windows':
+    import ctypes
+    ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID('pastaq-gui')
+app.setStyle("Fusion")
 
-    # show splash screen before opening GUI
-    splash = SplashScreen()
-    splash.show()
-
-    app.exec_()
+window = MainWindow()
+window.resize(QSize(900, 700))
+window.show()
 
 
-if __name__ == "__main__":
-    main()
+app.exec_()
+
