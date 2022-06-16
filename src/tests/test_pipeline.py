@@ -19,7 +19,7 @@ class TestRun:
     output = [{'raw_path': ml_path, 'reference': False, 'group': '', 'ident_path': ident_path_mzid}]
 
     # assuming the file processing works, input files are changed accordingly
-    # T2.1
+    # T5.1
     def test_run_true(self, mock_pipeline, mock_files):
         pipe = pipeline.PipelineRunner(mock_files)
         pipe.input_files = self.input
@@ -28,7 +28,7 @@ class TestRun:
         assert pipe.input_files == self.output
 
     # assuming the file processing works, the pipeline can be called
-    # T2.2
+    # T5.2
     def test_run_true_call(self, mock_pipeline, mock_files):
         pipe = pipeline.PipelineRunner(mock_files)
         pipe.input_files = self.input
@@ -37,7 +37,7 @@ class TestRun:
         mock_pipeline.dda_pipeline.asser_not_called()
 
     # assuming the file processing did not work, the pipeline cannot be called
-    # T2.3
+    # T5.3
     def test_run_false_call(self, mock_pipeline, mock_files):
         pipe = pipeline.PipelineRunner(mock_files)
         mock_files.process.return_value = False
@@ -45,7 +45,7 @@ class TestRun:
         mock_pipeline.dda_pipeline.asser_not_called()
 
     # assuming the file processing did work but pipeline throws exception
-    # T2.4
+    # T5.4
     @mock.patch('builtins.print')
     def test_run_false_message(self, mock_print, mock_pipeline, mock_files):
         mock_pipeline.side_effect = Exception("ERROR")
