@@ -10,6 +10,7 @@ from PyQt5.QtWidgets import QTableWidget, QHeaderView, QHBoxLayout, QGroupBox, Q
 from PyQt5.QtWidgets import QVBoxLayout, QTabWidget, QSpinBox, QAbstractSpinBox, QMessageBox
 from PyQt5.QtWidgets import QWidget, QLineEdit, QDoubleSpinBox, QCheckBox, QStackedWidget, QListWidget
 from pathlib import Path
+
 global saved
 saved = True
 
@@ -86,6 +87,7 @@ class ParametersWidget(QTabWidget):
     # creates a file processor for processing .mgf files
     file_processor = files.FileProcessor()
     placeholder = 'Description of container'
+
     def __init__(self, parent=None):
         super(ParametersWidget, self).__init__(parent)
 

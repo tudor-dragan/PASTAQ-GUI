@@ -1,4 +1,5 @@
-import os, sys
+import os
+import sys
 import pytest
 
 import mock
@@ -32,7 +33,7 @@ class TestButtons:
         assert new_file["ident_path"] == 'C:/Users/Downloads/1_3.mzid'
 
     # T4.2
-    # tests to see if path does not get changed if paths dont match
+    # tests to see if path does not get changed if paths don't match
     def test_multiple_id_files_if_no_match(self, tmp_path):
         file = {'raw_path': mzXML, 'reference': False, 'group': '', 'ident_path': mzID, 'stem': 'D-10'}
         new_file = {'raw_path': mzXML, 'reference': False, 'group': '', 'ident_path': mzID, 'stem': 'D-10'}
@@ -64,7 +65,7 @@ class TestButtons:
     # T4.5
     # test to see if tooltip is the right one
     def test_init_button(self):
-        button = parameter.init_button("test_text", lambda a : a + 10, "test_tooltip")
+        button = parameter.init_button("test_text", lambda a: a + 10, "test_tooltip")
         assert button.toolTip() == "test_tooltip"
 
     # T4.6
