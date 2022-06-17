@@ -1,0 +1,32 @@
+name: Test
+
+on:
+  push:
+    branches: [main,working]
+
+jobs:
+  
+  test:
+    name: Test
+    runs-on: [macos-latest]
+    steps:
+    - uses: actions/checkout@v1
+    - name: Setup python
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.8
+    - name: Install dependencies
+      run: |
+        pip install PyQt5
+        pip install pytest
+        pip install mock
+        pip install cmake
+        pip install pastaq
+    - name: Compile resources
+      run: |
+        cd src
+        pyrcc5 -o resources.py resources.qrc
+        cd ..
+    - name: Perform tests
+      run: |
+        python -m pytest src/tests
