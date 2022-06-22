@@ -1,10 +1,10 @@
 This is a simple GUI that can be used to setup the parametrization of
 [PASTAQ's][pastaq]
-Data Dependent Acquisition (DDA) pipeline. To run this program, install `PyQT5`
-and `pastaq` with `pip` and run the `src/app.py` file.
+Data Dependent Acquisition (DDA) pipeline. To run this program, install `PyQT5`, `pastaq` and `pyrcc5` with `pip`, generate the resources with the `pyrcc5 src/resources.qrc -0 src/resources.py` command and run the `src/app.py` file.
 
 ```
-pip install pastaq PyQt5
+pip install pastaq PyQt5 pyrcc5
+pyrcc5 src/resources.qrc -0 src/resources.py
 python src/app.py
 ```
 
