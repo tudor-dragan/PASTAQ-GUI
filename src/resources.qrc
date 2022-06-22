@@ -4,7 +4,7 @@
         <file alias="loading.png">../resources/loading.png</file>
     </qresource>
     <qresource prefix="icons">
-        <file alias="question.png">../resources/question.png</file>
+        <file alias="question.png">../resources/questionmark.png</file>
         <file alias="pastaq.ico">../resources/pastaq.ico</file>
         <file alias="pastaq.icns">../resources/pastaq.icns</file>
         <file alias="pastaq.png">../resources/pastaq.png</file>
